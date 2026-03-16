@@ -10,6 +10,23 @@ type IndexScreenProps = {
   onSubmit?(message: string): Promise<ScheduleDraft>;
 };
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    switch (error.message) {
+      case 'service_unavailable':
+        return '解析服务暂时不可用，请稍后再试';
+      case 'empty_response':
+        return '未能解析出日程信息，请换一种描述再试';
+      case 'invalid_format':
+        return '解析结果格式异常，请稍后再试';
+      default:
+        return '解析失败，请稍后再试';
+    }
+  }
+
+  return '解析失败，请稍后再试';
+}
+
 async function defaultSubmit(message: string) {
   const endpoint = process.env.EXPO_PUBLIC_PARSE_API_URL ?? '';
   const result = await parseMessage(message, endpoint);
@@ -27,8 +44,13 @@ export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenPro
 
   async function handleSubmit(message: string) {
     setError('');
-    const nextDraft = await onSubmit(message);
-    setDraft(nextDraft);
+
+    try {
+      const nextDraft = await onSubmit(message);
+      setDraft(nextDraft);
+    } catch (error) {
+      setError(getErrorMessage(error));
+    }
   }
 
   return (
