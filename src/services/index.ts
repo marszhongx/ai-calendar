@@ -2,6 +2,11 @@
 // 统一的服务入口，包含AI服务和日历事件服务
 
 import { ParseMessageResult, ParsedSchedulePayload, Schedule, ScheduleDraft } from '../types';
+import { streamText, generateObject } from 'ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { z } from 'zod';
 
 // ===== AI Service =====
 export interface IAIService {
@@ -10,78 +15,80 @@ export interface IAIService {
 
 export interface AIServiceConfig {
   apiKey: string;
-  apiUrl?: string;
+  provider?: 'google' | 'openai' | 'anthropic';
   model?: string;
+  baseUrl?: string;
 }
 
 export class AIService implements IAIService {
   private config: AIServiceConfig;
+  private providerInstance: any;
 
   constructor(config: AIServiceConfig) {
     this.config = {
-      apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-flash:generateContent',
+      provider: 'google',
       model: 'gemini-2.5-pro-flash',
       ...config
     };
+
+    // 根据配置创建对应的AI提供商实例
+    switch (this.config.provider) {
+      case 'google':
+        this.providerInstance = createGoogleGenerativeAI({
+          apiKey: this.config.apiKey
+        });
+        break;
+      case 'openai':
+        this.providerInstance = createOpenAI({
+          apiKey: this.config.apiKey,
+          baseURL: this.config.baseUrl
+        });
+        break;
+      case 'anthropic':
+        this.providerInstance = createAnthropic({
+          apiKey: this.config.apiKey,
+          baseURL: this.config.baseUrl
+        });
+        break;
+      default:
+        this.providerInstance = createGoogleGenerativeAI({
+          apiKey: this.config.apiKey
+        });
+    }
   }
 
   async parseMessage(message: string): Promise<ParseMessageResult> {
     try {
-      const response = await fetch(`${this.config.apiUrl}?key=${this.config.apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `请解析以下日程安排请求并返回JSON格式的数据：\n\n"${message}"\n\n请按以下格式返回数据：\n{\n  "title": "日程标题",\n  "start_time": "开始时间(ISO 8601格式)",\n  "end_time": "结束时间(ISO 8601格式)",\n  "timezone": "时区",\n  "reminder_minutes_before": "提前几分钟提醒",\n  "recurrence": "重复频率",\n  "notes": "备注"\n}`
-            }]
-          }],
-          generationConfig: {
-            responseMimeType: "application/json"
-          }
-        })
+      // 定义日程载荷的Zod模式
+      const scheduleSchema = z.object({
+        title: z.string().describe('日程标题'),
+        start_time: z.string().describe('开始时间(ISO 8601格式)'),
+        end_time: z.optional(z.string()).describe('结束时间(ISO 8601格式)'),
+        timezone: z.optional(z.string()).describe('时区'),
+        reminder_minutes_before: z.optional(z.number()).describe('提前几分钟提醒'),
+        recurrence: z.optional(z.string()).describe('重复频率'),
+        notes: z.optional(z.string()).describe('备注'),
+        confidence: z.optional(z.number()).describe('置信度')
       });
 
-      if (!response.ok) {
-        console.error(`AI API error: ${response.status} ${response.statusText}`);
+      // 使用generateObject从AI获取结构化输出
+      const result = await generateObject({
+        model: this.providerInstance(this.config.model),
+        schema: scheduleSchema,
+        prompt: `请解析以下日程安排请求并返回结构化数据：\n\n"${message}"\n\n请按要求返回对应字段的数据。`,
+      });
+
+      if (!result.object) {
         return {
           ok: false,
-          error: 'service_unavailable',
+          error: 'empty_response',
         };
       }
 
-      const data = await response.json();
-
-      // 提取AI响应中的内容
-      let contentText = '';
-      try {
-        contentText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-        // 清理响应文本，移除可能的markdown代码块标记
-        contentText = contentText.replace(/```json\n?/, '').replace(/\n?```/, '');
-
-        const parsedData: ParsedSchedulePayload = JSON.parse(contentText);
-
-        if (!parsedData) {
-          return {
-            ok: false,
-            error: 'empty_response',
-          };
-        }
-
-        return {
-          ok: true,
-          data: parsedData,
-        };
-      } catch (parseError) {
-        console.error('Failed to parse AI response:', parseError, contentText);
-        return {
-          ok: false,
-          error: 'invalid_format',
-        };
-      }
+      return {
+        ok: true,
+        data: result.object as ParsedSchedulePayload,
+      };
     } catch (error) {
       console.error('Error calling AI service:', error);
       return {
