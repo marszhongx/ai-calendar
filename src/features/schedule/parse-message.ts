@@ -1,10 +1,17 @@
 import type { ParseMessageResult } from '../../types';
-import { getAIService, createAIService } from '../../services';
+import { getAIService, createAIService, AIServiceConfig } from '../../services';
 
-export async function parseMessageWithAI(message: string): Promise<ParseMessageResult> {
-  // 从环境变量获取API密钥和URL
-  const apiKey = process.env.EXPO_PUBLIC_AI_API_KEY;
-  const apiUrl = process.env.EXPO_PUBLIC_AI_API_URL;
+export async function parseMessageWithAI(message: string, config?: AIServiceConfig): Promise<ParseMessageResult> {
+  // 如果提供了配置，则使用提供的配置
+  if (config) {
+    const aiService = createAIService(config);
+    return aiService.parseMessage(message);
+  }
+
+  // 否则从环境变量获取配置
+  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_AI_API_KEY;
+  const provider = process.env.EXPO_PUBLIC_AI_PROVIDER || 'google';
+  const modelName = process.env.EXPO_PUBLIC_GOOGLE_MODEL_NAME || 'gemini-2.5-pro-exp';
 
   if (!apiKey) {
     console.error('AI API key is not configured');
@@ -19,7 +26,8 @@ export async function parseMessageWithAI(message: string): Promise<ParseMessageR
   if (!aiService) {
     aiService = createAIService({
       apiKey,
-      apiUrl,
+      provider: provider as 'google' | 'openai' | 'anthropic',
+      model: modelName
     });
   }
 

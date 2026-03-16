@@ -29,7 +29,33 @@ function getErrorMessage(error: unknown) {
 }
 
 async function defaultSubmit(message: string) {
-  const result = await parseMessageWithAI(message);
+  // 从环境变量获取AI配置
+  const provider = process.env.EXPO_PUBLIC_AI_PROVIDER || 'google';
+  let apiKey = '';
+
+  switch(provider) {
+    case 'google':
+      apiKey = process.env.EXPO_PUBLIC_GOOGLE_AI_API_KEY || '';
+      break;
+    case 'openai':
+      apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || '';
+      break;
+    case 'anthropic':
+      apiKey = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY || '';
+      break;
+    default:
+      apiKey = process.env.EXPO_PUBLIC_GOOGLE_AI_API_KEY || '';
+  }
+
+  if (!apiKey) {
+    throw new Error('AI API key is not configured');
+  }
+
+  const result = await parseMessageWithAI(message, {
+    provider: provider as 'google' | 'openai' | 'anthropic',
+    apiKey,
+    model: process.env.EXPO_PUBLIC_GOOGLE_MODEL_NAME || 'gemini-2.5-pro-exp'
+  });
 
   if (!result.ok) {
     throw new Error(result.error);
