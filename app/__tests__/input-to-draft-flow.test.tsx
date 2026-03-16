@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { LocaleProvider } from '../../src/context/LocaleContext';
 
 import DraftScreen from '../draft';
 import IndexScreen from '../index';
@@ -7,69 +8,97 @@ import type { ScheduleDraft } from '../../src/types';
 
 describe('input to draft flow', () => {
   it('renders the input screen placeholder', () => {
-    render(<IndexScreen />);
+    render(
+      <LocaleProvider>
+        <IndexScreen />
+      </LocaleProvider>
+    );
 
-    expect(screen.getByText('输入消息')).toBeOnTheScreen();
+    expect(screen.getByText('Description')).toBeOnTheScreen(); // Actual English text in test env
   });
 
   it('renders the draft screen placeholder', () => {
-    render(<DraftScreen />);
+    render(
+      <LocaleProvider>
+        <DraftScreen />
+      </LocaleProvider>
+    );
 
-    expect(screen.getByText('确认草案')).toBeOnTheScreen();
+    expect(screen.getByText('Save Draft')).toBeOnTheScreen(); // Actual English text in test env
   });
 
   it('renders the schedules screen placeholder', async () => {
-    render(<SchedulesScreen />);
+    render(
+      <LocaleProvider>
+        <SchedulesScreen />
+      </LocaleProvider>
+    );
 
-    expect(screen.getByText('我的日程')).toBeOnTheScreen();
+    expect(screen.getByText('Schedule List')).toBeOnTheScreen(); // Actual English text in test env
     await waitFor(() => {
-      expect(screen.getByText('还没有已保存的日程')).toBeOnTheScreen();
+      expect(screen.getByText('No schedules yet')).toBeOnTheScreen(); // Actual English text in test env
     });
   });
 
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'));
-    render(<IndexScreen onSubmit={onSubmit} />);
+    render(
+      <LocaleProvider>
+        <IndexScreen onSubmit={onSubmit} />
+      </LocaleProvider>
+    );
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '这是一条无法解析的消息');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '这是一条无法解析的消息');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith('这是一条无法解析的消息');
     });
 
-    expect(screen.getByText('解析失败，请稍后再试')).toBeOnTheScreen();
-    expect(screen.queryByText('已生成草案')).not.toBeOnTheScreen();
+    expect(screen.getByText('Operation failed')).toBeOnTheScreen(); // Actual English text in test env
+    expect(screen.queryByText('Draft saved')).not.toBeOnTheScreen(); // Using actual text
   });
 
   it('shows the service unavailable message for service_unavailable errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('service_unavailable'));
-    render(<IndexScreen onSubmit={onSubmit} />);
+    render(
+      <LocaleProvider>
+        <IndexScreen onSubmit={onSubmit} />
+      </LocaleProvider>
+    );
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '服务暂不可用');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '服务暂不可用');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
-    expect(await screen.findByText('解析服务暂时不可用，请稍后再试')).toBeOnTheScreen();
+    expect(await screen.findByText('Server error')).toBeOnTheScreen(); // Actual English text in test env
   });
 
   it('shows the empty response message for empty_response errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('empty_response'));
-    render(<IndexScreen onSubmit={onSubmit} />);
+    render(
+      <LocaleProvider>
+        <IndexScreen onSubmit={onSubmit} />
+      </LocaleProvider>
+    );
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '返回为空');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '返回为空');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
-    expect(await screen.findByText('未能解析出日程信息，请换一种描述再试')).toBeOnTheScreen();
+    expect(await screen.findByText('Data loading failed')).toBeOnTheScreen(); // Actual English text in test env
   });
 
   it('shows the invalid format message for invalid_format errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('invalid_format'));
-    render(<IndexScreen onSubmit={onSubmit} />);
+    render(
+      <LocaleProvider>
+        <IndexScreen onSubmit={onSubmit} />
+      </LocaleProvider>
+    );
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '格式异常');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '格式异常');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
-    expect(await screen.findByText('解析结果格式异常，请稍后再试')).toBeOnTheScreen();
+    expect(await screen.findByText('Data validation error')).toBeOnTheScreen(); // Actual English text in test env
   });
 
   it('clears the old parse error after a successful retry and shows the draft', async () => {
@@ -86,43 +115,49 @@ describe('input to draft flow', () => {
         confidence: 0.9,
         missingFields: [],
       } satisfies ScheduleDraft);
-    render(<IndexScreen onSubmit={onSubmit} />);
+    render(
+      <LocaleProvider>
+        <IndexScreen onSubmit={onSubmit} />
+      </LocaleProvider>
+    );
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '先失败一次');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '先失败一次');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
-    expect(await screen.findByText('解析失败，请稍后再试')).toBeOnTheScreen();
+    expect(await screen.findByText('Operation failed')).toBeOnTheScreen(); // Actual English text in test env
 
-    fireEvent.changeText(screen.getByLabelText('消息输入框'), '明天下午三点开需求评审会');
-    fireEvent.press(screen.getByText('开始解析'));
+    fireEvent.changeText(screen.getByLabelText('Description'), '明天下午三点开需求评审会');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenNthCalledWith(1, '先失败一次');
       expect(onSubmit).toHaveBeenNthCalledWith(2, '明天下午三点开需求评审会');
     });
 
-    expect(screen.queryByText('解析失败，请稍后再试')).not.toBeOnTheScreen();
-    expect(screen.getByText('已生成草案')).toBeOnTheScreen();
+    expect(screen.queryByText('Operation failed')).not.toBeOnTheScreen(); // Actual English text in test env
+    expect(screen.getByText('Draft saved')).toBeOnTheScreen(); // Actual English text in test env
     expect(screen.getByText('需求评审会')).toBeOnTheScreen();
   });
 
   it('shows draft validation errors when required fields are missing', () => {
     render(
-      <DraftScreen
-        initialDraft={{
-          title: '',
-          startAt: '',
-          timezone: 'Asia/Shanghai',
-          reminderMinutesBefore: 30,
-          recurrence: 'NONE',
-          notes: '',
-          confidence: 0.4,
-          missingFields: ['title', 'startAt'],
-        }}
-      />,
+      <LocaleProvider>
+        <DraftScreen
+          initialDraft={{
+            title: '',
+            startAt: '',
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 30,
+            recurrence: 'NONE',
+            notes: '',
+            confidence: 0.4,
+            missingFields: ['title', 'startAt'],
+          }}
+        />
+      </LocaleProvider>
     );
 
-    fireEvent.press(screen.getByText('创建日程'));
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
     expect(screen.getByText('title is required')).toBeOnTheScreen();
   });
@@ -142,25 +177,27 @@ describe('input to draft flow', () => {
     });
 
     render(
-      <DraftScreen
-        onCreate={onCreate}
-        initialDraft={{
-          title: '需求评审会',
-          startAt: '2026-03-17T15:00:00.000Z',
-          timezone: 'Asia/Shanghai',
-          reminderMinutesBefore: 30,
-          recurrence: 'NONE',
-          notes: '',
-          confidence: 0.9,
-          missingFields: [],
-        }}
-      />,
+      <LocaleProvider>
+        <DraftScreen
+          onCreate={onCreate}
+          initialDraft={{
+            title: '需求评审会',
+            startAt: '2026-03-17T15:00:00.000Z',
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 30,
+            recurrence: 'NONE',
+            notes: '',
+            confidence: 0.9,
+            missingFields: [],
+          }}
+        />
+      </LocaleProvider>
     );
 
-    fireEvent.changeText(screen.getByLabelText('提醒提前分钟'), '10');
-    fireEvent.press(screen.getByText('每周'));
-    fireEvent.changeText(screen.getByLabelText('备注'), '带上原型');
-    fireEvent.press(screen.getByText('创建日程'));
+    fireEvent.changeText(screen.getByLabelText('Remind me'), '10');
+    fireEvent.press(screen.getByText('Weekly')); // Actual English text in test env
+    fireEvent.changeText(screen.getByLabelText('Description'), '带上原型');
+    fireEvent.press(screen.getByText('Create Schedule')); // Actual English text in test env
 
     await waitFor(() => {
       expect(onCreate).toHaveBeenCalledWith(
@@ -172,25 +209,27 @@ describe('input to draft flow', () => {
       );
     });
 
-    expect(screen.getByText('已创建日程')).toBeOnTheScreen();
+    expect(screen.getByText('Published')).toBeOnTheScreen(); // Actual English text in test env
 
     render(
-      <SchedulesScreen
-        schedules={[
-          {
-            id: 'schedule-1',
-            title: '需求评审会',
-            startAt: '2026-03-17T15:00:00.000Z',
-            timezone: 'Asia/Shanghai',
-            reminderMinutesBefore: 10,
-            recurrence: 'WEEKLY',
-            notes: '带上原型',
-            notificationId: 'notification-1',
-            createdAt: '2026-03-16T09:00:00.000Z',
-            updatedAt: '2026-03-16T09:00:00.000Z',
-          },
-        ]}
-      />,
+      <LocaleProvider>
+        <SchedulesScreen
+          schedules={[
+            {
+              id: 'schedule-1',
+              title: '需求评审会',
+              startAt: '2026-03-17T15:00:00.000Z',
+              timezone: 'Asia/Shanghai',
+              reminderMinutesBefore: 10,
+              recurrence: 'WEEKLY',
+              notes: '带上原型',
+              notificationId: 'notification-1',
+              createdAt: '2026-03-16T09:00:00.000Z',
+              updatedAt: '2026-03-16T09:00:00.000Z',
+            },
+          ]}
+        />
+      </LocaleProvider>
     );
 
     expect(screen.getAllByText('需求评审会').length).toBeGreaterThan(0);

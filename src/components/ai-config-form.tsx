@@ -1,6 +1,7 @@
 // src/components/ai-config-form.tsx
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useLocale } from '../context/LocaleContext';
 import { ConfigManager } from '../config/ai-config';
 
 interface AIConfigFormProps {
@@ -8,32 +9,36 @@ interface AIConfigFormProps {
 }
 
 export const AIConfigForm: React.FC<AIConfigFormProps> = ({ onConfigChange }) => {
+  const { t } = useLocale(); // 添加国际化钩子
   const configManager = ConfigManager.getInstance();
   const currentConfig = configManager.getConfig();
 
   const [provider, setProvider] = useState(currentConfig.aiProvider);
   const [model, setModel] = useState(currentConfig.aiModel);
   const [apiKey, setApiKey] = useState(currentConfig.aiApiKey);
+  const [baseUrl, setBaseUrl] = useState(currentConfig.aiBaseUrl || '');
 
   useEffect(() => {
     setProvider(currentConfig.aiProvider);
     setModel(currentConfig.aiModel);
     setApiKey(currentConfig.aiApiKey);
+    setBaseUrl(currentConfig.aiBaseUrl || '');
   }, []);
 
   const handleSave = () => {
     if (!apiKey.trim()) {
-      Alert.alert('错误', '请输入API密钥');
+      Alert.alert(t('messages.error'), t('messages.invalidInput'));
       return;
     }
 
     configManager.updateConfig({
       aiProvider: provider as 'google' | 'openai' | 'anthropic',
       aiModel: model,
-      aiApiKey: apiKey
+      aiApiKey: apiKey,
+      aiBaseUrl: baseUrl || undefined
     });
 
-    Alert.alert('成功', '配置已保存');
+    Alert.alert(t('messages.success'), t('ai_config.saveSuccess'));
 
     if (onConfigChange) {
       onConfigChange();
@@ -42,7 +47,7 @@ export const AIConfigForm: React.FC<AIConfigFormProps> = ({ onConfigChange }) =>
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>AI 提供商:</Text>
+      <Text style={styles.label}>{t('ai_config.provider')}:</Text>
       <View style={styles.row}>
         <TouchableOpacity
           style={[styles.optionButton, provider === 'google' && styles.selectedOption]}
@@ -64,25 +69,34 @@ export const AIConfigForm: React.FC<AIConfigFormProps> = ({ onConfigChange }) =>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>模型名称:</Text>
+      <Text style={styles.label}>{t('ai_config.modelName')}:</Text>
       <TextInput
         style={styles.input}
         value={model}
         onChangeText={setModel}
-        placeholder="例如: gemini-2.5-pro-exp"
+        placeholder={t('ai_config.defaultModel')}
       />
 
-      <Text style={styles.label}>API 密钥:</Text>
+      <Text style={styles.label}>{t('ai_config.apiKey')}:</Text>
       <TextInput
         style={styles.input}
         value={apiKey}
         onChangeText={setApiKey}
-        placeholder="输入您的API密钥"
+        placeholder={t('ai_config.apiKey')}
         secureTextEntry={true}
       />
 
+      <Text style={styles.label}>{t('ai_config.baseUrl')}:</Text>
+      <TextInput
+        style={styles.input}
+        value={baseUrl}
+        onChangeText={setBaseUrl}
+        placeholder={t('ai_config.baseUrlPlaceholder')}
+        keyboardType="url"
+      />
+
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>保存配置</Text>
+        <Text style={styles.saveButtonText}>{t('ai_config.saveSettings')}</Text>
       </TouchableOpacity>
     </View>
   );

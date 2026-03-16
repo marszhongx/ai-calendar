@@ -1,4 +1,5 @@
 import { Button, Text, TextInput, View } from 'react-native';
+import { useLocale } from '../context/LocaleContext';
 
 import type { ScheduleDraft } from '../types';
 
@@ -10,20 +11,22 @@ type ScheduleDraftFormProps = {
 };
 
 export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: ScheduleDraftFormProps) {
+  const { t } = useLocale(); // 添加国际化钩子
+
   return (
     <View>
       <TextInput
-        accessibilityLabel="标题"
+        accessibilityLabel={t('schedule.eventName')}
         value={draft.title}
         onChangeText={(title) => onChange({ ...draft, title })}
       />
       <TextInput
-        accessibilityLabel="开始时间"
+        accessibilityLabel={t('schedule.startTime')}
         value={draft.startAt}
         onChangeText={(startAt) => onChange({ ...draft, startAt })}
       />
       <TextInput
-        accessibilityLabel="提醒提前分钟"
+        accessibilityLabel={t('schedule.remindMe')}
         value={String(draft.reminderMinutesBefore)}
         onChangeText={(value) =>
           onChange({
@@ -33,21 +36,21 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
         }
       />
       <View>
-        <Text>重复规则</Text>
+        <Text>{t('schedule.repeat')}</Text>
         <View>
-          <Button title="不重复" onPress={() => onChange({ ...draft, recurrence: 'NONE' })} />
-          <Button title="每天" onPress={() => onChange({ ...draft, recurrence: 'DAILY' })} />
-          <Button title="每周" onPress={() => onChange({ ...draft, recurrence: 'WEEKLY' })} />
-          <Button title="每月" onPress={() => onChange({ ...draft, recurrence: 'MONTHLY' })} />
+          <Button title={t('schedule.never')} onPress={() => onChange({ ...draft, recurrence: 'NONE' })} />
+          <Button title={t('schedule.daily')} onPress={() => onChange({ ...draft, recurrence: 'DAILY' })} />
+          <Button title={t('schedule.weekly')} onPress={() => onChange({ ...draft, recurrence: 'WEEKLY' })} />
+          <Button title={t('schedule.monthly')} onPress={() => onChange({ ...draft, recurrence: 'MONTHLY' })} />
         </View>
         <Text>{draft.recurrence}</Text>
       </View>
       <TextInput
-        accessibilityLabel="备注"
+        accessibilityLabel={t('schedule.description')}
         value={draft.notes}
         onChangeText={(notes) => onChange({ ...draft, notes })}
       />
-      <Button title="创建日程" onPress={onSubmit} />
+      <Button title={t('schedule.create')} onPress={onSubmit} />
       {errors.map((error) => (
         <Text key={error}>{error}</Text>
       ))}

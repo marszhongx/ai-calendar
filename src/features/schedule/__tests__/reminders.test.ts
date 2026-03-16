@@ -17,16 +17,18 @@ describe('reminder scheduler', () => {
   };
 
   it('creates a reminder notification', async () => {
+    const mockTranslate = jest.fn().mockReturnValue('你有一个即将到来的日程');
     const scheduler = createReminderScheduler({
       scheduleNotification: jest.fn().mockResolvedValue('notification-1'),
       cancelNotification: jest.fn(),
     });
 
-    await expect(scheduler.scheduleReminder(schedule)).resolves.toBe('notification-1');
+    await expect(scheduler.scheduleReminder(schedule, mockTranslate)).resolves.toBe('notification-1');
   });
 
   it('replaces an old notification when updating a reminder', async () => {
     const cancelNotification = jest.fn();
+    const mockTranslate = jest.fn().mockReturnValue('你有一个即将到来的日程');
     const scheduler = createReminderScheduler({
       scheduleNotification: jest.fn().mockResolvedValue('notification-2'),
       cancelNotification,
@@ -36,7 +38,7 @@ describe('reminder scheduler', () => {
       scheduler.updateReminder({
         ...schedule,
         notificationId: 'notification-1',
-      }),
+      }, mockTranslate)
     ).resolves.toBe('notification-2');
     expect(cancelNotification).toHaveBeenCalledWith('notification-1');
   });
@@ -55,12 +57,13 @@ describe('reminder scheduler', () => {
 
   it('maps recurrence values into repeat triggers', async () => {
     const scheduleNotification = jest.fn().mockResolvedValue('notification-3');
+    const mockTranslate = jest.fn().mockReturnValue('你有一个即将到来的日程');
     const scheduler = createReminderScheduler({
       scheduleNotification,
       cancelNotification: jest.fn(),
     });
 
-    await scheduler.scheduleReminder(schedule);
+    await scheduler.scheduleReminder(schedule, mockTranslate);
 
     expect(scheduleNotification).toHaveBeenCalledWith(
       expect.objectContaining({

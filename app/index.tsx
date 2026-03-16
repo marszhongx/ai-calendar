@@ -1,6 +1,7 @@
 // app/index.tsx
 import { useState } from 'react';
 import { Text, View } from 'react-native';
+import { useLocale } from '../src/context/LocaleContext';
 
 import { MessageInputForm } from '../src/components/message-input-form';
 import { normalizeDraft } from '../src/features/schedule/normalizer';
@@ -12,21 +13,21 @@ type IndexScreenProps = {
   onSubmit?(message: string): Promise<ScheduleDraft>;
 };
 
-function getErrorMessage(error: unknown) {
+function getErrorMessage(error: unknown, t: (key: string) => string) {
   if (error instanceof Error) {
     switch (error.message) {
       case 'service_unavailable':
-        return '解析服务暂时不可用，请稍后再试';
+        return t('messages.serverError');
       case 'empty_response':
-        return '未能解析出日程信息，请换一种描述再试';
+        return t('messages.dataLoadFailed');
       case 'invalid_format':
-        return '解析结果格式异常，请稍后再试';
+        return t('messages.validationError');
       default:
-        return '解析失败，请稍后再试';
+        return t('messages.error');
     }
   }
 
-  return '解析失败，请稍后再试';
+  return t('messages.error');
 }
 
 async function defaultSubmit(message: string) {
@@ -47,6 +48,7 @@ async function defaultSubmit(message: string) {
 }
 
 export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenProps) {
+  const { t } = useLocale(); // 添加国际化钩子
   const [draft, setDraft] = useState<ScheduleDraft | null>(null);
   const [error, setError] = useState('');
 
@@ -57,7 +59,7 @@ export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenPro
       const nextDraft = await onSubmit(message);
       setDraft(nextDraft);
     } catch (error) {
-      setError(getErrorMessage(error));
+      setError(getErrorMessage(error, t));
     }
   }
 
@@ -66,7 +68,7 @@ export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenPro
       <MessageInputForm onSubmit={handleSubmit} error={error} />
       {draft ? (
         <View>
-          <Text>已生成草案</Text>
+          <Text>{t('schedule.draftSaved')}</Text>
           <Text>{draft.title}</Text>
         </View>
       ) : null}

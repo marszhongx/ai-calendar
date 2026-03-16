@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Button, Text, TextInput, View } from 'react-native';
+import { useLocale } from '../context/LocaleContext';
 
 type MessageInputFormProps = {
   onSubmit(message: string): Promise<void>;
@@ -7,6 +8,7 @@ type MessageInputFormProps = {
 };
 
 export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
+  const { t } = useLocale(); // 添加国际化钩子
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -22,9 +24,9 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
 
   return (
     <View>
-      <Text>输入消息</Text>
-      <TextInput accessibilityLabel="消息输入框" value={message} onChangeText={setMessage} />
-      <Button title="开始解析" onPress={handleSubmit} />
+      <Text>{t('schedule.description')}</Text>
+      <TextInput accessibilityLabel={t('schedule.description')} value={message} onChangeText={setMessage} />
+      <Button title={t('schedule.create')} onPress={handleSubmit} />
       {submitting ? <ActivityIndicator /> : null}
       {error ? <Text>{error}</Text> : null}
     </View>

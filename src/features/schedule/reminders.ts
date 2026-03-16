@@ -26,9 +26,15 @@ const defaultDriver: ReminderDriver = {
   },
 };
 
-export function createReminderScheduler(driver: ReminderDriver = defaultDriver) {
+type ReminderScheduler = {
+  scheduleReminder(schedule: Schedule, t?: (key: string) => string): Promise<string>;
+  updateReminder(schedule: Schedule, t?: (key: string) => string): Promise<string>;
+  cancelReminder(notificationId: string): Promise<void>;
+};
+
+export function createReminderScheduler(driver: ReminderDriver = defaultDriver): ReminderScheduler {
   return {
-    async scheduleReminder(schedule: Schedule) {
+    async scheduleReminder(schedule: Schedule, t?: (key: string) => string) {
       const notificationDate = subtractMinutes(schedule.startAt, schedule.reminderMinutesBefore);
       const trigger = getRepeatTrigger(schedule.recurrence, notificationDate) ?? {
         type: 'date' as const,
@@ -37,15 +43,15 @@ export function createReminderScheduler(driver: ReminderDriver = defaultDriver) 
 
       return driver.scheduleNotification(trigger, {
         title: schedule.title,
-        body: schedule.notes || '你有一个即将开始的日程',
+        body: schedule.notes || (t ? t('schedule.remindMe') : 'You have an upcoming schedule'),
       });
     },
-    async updateReminder(schedule: Schedule) {
+    async updateReminder(schedule: Schedule, t?: (key: string) => string) {
       if (schedule.notificationId) {
         await driver.cancelNotification(schedule.notificationId);
       }
 
-      return this.scheduleReminder(schedule);
+      return this.scheduleReminder(schedule, t);
     },
     async cancelReminder(notificationId: string) {
       await driver.cancelNotification(notificationId);

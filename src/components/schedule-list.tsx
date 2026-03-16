@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { useLocale } from '../context/LocaleContext';
 
 import type { Schedule } from '../types';
 
@@ -7,8 +8,10 @@ type ScheduleListProps = {
 };
 
 export function ScheduleList({ schedules }: ScheduleListProps) {
+  const { t } = useLocale(); // 添加国际化钩子
+
   if (schedules.length === 0) {
-    return <Text>还没有已保存的日程</Text>;
+    return <Text>{t('schedule.emptyList')}</Text>;
   }
 
   return (

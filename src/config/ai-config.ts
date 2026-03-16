@@ -5,6 +5,7 @@ export interface AppConfig {
   aiProvider: 'google' | 'openai' | 'anthropic';
   aiModel: string;
   aiApiKey: string;
+  aiBaseUrl?: string;
 }
 
 export class ConfigManager {
@@ -17,6 +18,7 @@ export class ConfigManager {
       aiProvider: (process.env.EXPO_PUBLIC_AI_PROVIDER as 'google' | 'openai' | 'anthropic') || 'google',
       aiModel: process.env.EXPO_PUBLIC_AI_MODEL_NAME || 'gemini-2.5-pro-exp',
       aiApiKey: process.env.EXPO_PUBLIC_AI_API_KEY || '',
+      aiBaseUrl: process.env.EXPO_PUBLIC_AI_BASE_URL || undefined,
     };
   }
 
@@ -40,6 +42,7 @@ export class ConfigManager {
       apiKey: this.config.aiApiKey,
       provider: this.config.aiProvider,
       model: this.config.aiModel,
+      baseUrl: this.config.aiBaseUrl || undefined,
     };
   }
 
@@ -55,6 +58,10 @@ export class ConfigManager {
     this.config.aiApiKey = apiKey;
   }
 
+  public setBaseUrl(baseUrl: string): void {
+    this.config.aiBaseUrl = baseUrl;
+  }
+
   public getProvider(): 'google' | 'openai' | 'anthropic' {
     return this.config.aiProvider;
   }
@@ -65,5 +72,9 @@ export class ConfigManager {
 
   public getApiKey(): string {
     return this.config.aiApiKey;
+  }
+
+  public getBaseUrl(): string | undefined {
+    return this.config.aiBaseUrl;
   }
 }

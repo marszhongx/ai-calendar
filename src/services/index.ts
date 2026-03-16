@@ -35,7 +35,8 @@ export class AIService implements IAIService {
     switch (this.config.provider) {
       case 'google':
         this.providerInstance = createGoogleGenerativeAI({
-          apiKey: this.config.apiKey
+          apiKey: this.config.apiKey,
+          baseURL: this.config.baseUrl
         });
         break;
       case 'openai':
@@ -52,7 +53,8 @@ export class AIService implements IAIService {
         break;
       default:
         this.providerInstance = createGoogleGenerativeAI({
-          apiKey: this.config.apiKey
+          apiKey: this.config.apiKey,
+          baseURL: this.config.baseUrl
         });
     }
   }

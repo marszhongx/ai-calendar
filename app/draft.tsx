@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
+import { useLocale } from '../src/context/LocaleContext';
 
 import { ScheduleDraftForm } from '../src/components/schedule-draft-form';
 import { createScheduleRepository } from '../src/features/schedule/repository';
@@ -24,6 +25,7 @@ type DraftScreenProps = {
 };
 
 async function defaultCreate(draft: ScheduleDraft) {
+  const { t } = useLocale(); // 从全局上下文获取国际化函数
   const repository = createScheduleRepository();
   const reminders = createReminderScheduler();
   const now = new Date().toISOString();
@@ -39,7 +41,7 @@ async function defaultCreate(draft: ScheduleDraft) {
     createdAt: now,
     updatedAt: now,
   };
-  const notificationId = await reminders.scheduleReminder(scheduleBase);
+  const notificationId = await reminders.scheduleReminder(scheduleBase, t);
   const schedule = {
     ...scheduleBase,
     notificationId,
@@ -51,6 +53,7 @@ async function defaultCreate(draft: ScheduleDraft) {
 }
 
 export default function DraftScreen({ initialDraft = fallbackDraft, onCreate = defaultCreate }: DraftScreenProps) {
+  const { t } = useLocale(); // 添加国际化钩子
   const [draft, setDraft] = useState(initialDraft);
   const [errors, setErrors] = useState<string[]>([]);
   const [createdSchedule, setCreatedSchedule] = useState<Schedule | null>(null);
@@ -69,9 +72,9 @@ export default function DraftScreen({ initialDraft = fallbackDraft, onCreate = d
 
   return (
     <View>
-      <Text>确认草案</Text>
+      <Text>{t('schedule.saveDraft')}</Text>
       <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} />
-      {createdSchedule ? <Text>已创建日程</Text> : null}
+      {createdSchedule ? <Text>{t('schedule.published')}</Text> : null}
     </View>
   );
 }

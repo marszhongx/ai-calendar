@@ -23,7 +23,10 @@
 创建 `.env` 并配置：
 
 ```bash
-EXPO_PUBLIC_PARSE_API_URL=https://example.com/parse
+EXPO_PUBLIC_AI_API_KEY=your_ai_api_key
+EXPO_PUBLIC_AI_PROVIDER=google
+EXPO_PUBLIC_AI_MODEL_NAME=gemini-2.5-pro
+EXPO_PUBLIC_AI_BASE_URL=
 ```
 
 可参考 `.env.example`。
