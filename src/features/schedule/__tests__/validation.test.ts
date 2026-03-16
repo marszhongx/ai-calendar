@@ -1,0 +1,114 @@
+import { validateDraft, validateSchedule } from '../validation';
+import type { Schedule, ScheduleDraft } from '../../../types';
+
+describe('validateDraft', () => {
+  it('accepts a complete draft', () => {
+    const draft: ScheduleDraft = {
+      title: '需求评审会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      endAt: '2026-03-17T16:00:00.000Z',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 30,
+      recurrence: 'WEEKLY',
+      notes: '准备原型',
+      confidence: 0.92,
+      missingFields: [],
+    };
+
+    expect(validateDraft(draft)).toEqual({ valid: true, errors: [] });
+  });
+
+  it('rejects a draft without title', () => {
+    const draft: ScheduleDraft = {
+      title: '',
+      startAt: '2026-03-17T15:00:00.000Z',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 30,
+      recurrence: 'NONE',
+      notes: '',
+      confidence: 0.8,
+      missingFields: [],
+    };
+
+    expect(validateDraft(draft)).toEqual({
+      valid: false,
+      errors: ['title is required'],
+    });
+  });
+
+  it('rejects a draft without start time', () => {
+    const draft: ScheduleDraft = {
+      title: '医生复诊',
+      startAt: '',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 60,
+      recurrence: 'NONE',
+      notes: '',
+      confidence: 0.88,
+      missingFields: ['startAt'],
+    };
+
+    expect(validateDraft(draft)).toEqual({
+      valid: false,
+      errors: ['startAt is required'],
+    });
+  });
+
+  it('rejects a draft with invalid recurrence', () => {
+    const draft = {
+      title: '周会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 10,
+      recurrence: 'yearly',
+      notes: '',
+      confidence: 0.6,
+      missingFields: [],
+    } as unknown as ScheduleDraft;
+
+    expect(validateDraft(draft)).toEqual({
+      valid: false,
+      errors: ['recurrence must be one of NONE, DAILY, WEEKLY, MONTHLY'],
+    });
+  });
+});
+
+describe('validateSchedule', () => {
+  it('accepts a complete schedule', () => {
+    const schedule: Schedule = {
+      id: 'schedule-1',
+      title: '需求评审会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      endAt: '2026-03-17T16:00:00.000Z',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 30,
+      recurrence: 'NONE',
+      notes: '',
+      notificationId: 'notification-1',
+      createdAt: '2026-03-16T09:00:00.000Z',
+      updatedAt: '2026-03-16T09:00:00.000Z',
+    };
+
+    expect(validateSchedule(schedule)).toEqual({ valid: true, errors: [] });
+  });
+
+  it('rejects a schedule without id', () => {
+    const schedule = {
+      id: '',
+      title: '需求评审会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 30,
+      recurrence: 'NONE',
+      notes: '',
+      notificationId: 'notification-1',
+      createdAt: '2026-03-16T09:00:00.000Z',
+      updatedAt: '2026-03-16T09:00:00.000Z',
+    } as Schedule;
+
+    expect(validateSchedule(schedule)).toEqual({
+      valid: false,
+      errors: ['id is required'],
+    });
+  });
+});
