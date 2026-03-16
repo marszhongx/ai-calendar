@@ -45,8 +45,8 @@ npm run typecheck
 ## 当前实现说明
 
 - 路由：Expo Router 三页骨架
-- 存储：当前仓库层使用内存存储抽象，后续可接 AsyncStorage 实际适配
-- 提醒：当前提醒调度层为可测试驱动抽象，后续可接 Expo Notifications 实际实现
+- 存储：当前仓库层默认通过 `AsyncStorage` 持久化，并保留内存存储抽象用于测试与替换
+- 提醒：当前提醒调度层默认通过 Expo Notifications 调度，并保留可注入 driver 以便测试
 - 解析：已封装 parse API 客户端、标准化与校验边界
 
 ## 核心验证路径
