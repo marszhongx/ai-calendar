@@ -100,9 +100,18 @@ export class AIService implements IAIService {
 }
 
 let aiService: IAIService | null = null;
+let currentConfig: AIServiceConfig | null = null;
 
 export function createAIService(config: AIServiceConfig): IAIService {
-  aiService = new AIService(config);
+  // 如果配置发生变化，重新创建服务
+  if (!currentConfig ||
+      currentConfig.apiKey !== config.apiKey ||
+      currentConfig.provider !== config.provider ||
+      currentConfig.model !== config.model) {
+    currentConfig = config;
+    aiService = new AIService(config);
+  }
+
   return aiService;
 }
 
@@ -112,6 +121,7 @@ export function getAIService(): IAIService | null {
 
 export function resetAIService(): void {
   aiService = null;
+  currentConfig = null;
 }
 
 // ===== Calendar Event Service =====

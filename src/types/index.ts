@@ -11,3 +11,6 @@ export type {
 export type { DailyTrigger, MonthlyTrigger, RepeatTrigger, WeeklyTrigger } from './reminder';
 
 // 服务相关类型现在直接从services/index.ts导出
+
+// 配置相关类型
+export type { AppConfig } from '../config/ai-config';

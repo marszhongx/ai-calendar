@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { MessageInputForm } from '../src/components/message-input-form';
 import { normalizeDraft } from '../src/features/schedule/normalizer';
 import { parseMessageWithAI } from '../src/features/schedule/parse-message';
+import { ConfigManager } from '../src/config/ai-config';
 import type { ScheduleDraft } from '../src/types';
 
 type IndexScreenProps = {
@@ -29,20 +30,14 @@ function getErrorMessage(error: unknown) {
 }
 
 async function defaultSubmit(message: string) {
-  // 从环境变量获取AI配置
-  const provider = process.env.EXPO_PUBLIC_AI_PROVIDER || 'google';
-  const apiKey = process.env.EXPO_PUBLIC_AI_API_KEY || '';
-  const model = process.env.EXPO_PUBLIC_AI_MODEL_NAME || 'gemini-2.5-pro-exp';
+  const configManager = ConfigManager.getInstance();
+  const aiConfig = configManager.getAIConfig();
 
-  if (!apiKey) {
+  if (!aiConfig.apiKey) {
     throw new Error('AI API key is not configured');
   }
 
-  const result = await parseMessageWithAI(message, {
-    provider: provider as 'google' | 'openai' | 'anthropic',
-    apiKey,
-    model
-  });
+  const result = await parseMessageWithAI(message, aiConfig);
 
   if (!result.ok) {
     throw new Error(result.error);
