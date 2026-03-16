@@ -1,9 +1,10 @@
+// app/index.tsx
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { MessageInputForm } from '../src/components/message-input-form';
 import { normalizeDraft } from '../src/features/schedule/normalizer';
-import { parseMessage } from '../src/features/schedule/parse-message';
+import { parseMessageWithAI } from '../src/features/schedule/parse-message';
 import type { ScheduleDraft } from '../src/types';
 
 type IndexScreenProps = {
@@ -28,8 +29,7 @@ function getErrorMessage(error: unknown) {
 }
 
 async function defaultSubmit(message: string) {
-  const endpoint = process.env.EXPO_PUBLIC_PARSE_API_URL ?? '';
-  const result = await parseMessage(message, endpoint);
+  const result = await parseMessageWithAI(message);
 
   if (!result.ok) {
     throw new Error(result.error);
