@@ -24,27 +24,30 @@
 - `View/Text` → `YStack/XStack/SizableText/Card`
 - 每条日程渲染为 Tamagui `Card`，包含：
   - 标题：`SizableText` 加粗，较大字号
-  - 时间：`SizableText` 较小字号，使用 `$colorSubtle` 主题色
-  - 备注：`SizableText`，为空则不显示
+  - 时间：`SizableText` 较小字号，使用 `$placeholderColor` 主题色
+  - 如果 `endAt` 存在，显示时间范围（`startAt - endAt`）
+  - 备注：`SizableText`，条件渲染（`schedule.notes ? <SizableText>...</SizableText> : null`）
 - 卡片间距通过 `YStack gap="$3"` 控制
+- 使用 `ScrollView` 包裹列表，支持内容溢出滚动
 - 空列表状态显示居中提示文字
 - 使用主题 token，自动支持深色模式
 
 ### 2. schedules.tsx — 日程列表页面
 
 - `View/Text` → `YStack/SizableText`
-- 使用 `SafeAreaView` 包裹，与 `index.tsx` 一致
+- 使用 `SafeAreaView`（从 `react-native-safe-area-context` 导入）包裹，与 `index.tsx` 一致
 - 页面标题：`SizableText size="$8" fontWeight="bold"`
 - 布局：`YStack flex={1} backgroundColor="$background" padding="$4"`
 
 ### 3. ai-config-form.tsx — AI 配置表单
 
 - 移除整个 `StyleSheet`，使用 Tamagui 主题 token
-- 布局：`YStack gap="$4" padding="$4"`
-- Provider 分段控件：`XStack` 包裹三个 `Button`，选中项 `theme="active"`，未选中默认主题
-- 表单字段：复用已有 `FormField` 组件 + Tamagui `Input`
-- API Key：`Input` + `secureTextEntry`
-- Base URL：`Input` + `keyboardType="url"`
+- 布局：`YStack gap="$4" padding="$4"` + `backgroundColor="$background"` + `borderRadius="$4"`
+- 4 个字段的组件映射：
+  - Provider：`FormField` + `XStack` 包裹三个 `Button`，选中项 `theme="active"`，未选中默认主题
+  - Model Name：`FormField` + `Input`
+  - API Key：`FormField` + `Input` + `secureTextEntry`
+  - Base URL：`FormField` + `Input` + `keyboardType="url"`
 - 保存按钮：`Button size="$4" theme="active"`
 - `Alert.alert` 保持不变（RN 原生弹窗）
 - 自动支持深色模式
@@ -52,8 +55,9 @@
 ### 4. config.tsx — AI 配置页面
 
 - `View/Text` → `YStack/SizableText`
-- 使用 `SafeAreaView` 包裹
-- 页面标题：`SizableText size="$8" fontWeight="bold"`，使用 `t()` 国际化
+- 使用 `SafeAreaView`（从 `react-native-safe-area-context` 导入）包裹
+- 新增 `useLocale` 导入，页面标题使用 `t('ai_config.title')` 国际化（需确认 i18n 翻译文件中已有对应 key，如无则新增）
+- 页面标题：`SizableText size="$8" fontWeight="bold"`
 - 布局：`YStack flex={1} backgroundColor="$background" padding="$4"`
 - 移除内联 style 对象
 
