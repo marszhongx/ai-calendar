@@ -3,6 +3,7 @@ import { TamaguiProvider } from 'tamagui';
 import config from '../../src/theme/tamagui.config';
 import { LocaleProvider } from '../../src/context/LocaleContext';
 
+import ConfigScreen from '../config';
 import DraftScreen from '../draft';
 import IndexScreen from '../index';
 import SchedulesScreen from '../schedules';
@@ -257,5 +258,14 @@ describe('input to draft flow', () => {
 
     expect(screen.getByText('空备注日程')).toBeOnTheScreen();
     expect(screen.queryByTestId('schedule-notes-schedule-no-notes')).not.toBeOnTheScreen();
+  });
+
+  it('renders the config screen with provider buttons and form fields', () => {
+    renderWithProviders(<ConfigScreen />);
+
+    expect(screen.getByText('Google')).toBeOnTheScreen();
+    expect(screen.getByText('OpenAI')).toBeOnTheScreen();
+    expect(screen.getByText('Anthropic')).toBeOnTheScreen();
+    expect(screen.getByText('Save Settings')).toBeOnTheScreen();
   });
 });
