@@ -1,16 +1,18 @@
-import { Text, TextInput, View } from 'react-native';
+import type { ReactNode } from 'react'
+import { Label, YStack } from 'tamagui'
 
 type FormFieldProps = {
-  label: string;
-  value: string;
-  onChangeText(value: string): void;
-};
+  label: string
+  children: ReactNode
+}
 
-export function FormField({ label, value, onChangeText }: FormFieldProps) {
+export function FormField({ label, children }: FormFieldProps) {
   return (
-    <View>
-      <Text>{label}</Text>
-      <TextInput accessibilityLabel={label} value={value} onChangeText={onChangeText} />
-    </View>
-  );
+    <YStack gap="$2">
+      <Label fontSize="$4" fontWeight="bold">
+        {label}
+      </Label>
+      {children}
+    </YStack>
+  )
 }
