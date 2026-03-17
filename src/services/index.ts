@@ -42,7 +42,8 @@ export class AIService implements IAIService {
       case 'openai':
         this.providerInstance = createOpenAI({
           apiKey: this.config.apiKey,
-          baseURL: this.config.baseUrl
+          baseURL: this.config.baseUrl,
+          compatibility: 'compatible',
         });
         break;
       case 'anthropic':
@@ -74,8 +75,11 @@ export class AIService implements IAIService {
       });
 
       // 使用generateObject从AI获取结构化输出
+      const model = this.config.provider === 'openai'
+        ? this.providerInstance.chat(this.config.model)
+        : this.providerInstance(this.config.model);
       const result = await generateObject({
-        model: this.providerInstance(this.config.model),
+        model,
         schema: scheduleSchema,
         prompt: `请解析以下日程安排请求并返回结构化数据：\n\n"${message}"\n\n请按要求返回对应字段的数据。`,
       });
