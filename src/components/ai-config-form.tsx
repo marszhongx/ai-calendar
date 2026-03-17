@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Alert } from 'react-native'
 import { Button, Input, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
@@ -19,14 +19,7 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
   const [apiKey, setApiKey] = useState(currentConfig.aiApiKey)
   const [baseUrl, setBaseUrl] = useState(currentConfig.aiBaseUrl || '')
 
-  useEffect(() => {
-    setProvider(currentConfig.aiProvider)
-    setModel(currentConfig.aiModel)
-    setApiKey(currentConfig.aiApiKey)
-    setBaseUrl(currentConfig.aiBaseUrl || '')
-  }, [])
-
-  const handleSave = () => {
+  function handleSave() {
     if (!apiKey.trim()) {
       Alert.alert(t('messages.error'), t('messages.invalidInput'))
       return
