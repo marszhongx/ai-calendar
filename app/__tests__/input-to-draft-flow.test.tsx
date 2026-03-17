@@ -209,4 +209,53 @@ describe('input to draft flow', () => {
     expect(screen.getAllByText('需求评审会').length).toBeGreaterThan(0);
     expect(screen.getByText('带上原型')).toBeOnTheScreen();
   });
+
+  it('renders schedule card with time range when endAt exists', () => {
+    renderWithProviders(
+      <SchedulesScreen
+        schedules={[
+          {
+            id: 'schedule-range',
+            title: '团队会议',
+            startAt: '2026-03-18T09:00:00.000Z',
+            endAt: '2026-03-18T10:00:00.000Z',
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 10,
+            recurrence: 'NONE',
+            notes: '',
+            notificationId: 'n-1',
+            createdAt: '2026-03-17T09:00:00.000Z',
+            updatedAt: '2026-03-17T09:00:00.000Z',
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getByText('团队会议')).toBeOnTheScreen();
+    expect(screen.getByText('2026-03-18T09:00:00.000Z - 2026-03-18T10:00:00.000Z')).toBeOnTheScreen();
+  });
+
+  it('hides notes when schedule notes is empty', () => {
+    renderWithProviders(
+      <SchedulesScreen
+        schedules={[
+          {
+            id: 'schedule-no-notes',
+            title: '空备注日程',
+            startAt: '2026-03-18T09:00:00.000Z',
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 0,
+            recurrence: 'NONE',
+            notes: '',
+            notificationId: 'n-2',
+            createdAt: '2026-03-17T09:00:00.000Z',
+            updatedAt: '2026-03-17T09:00:00.000Z',
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getByText('空备注日程')).toBeOnTheScreen();
+    expect(screen.queryByTestId('schedule-notes-schedule-no-notes')).not.toBeOnTheScreen();
+  });
 });
