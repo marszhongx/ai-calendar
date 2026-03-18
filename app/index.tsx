@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Alert } from 'react-native'
+import { Alert, Platform } from 'react-native'
 import { Button, SizableText, Spinner, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
@@ -46,32 +46,44 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
     }, [schedules, t])
   )
 
-  const handleDelete = useCallback((schedule: Schedule) => {
-    Alert.alert(
-      t('schedule.delete'),
-      t('schedule.deleteConfirm'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const repository = createScheduleRepository()
-              const reminders = createReminderScheduler()
-              if (schedule.notificationId) {
-                await reminders.cancelReminder(schedule.notificationId)
-              }
-              await repository.deleteSchedule(schedule.id)
-              setItems((prev) => prev.filter((item) => item.id !== schedule.id))
-            } catch {
-              Alert.alert(t('messages.error'), t('messages.deleteFailed'))
-            }
-          },
-        },
-      ],
-    )
+  const performDelete = useCallback(async (schedule: Schedule) => {
+    try {
+      const repository = createScheduleRepository()
+      const reminders = createReminderScheduler()
+      if (schedule.notificationId) {
+        await reminders.cancelReminder(schedule.notificationId)
+      }
+      await repository.deleteSchedule(schedule.id)
+      setItems((prev) => prev.filter((item) => item.id !== schedule.id))
+    } catch {
+      if (Platform.OS === 'web') {
+        window.alert(t('messages.deleteFailed'))
+      } else {
+        Alert.alert(t('messages.error'), t('messages.deleteFailed'))
+      }
+    }
   }, [t])
+
+  const handleDelete = useCallback((schedule: Schedule) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(t('schedule.deleteConfirm'))) {
+        performDelete(schedule)
+      }
+    } else {
+      Alert.alert(
+        t('schedule.delete'),
+        t('schedule.deleteConfirm'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: () => performDelete(schedule),
+          },
+        ],
+      )
+    }
+  }, [t, performDelete])
 
   return (
     <>
