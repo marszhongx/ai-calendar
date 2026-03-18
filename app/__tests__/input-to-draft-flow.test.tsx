@@ -51,7 +51,7 @@ describe('page navigation flow', () => {
       />
     );
 
-    expect(screen.getByText('Save Draft')).toBeOnTheScreen();
+    expect(screen.getByText('Create Schedule')).toBeOnTheScreen();
   });
 
   it('renders the home screen with schedule list', async () => {
