@@ -12,7 +12,7 @@ export default function RootLayout() {
     <TamaguiProvider config={config} defaultTheme={theme}>
       <Theme name={theme}>
         <LocaleProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: true }} />
         </LocaleProvider>
       </Theme>
     </TamaguiProvider>
