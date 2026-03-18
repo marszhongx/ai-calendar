@@ -7,16 +7,27 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 const mockRouterPush = jest.fn();
 const mockRouterReplace = jest.fn();
 const mockRouterBack = jest.fn();
+const mockRouterDismissAll = jest.fn();
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: mockRouterPush,
     replace: mockRouterReplace,
     back: mockRouterBack,
+    dismissAll: mockRouterDismissAll,
   }),
+  Stack: { Screen: () => null },
 }));
 
 (globalThis as Record<string, unknown>).__mockRouterPush = mockRouterPush;
+(globalThis as Record<string, unknown>).__mockRouterDismissAll = mockRouterDismissAll;
+
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: (cb: () => void) => {
+    const { useEffect } = require('react');
+    useEffect(cb, [cb]);
+  },
+}));
 
 jest.mock('expo-notifications', () => ({
   scheduleNotificationAsync: jest.fn().mockResolvedValue('notification-id'),
