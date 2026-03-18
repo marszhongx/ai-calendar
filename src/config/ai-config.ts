@@ -16,7 +16,7 @@ export class ConfigManager {
     // 从环境变量或默认值初始化配置
     this.config = {
       aiProvider: (process.env.EXPO_PUBLIC_AI_PROVIDER as 'google' | 'openai' | 'anthropic') || 'google',
-      aiModel: process.env.EXPO_PUBLIC_AI_MODEL_NAME || 'gemini-2.5-pro-exp',
+      aiModel: process.env.EXPO_PUBLIC_AI_MODEL_NAME || 'gemini-2.5-pro',
       aiApiKey: process.env.EXPO_PUBLIC_AI_API_KEY || '',
       aiBaseUrl: process.env.EXPO_PUBLIC_AI_BASE_URL || undefined,
     };

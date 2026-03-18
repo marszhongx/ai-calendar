@@ -1,68 +1,75 @@
-import { parseMessage } from '../parse-message';
+import { parseMessageWithAI } from '../parse-message';
 
-describe('parseMessage', () => {
-  const originalFetch = global.fetch;
+jest.mock('../../../services', () => {
+  const mockParseMessage = jest.fn();
+  return {
+    createAIService: jest.fn(() => ({ parseMessage: mockParseMessage })),
+    __mockParseMessage: mockParseMessage,
+  };
+});
 
+jest.mock('../../../config/ai-config', () => {
+  const mockGetAIConfig = jest.fn();
+  return {
+    ConfigManager: {
+      getInstance: () => ({
+        getAIConfig: mockGetAIConfig,
+      }),
+    },
+    __mockGetAIConfig: mockGetAIConfig,
+  };
+});
+
+const { __mockParseMessage: mockParseMessage } = jest.requireMock('../../../services') as { __mockParseMessage: jest.Mock };
+const { __mockGetAIConfig: mockGetAIConfig } = jest.requireMock('../../../config/ai-config') as { __mockGetAIConfig: jest.Mock };
+
+describe('parseMessageWithAI', () => {
   afterEach(() => {
-    global.fetch = originalFetch;
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  it('returns parsed structured JSON on success', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        draft: {
-          title: '需求评审会',
-          start_time: '2026-03-17T15:00:00.000Z',
-        },
-      }),
-    } as Response);
-
-    await expect(parseMessage('明天下午三点开需求评审会', 'https://example.com/parse')).resolves.toEqual({
-      ok: true,
+  it('returns parsed result on success with explicit config', async () => {
+    const expected = {
+      ok: true as const,
       data: {
         title: '需求评审会',
         start_time: '2026-03-17T15:00:00.000Z',
       },
+    };
+    mockParseMessage.mockResolvedValue(expected);
+
+    const result = await parseMessageWithAI('明天下午三点开需求评审会', {
+      apiKey: 'test-key',
+      provider: 'google',
+      model: 'gemini-2.5-pro',
     });
+
+    expect(result).toEqual(expected);
   });
 
-  it('maps service failures into domain errors', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-    } as Response);
+  it('returns service_unavailable when no API key configured', async () => {
+    mockGetAIConfig.mockReturnValue({ apiKey: '' });
 
-    await expect(parseMessage('明天下午三点开需求评审会', 'https://example.com/parse')).resolves.toEqual({
+    const result = await parseMessageWithAI('test');
+
+    expect(result).toEqual({
       ok: false,
       error: 'service_unavailable',
     });
   });
 
-  it('returns empty_response when draft is missing', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    } as Response);
+  it('returns error on AI service failure', async () => {
+    const expected = {
+      ok: false as const,
+      error: 'service_unavailable' as const,
+    };
+    mockParseMessage.mockResolvedValue(expected);
 
-    await expect(parseMessage('你好', 'https://example.com/parse')).resolves.toEqual({
-      ok: false,
-      error: 'empty_response',
+    const result = await parseMessageWithAI('test', {
+      apiKey: 'test-key',
+      provider: 'google',
     });
-  });
 
-  it('returns invalid_format when response body is not valid JSON', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => {
-        throw new Error('Unexpected token <');
-      },
-    } as unknown as Response);
-
-    await expect(parseMessage('你好', 'https://example.com/parse')).resolves.toEqual({
-      ok: false,
-      error: 'invalid_format',
-    });
+    expect(result).toEqual(expected);
   });
 });

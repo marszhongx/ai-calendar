@@ -142,6 +142,7 @@
     "dataLoadFailed": "数据加载失败",
     "saveFailed": "保存失败",
     "deleteFailed": "删除失败",
-    "updateFailed": "更新失败"
+    "updateFailed": "更新失败",
+    "invalidUrl": "URL格式无效"
   }
 }

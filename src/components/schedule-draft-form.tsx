@@ -6,13 +6,14 @@ import type { ScheduleDraft } from '../types'
 type ScheduleDraftFormProps = {
   draft: ScheduleDraft
   errors: string[]
+  disabled?: boolean
   onChange(draft: ScheduleDraft): void
   onSubmit(): void
 }
 
 const RECURRENCE_OPTIONS = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'] as const
 
-export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: ScheduleDraftFormProps) {
+export function ScheduleDraftForm({ draft, errors, disabled, onChange, onSubmit }: ScheduleDraftFormProps) {
   const { t } = useLocale()
 
   const recurrenceLabels: Record<string, string> = {
@@ -34,6 +35,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius="$4"
+          disabled={disabled}
         />
       </YStack>
 
@@ -47,6 +49,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
           borderWidth={1}
           borderColor="$borderColor"
           borderRadius="$4"
+          disabled={disabled}
         />
       </YStack>
 
@@ -66,6 +69,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
           borderColor="$borderColor"
           borderRadius="$4"
           keyboardType="numeric"
+          disabled={disabled}
         />
       </YStack>
 
@@ -78,6 +82,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
               size="$3"
               theme={draft.recurrence === option ? 'active' : undefined}
               onPress={() => onChange({ ...draft, recurrence: option })}
+              disabled={disabled}
             >
               {recurrenceLabels[option]}
             </Button>
@@ -97,6 +102,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
           borderColor="$borderColor"
           borderRadius="$4"
           minHeight={80}
+          disabled={disabled}
         />
       </YStack>
 
@@ -104,6 +110,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
         size="$4"
         theme="active"
         onPress={onSubmit}
+        disabled={disabled}
       >
         {t('schedule.create')}
       </Button>

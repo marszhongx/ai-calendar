@@ -22,6 +22,8 @@ function getErrorMessage(error: unknown, t: (key: string) => string) {
         return t('messages.dataLoadFailed')
       case 'invalid_format':
         return t('messages.validationError')
+      case 'timeout':
+        return t('messages.timeoutError')
       default:
         return t('messages.error')
     }
@@ -35,7 +37,7 @@ async function defaultSubmit(message: string) {
   const aiConfig = configManager.getAIConfig()
 
   if (!aiConfig.apiKey) {
-    throw new Error('AI API key is not configured')
+    throw new Error('service_unavailable')
   }
 
   const result = await parseMessageWithAI(message, aiConfig)
@@ -58,8 +60,8 @@ export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenPro
     try {
       const nextDraft = await onSubmit(message)
       setDraft(nextDraft)
-    } catch (error) {
-      setError(getErrorMessage(error, t))
+    } catch (err) {
+      setError(getErrorMessage(err, t))
     }
   }
 

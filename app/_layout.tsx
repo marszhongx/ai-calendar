@@ -6,10 +6,11 @@ import config from '../src/theme/tamagui.config'
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
+  const theme = colorScheme === 'dark' ? 'dark' : 'light'
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme ?? 'light'}>
-      <Theme name={colorScheme ?? 'light'}>
+    <TamaguiProvider config={config} defaultTheme={theme}>
+      <Theme name={theme}>
         <LocaleProvider>
           <Stack screenOptions={{ headerShown: false }} />
         </LocaleProvider>

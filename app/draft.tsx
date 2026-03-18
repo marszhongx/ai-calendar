@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ScrollView } from 'react-native'
-import { SizableText, YStack } from 'tamagui'
+import { Button, SizableText, Spinner, YStack } from 'tamagui'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocale } from '../src/context/LocaleContext'
 
@@ -11,8 +11,8 @@ import { validateDraft } from '../src/features/schedule/validation'
 import type { Schedule, ScheduleDraft } from '../src/types'
 
 const fallbackDraft: ScheduleDraft = {
-  title: '待确认日程',
-  startAt: '2026-03-17T15:00:00.000Z',
+  title: '',
+  startAt: new Date().toISOString(),
   timezone: 'Asia/Shanghai',
   reminderMinutesBefore: 30,
   recurrence: 'NONE',
@@ -31,6 +31,7 @@ export default function DraftScreen({ initialDraft = fallbackDraft, onCreate }: 
   const [draft, setDraft] = useState(initialDraft)
   const [errors, setErrors] = useState<string[]>([])
   const [createdSchedule, setCreatedSchedule] = useState<Schedule | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   async function createSchedule(scheduleDraft: ScheduleDraft) {
     const repository = createScheduleRepository()
@@ -48,15 +49,16 @@ export default function DraftScreen({ initialDraft = fallbackDraft, onCreate }: 
       createdAt: now,
       updatedAt: now,
     }
-    const notificationId = await reminders.scheduleReminder(scheduleBase, t)
-    const schedule = {
-      ...scheduleBase,
-      notificationId,
+
+    try {
+      const notificationId = await reminders.scheduleReminder(scheduleBase, t)
+      const schedule = { ...scheduleBase, notificationId }
+      await repository.createSchedule(schedule)
+      return schedule
+    } catch (error) {
+      console.error('Failed to create schedule:', error)
+      throw error
     }
-
-    await repository.createSchedule(schedule)
-
-    return schedule
   }
 
   async function handleSubmit() {
@@ -67,9 +69,16 @@ export default function DraftScreen({ initialDraft = fallbackDraft, onCreate }: 
       return
     }
 
-    const handler = onCreate ?? createSchedule
-    const schedule = await handler(draft)
-    setCreatedSchedule(schedule)
+    setSubmitting(true)
+    try {
+      const handler = onCreate ?? createSchedule
+      const schedule = await handler(draft)
+      setCreatedSchedule(schedule)
+    } catch {
+      setErrors([t('messages.saveFailed')])
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -79,7 +88,10 @@ export default function DraftScreen({ initialDraft = fallbackDraft, onCreate }: 
           <SizableText size="$6" fontWeight="bold">
             {t('schedule.saveDraft')}
           </SizableText>
-          <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} />
+          <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} disabled={submitting} />
+          {submitting ? (
+            <Spinner size="large" />
+          ) : null}
           {createdSchedule ? (
             <SizableText color="$green10">{t('schedule.published')}</SizableText>
           ) : null}

@@ -1,16 +1,18 @@
-import { asyncStorage, createMemoryStorage, type KeyValueStorage } from '../../lib/storage';
+import { asyncStorage, type KeyValueStorage } from '../../lib/storage';
 import type { Schedule } from '../../types';
 
 const SCHEDULES_STORAGE_KEY = 'schedules';
 
 async function readSchedules(storage: KeyValueStorage) {
-  const raw = await storage.getItem(SCHEDULES_STORAGE_KEY);
-
-  if (!raw) {
+  try {
+    const raw = await storage.getItem(SCHEDULES_STORAGE_KEY);
+    if (!raw) {
+      return [] as Schedule[];
+    }
+    return JSON.parse(raw) as Schedule[];
+  } catch {
     return [] as Schedule[];
   }
-
-  return JSON.parse(raw) as Schedule[];
 }
 
 async function writeSchedules(storage: KeyValueStorage, schedules: Schedule[]) {

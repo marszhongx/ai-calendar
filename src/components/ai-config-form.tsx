@@ -1,12 +1,21 @@
 import { useState } from 'react'
 import { Alert } from 'react-native'
-import { Button, Input, XStack, YStack } from 'tamagui'
+import { Button, Input, SizableText, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
 import { ConfigManager } from '../config/ai-config'
 import { FormField } from './form-field'
 
 type AIConfigFormProps = {
   onConfigChange?: () => void
+}
+
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
@@ -18,15 +27,32 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
   const [model, setModel] = useState(currentConfig.aiModel)
   const [apiKey, setApiKey] = useState(currentConfig.aiApiKey)
   const [baseUrl, setBaseUrl] = useState(currentConfig.aiBaseUrl || '')
+  const [errors, setErrors] = useState<string[]>([])
 
   function handleSave() {
+    const validationErrors: string[] = []
+
     if (!apiKey.trim()) {
-      Alert.alert(t('messages.error'), t('messages.invalidInput'))
+      validationErrors.push(t('messages.invalidInput'))
+    }
+
+    if (!model.trim()) {
+      validationErrors.push(t('messages.requiredField'))
+    }
+
+    if (baseUrl.trim() && !isValidUrl(baseUrl.trim())) {
+      validationErrors.push(t('messages.invalidUrl'))
+    }
+
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors)
       return
     }
 
+    setErrors([])
+
     configManager.updateConfig({
-      aiProvider: provider as 'google' | 'openai' | 'anthropic',
+      aiProvider: provider,
       aiModel: model,
       aiApiKey: apiKey,
       aiBaseUrl: baseUrl || undefined
@@ -94,6 +120,12 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
           borderRadius="$4"
         />
       </FormField>
+
+      {errors.map((error) => (
+        <SizableText key={error} color="$red10">
+          {error}
+        </SizableText>
+      ))}
 
       <Button size="$4" theme="active" onPress={handleSave}>
         {t('ai_config.saveSettings')}

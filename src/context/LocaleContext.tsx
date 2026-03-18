@@ -1,12 +1,11 @@
-// src/context/LocaleContext.tsx
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, ReactNode, useEffect } from 'react';
 import I18n from '../i18n';
 import { Locale } from '../i18n/types';
 
 type LocaleContextType = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: keyof any, options?: any) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
 };
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
@@ -16,21 +15,19 @@ type LocaleProviderProps = {
 };
 
 export const LocaleProvider = ({ children }: LocaleProviderProps) => {
-  const [locale, setLocaleState] = useState<Locale>('zh'); // 默认为简体中文
+  const [locale, setLocaleState] = useState<Locale>('zh');
 
-  // 初始化语言环境
   useEffect(() => {
-    // 在测试环境中跳过动态导入
     if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
-      // 在测试环境中直接使用初始语言
       return;
     }
 
-    // 尝试获取系统语言
-    import('../i18n').then(({ initialLocale }) => {
-      setLocaleState(initialLocale);
-      I18n.locale = initialLocale;
-    });
+    import('../i18n')
+      .then(({ initialLocale }) => {
+        setLocaleState(initialLocale);
+        I18n.locale = initialLocale;
+      })
+      .catch(() => {});
   }, []);
 
   const setLocale = (newLocale: Locale) => {
@@ -38,13 +35,14 @@ export const LocaleProvider = ({ children }: LocaleProviderProps) => {
     I18n.locale = newLocale;
   };
 
-  const t = (key: keyof any, options?: any) => {
-    // 通过点号访问嵌套对象，例如 'common.save'
+  const t = (key: string, options?: Record<string, unknown>) => {
     return I18n.t(key, options);
   };
 
+  const value = useMemo(() => ({ locale, setLocale, t }), [locale]);
+
   return (
-    <LocaleContext.Provider value={{ locale, setLocale, t }}>
+    <LocaleContext.Provider value={value}>
       {children}
     </LocaleContext.Provider>
   );

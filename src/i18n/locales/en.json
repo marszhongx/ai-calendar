@@ -142,6 +142,7 @@
     "dataLoadFailed": "Data loading failed",
     "saveFailed": "Save failed",
     "deleteFailed": "Delete failed",
-    "updateFailed": "Update failed"
+    "updateFailed": "Update failed",
+    "invalidUrl": "Invalid URL format"
   }
 }
