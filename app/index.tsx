@@ -1,83 +1,113 @@
-import { useState } from 'react'
-import { Button, YStack } from 'tamagui'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useCallback, useState } from 'react'
+import { Alert } from 'react-native'
+import { Button, SizableText, Spinner, YStack } from 'tamagui'
+import { Stack, useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 import { useLocale } from '../src/context/LocaleContext'
 
-import { MessageInputForm } from '../src/components/message-input-form'
-import { normalizeDraft } from '../src/features/schedule/normalizer'
-import { parseMessageWithAI } from '../src/features/schedule/parse-message'
-import { ConfigManager } from '../src/config/ai-config'
-import type { ScheduleDraft } from '../src/types'
+import { ScheduleList } from '../src/components/schedule-list'
+import { createScheduleRepository } from '../src/features/schedule/repository'
+import { createReminderScheduler } from '../src/features/schedule/reminders'
+import type { Schedule } from '../src/types'
 
 type IndexScreenProps = {
-  onSubmit?(message: string): Promise<ScheduleDraft>
+  schedules?: Schedule[]
 }
 
-function getErrorMessage(error: unknown, t: (key: string) => string) {
-  if (error instanceof Error) {
-    switch (error.message) {
-      case 'service_unavailable':
-        return t('messages.serverError')
-      case 'empty_response':
-        return t('messages.dataLoadFailed')
-      case 'invalid_format':
-        return t('messages.validationError')
-      case 'timeout':
-        return t('messages.timeoutError')
-      default:
-        return t('messages.error')
-    }
-  }
-
-  return t('messages.error')
-}
-
-async function defaultSubmit(message: string) {
-  const configManager = ConfigManager.getInstance()
-  const aiConfig = configManager.getAIConfig()
-
-  if (!aiConfig.apiKey) {
-    throw new Error('service_unavailable')
-  }
-
-  const result = await parseMessageWithAI(message, aiConfig)
-
-  if (!result.ok) {
-    throw new Error(result.error)
-  }
-
-  return normalizeDraft(result.data)
-}
-
-export const PENDING_DRAFT_KEY = 'pending-draft'
-
-export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenProps) {
+export default function IndexScreen({ schedules }: IndexScreenProps) {
   const { t } = useLocale()
   const router = useRouter()
+  const [items, setItems] = useState<Schedule[]>(schedules ?? [])
+  const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
 
-  async function handleSubmit(message: string) {
-    setError('')
+  useFocusEffect(
+    useCallback(() => {
+      if (schedules) return
 
-    try {
-      const draft = await onSubmit(message)
-      await AsyncStorage.setItem(PENDING_DRAFT_KEY, JSON.stringify(draft))
-      router.push('/draft')
-    } catch (err) {
-      setError(getErrorMessage(err, t))
-    }
-  }
+      let cancelled = false
+      setLoading(true)
+      createScheduleRepository()
+        .listSchedules()
+        .then((data) => {
+          if (!cancelled) {
+            setItems(data)
+            setError('')
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setError(t('messages.dataLoadFailed'))
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+
+      return () => { cancelled = true }
+    }, [schedules, t])
+  )
+
+  const handleDelete = useCallback((schedule: Schedule) => {
+    Alert.alert(
+      t('schedule.delete'),
+      t('schedule.deleteConfirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const repository = createScheduleRepository()
+              const reminders = createReminderScheduler()
+              if (schedule.notificationId) {
+                await reminders.cancelReminder(schedule.notificationId)
+              }
+              await repository.deleteSchedule(schedule.id)
+              setItems((prev) => prev.filter((item) => item.id !== schedule.id))
+            } catch {
+              Alert.alert(t('messages.error'), t('messages.deleteFailed'))
+            }
+          },
+        },
+      ],
+    )
+  }, [t])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
+      <Stack.Screen
+        options={{
+          title: t('schedule.scheduleList'),
+          headerRight: () => (
+            <Button size="$3" chromeless onPress={() => router.push('/config')}>
+              <SizableText>⚙</SizableText>
+            </Button>
+          ),
+        }}
+      />
       <YStack flex={1} backgroundColor="$background" padding="$4">
-        <MessageInputForm onSubmit={handleSubmit} error={error} />
-        <Button marginTop="$4" variant="outlined" onPress={() => router.push('/schedules')}>
-          {t('schedule.scheduleList')}
-        </Button>
+        {loading ? (
+          <YStack flex={1} justifyContent="center" alignItems="center">
+            <Spinner size="large" />
+          </YStack>
+        ) : error ? (
+          <SizableText color="$red10">{error}</SizableText>
+        ) : (
+          <ScheduleList schedules={items} onDelete={handleDelete} />
+        )}
       </YStack>
-    </SafeAreaView>
+      <Button
+        size="$6"
+        circular
+        theme="active"
+        position="absolute"
+        bottom={24}
+        right={24}
+        elevation="$4"
+        onPress={() => router.push('/new')}
+      >
+        +
+      </Button>
+    </>
   )
 }
