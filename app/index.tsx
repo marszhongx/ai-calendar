@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { SizableText, YStack } from 'tamagui'
+import { Button, YStack } from 'tamagui'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocale } from '../src/context/LocaleContext'
 
 import { MessageInputForm } from '../src/components/message-input-form'
@@ -49,17 +51,20 @@ async function defaultSubmit(message: string) {
   return normalizeDraft(result.data)
 }
 
+export const PENDING_DRAFT_KEY = 'pending-draft'
+
 export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenProps) {
   const { t } = useLocale()
-  const [draft, setDraft] = useState<ScheduleDraft | null>(null)
+  const router = useRouter()
   const [error, setError] = useState('')
 
   async function handleSubmit(message: string) {
     setError('')
 
     try {
-      const nextDraft = await onSubmit(message)
-      setDraft(nextDraft)
+      const draft = await onSubmit(message)
+      await AsyncStorage.setItem(PENDING_DRAFT_KEY, JSON.stringify(draft))
+      router.push('/draft')
     } catch (err) {
       setError(getErrorMessage(err, t))
     }
@@ -69,12 +74,9 @@ export default function IndexScreen({ onSubmit = defaultSubmit }: IndexScreenPro
     <SafeAreaView style={{ flex: 1 }}>
       <YStack flex={1} backgroundColor="$background" padding="$4">
         <MessageInputForm onSubmit={handleSubmit} error={error} />
-        {draft ? (
-          <YStack padding="$4" gap="$2">
-            <SizableText color="$green10">{t('schedule.draftSaved')}</SizableText>
-            <SizableText size="$5" fontWeight="bold">{draft.title}</SizableText>
-          </YStack>
-        ) : null}
+        <Button marginTop="$4" variant="outlined" onPress={() => router.push('/schedules')}>
+          {t('schedule.scheduleList')}
+        </Button>
       </YStack>
     </SafeAreaView>
   )

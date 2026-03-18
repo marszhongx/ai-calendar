@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
-import { SizableText, YStack } from 'tamagui'
+import { Button, SizableText, YStack } from 'tamagui'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import { useLocale } from '../src/context/LocaleContext'
 
 import { ScheduleList } from '../src/components/schedule-list'
@@ -15,6 +16,7 @@ type SchedulesScreenProps = {
 
 export default function SchedulesScreen({ schedules }: SchedulesScreenProps) {
   const { t } = useLocale()
+  const router = useRouter()
   const [items, setItems] = useState<Schedule[]>(schedules ?? [])
   const [error, setError] = useState('')
 
@@ -67,6 +69,9 @@ export default function SchedulesScreen({ schedules }: SchedulesScreenProps) {
           <SizableText color="$red10">{error}</SizableText>
         ) : null}
         <ScheduleList schedules={items} onDelete={handleDelete} />
+        <Button marginTop="$4" variant="outlined" onPress={() => router.push('/')}>
+          {t('schedule.newSchedule')}
+        </Button>
       </YStack>
     </SafeAreaView>
   )

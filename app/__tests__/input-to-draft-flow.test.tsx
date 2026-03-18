@@ -1,7 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../src/theme/tamagui.config';
 import { LocaleProvider } from '../../src/context/LocaleContext';
+
+const mockRouterPush = (globalThis as Record<string, unknown>).__mockRouterPush as jest.Mock;
 
 import ConfigScreen from '../config';
 import DraftScreen from '../draft';
@@ -27,7 +30,20 @@ describe('input to draft flow', () => {
   });
 
   it('renders the draft screen placeholder', () => {
-    renderWithProviders(<DraftScreen />);
+    renderWithProviders(
+      <DraftScreen
+        initialDraft={{
+          title: '',
+          startAt: new Date().toISOString(),
+          timezone: 'Asia/Shanghai',
+          reminderMinutesBefore: 30,
+          recurrence: 'NONE',
+          notes: '',
+          confidence: 0.5,
+          missingFields: [],
+        }}
+      />
+    );
 
     expect(screen.getByText('Save Draft')).toBeOnTheScreen();
   });
@@ -86,7 +102,9 @@ describe('input to draft flow', () => {
     expect(await screen.findByText('Data validation error')).toBeOnTheScreen();
   });
 
-  it('clears the old parse error after a successful retry and shows the draft', async () => {
+  it('clears the old parse error after a successful retry and navigates to draft', async () => {
+    mockRouterPush.mockClear();
+
     const onSubmit = jest
       .fn()
       .mockRejectedValueOnce(new Error('parse failed'))
@@ -111,13 +129,15 @@ describe('input to draft flow', () => {
     fireEvent.press(screen.getByText('Create Schedule'));
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenNthCalledWith(1, '先失败一次');
       expect(onSubmit).toHaveBeenNthCalledWith(2, '明天下午三点开需求评审会');
     });
 
     expect(screen.queryByText('Operation failed')).not.toBeOnTheScreen();
-    expect(screen.getByText('Draft saved')).toBeOnTheScreen();
-    expect(screen.getByText('需求评审会')).toBeOnTheScreen();
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+      'pending-draft',
+      expect.stringContaining('需求评审会'),
+    );
+    expect(mockRouterPush).toHaveBeenCalledWith('/draft');
   });
 
   it('shows draft validation errors when required fields are missing', () => {

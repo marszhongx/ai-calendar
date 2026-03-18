@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 import { getRepeatTrigger, subtractMinutes } from '../../lib/date-time';
@@ -14,7 +15,7 @@ type ReminderDriver = {
   cancelNotification(notificationId: string): void | Promise<void>;
 };
 
-const defaultDriver: ReminderDriver = {
+const nativeDriver: ReminderDriver = {
   async scheduleNotification(trigger, content) {
     return Notifications.scheduleNotificationAsync({
       content,
@@ -25,6 +26,15 @@ const defaultDriver: ReminderDriver = {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   },
 };
+
+const webDriver: ReminderDriver = {
+  async scheduleNotification() {
+    return `web-${Date.now()}`;
+  },
+  async cancelNotification() {},
+};
+
+const defaultDriver: ReminderDriver = Platform.OS === 'web' ? webDriver : nativeDriver;
 
 type ReminderScheduler = {
   scheduleReminder(schedule: Schedule, t?: (key: string) => string): Promise<string>;
