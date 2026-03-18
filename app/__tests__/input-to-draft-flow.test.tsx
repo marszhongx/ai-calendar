@@ -5,11 +5,12 @@ import config from '../../src/theme/tamagui.config';
 import { LocaleProvider } from '../../src/context/LocaleContext';
 
 const mockRouterPush = (globalThis as Record<string, unknown>).__mockRouterPush as jest.Mock;
+const mockRouterDismissAll = (globalThis as Record<string, unknown>).__mockRouterDismissAll as jest.Mock;
 
 import ConfigScreen from '../config';
 import DraftScreen from '../draft';
+import NewScheduleScreen from '../new';
 import IndexScreen from '../index';
-import SchedulesScreen from '../schedules';
 import type { ScheduleDraft } from '../../src/types';
 
 function renderWithProviders(ui: React.ReactElement) {
@@ -22,14 +23,19 @@ function renderWithProviders(ui: React.ReactElement) {
   );
 }
 
-describe('input to draft flow', () => {
-  it('renders the input screen placeholder', () => {
-    renderWithProviders(<IndexScreen />);
+describe('page navigation flow', () => {
+  beforeEach(() => {
+    mockRouterPush.mockClear();
+    mockRouterDismissAll.mockClear();
+  });
+
+  it('renders the new schedule screen with input form', () => {
+    renderWithProviders(<NewScheduleScreen />);
 
     expect(screen.getByText('Description')).toBeOnTheScreen();
   });
 
-  it('renders the draft screen placeholder', () => {
+  it('renders the draft screen', () => {
     renderWithProviders(
       <DraftScreen
         initialDraft={{
@@ -48,10 +54,9 @@ describe('input to draft flow', () => {
     expect(screen.getByText('Save Draft')).toBeOnTheScreen();
   });
 
-  it('renders the schedules screen placeholder', async () => {
-    renderWithProviders(<SchedulesScreen />);
+  it('renders the home screen with schedule list', async () => {
+    renderWithProviders(<IndexScreen schedules={[]} />);
 
-    expect(screen.getByText('Schedule List')).toBeOnTheScreen();
     await waitFor(() => {
       expect(screen.getByText('No schedules yet')).toBeOnTheScreen();
     });
@@ -59,7 +64,7 @@ describe('input to draft flow', () => {
 
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'));
-    renderWithProviders(<IndexScreen onSubmit={onSubmit} />);
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
     fireEvent.changeText(screen.getByLabelText('Description'), '这是一条无法解析的消息');
     fireEvent.press(screen.getByText('Create Schedule'));
@@ -74,7 +79,7 @@ describe('input to draft flow', () => {
 
   it('shows the service unavailable message for service_unavailable errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('service_unavailable'));
-    renderWithProviders(<IndexScreen onSubmit={onSubmit} />);
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
     fireEvent.changeText(screen.getByLabelText('Description'), '服务暂不可用');
     fireEvent.press(screen.getByText('Create Schedule'));
@@ -84,7 +89,7 @@ describe('input to draft flow', () => {
 
   it('shows the empty response message for empty_response errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('empty_response'));
-    renderWithProviders(<IndexScreen onSubmit={onSubmit} />);
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
     fireEvent.changeText(screen.getByLabelText('Description'), '返回为空');
     fireEvent.press(screen.getByText('Create Schedule'));
@@ -94,7 +99,7 @@ describe('input to draft flow', () => {
 
   it('shows the invalid format message for invalid_format errors', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('invalid_format'));
-    renderWithProviders(<IndexScreen onSubmit={onSubmit} />);
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
     fireEvent.changeText(screen.getByLabelText('Description'), '格式异常');
     fireEvent.press(screen.getByText('Create Schedule'));
@@ -118,7 +123,7 @@ describe('input to draft flow', () => {
         confidence: 0.9,
         missingFields: [],
       } satisfies ScheduleDraft);
-    renderWithProviders(<IndexScreen onSubmit={onSubmit} />);
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
     fireEvent.changeText(screen.getByLabelText('Description'), '先失败一次');
     fireEvent.press(screen.getByText('Create Schedule'));
@@ -161,7 +166,7 @@ describe('input to draft flow', () => {
     expect(screen.getByText('title is required')).toBeOnTheScreen();
   });
 
-  it('creates a schedule and renders it in the list screen', async () => {
+  it('calls dismissAll after creating a schedule', async () => {
     const onCreate = jest.fn().mockResolvedValue({
       id: 'schedule-1',
       title: '需求评审会',
@@ -206,34 +211,14 @@ describe('input to draft flow', () => {
       );
     });
 
-    expect(screen.getByText('Published')).toBeOnTheScreen();
-
-    renderWithProviders(
-      <SchedulesScreen
-        schedules={[
-          {
-            id: 'schedule-1',
-            title: '需求评审会',
-            startAt: '2026-03-17T15:00:00.000Z',
-            timezone: 'Asia/Shanghai',
-            reminderMinutesBefore: 10,
-            recurrence: 'WEEKLY',
-            notes: '带上原型',
-            notificationId: 'notification-1',
-            createdAt: '2026-03-16T09:00:00.000Z',
-            updatedAt: '2026-03-16T09:00:00.000Z',
-          },
-        ]}
-      />
-    );
-
-    expect(screen.getAllByText('需求评审会').length).toBeGreaterThan(0);
-    expect(screen.getByText('带上原型')).toBeOnTheScreen();
+    await waitFor(() => {
+      expect(mockRouterDismissAll).toHaveBeenCalled();
+    });
   });
 
   it('renders schedule card with time range when endAt exists', () => {
     renderWithProviders(
-      <SchedulesScreen
+      <IndexScreen
         schedules={[
           {
             id: 'schedule-range',
@@ -258,7 +243,7 @@ describe('input to draft flow', () => {
 
   it('hides notes when schedule notes is empty', () => {
     renderWithProviders(
-      <SchedulesScreen
+      <IndexScreen
         schedules={[
           {
             id: 'schedule-no-notes',
@@ -287,5 +272,13 @@ describe('input to draft flow', () => {
     expect(screen.getByText('OpenAI')).toBeOnTheScreen();
     expect(screen.getByText('Anthropic')).toBeOnTheScreen();
     expect(screen.getByText('Save Settings')).toBeOnTheScreen();
+  });
+
+  it('navigates to new schedule page when FAB is pressed', () => {
+    renderWithProviders(<IndexScreen schedules={[]} />);
+
+    fireEvent.press(screen.getByText('+'));
+
+    expect(mockRouterPush).toHaveBeenCalledWith('/new');
   });
 });
