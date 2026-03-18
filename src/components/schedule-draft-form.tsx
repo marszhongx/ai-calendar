@@ -27,7 +27,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.eventName')}</Label>
         <Input
-          accessibilityLabel={t('schedule.eventName')}
+          aria-label={t('schedule.eventName')}
           value={draft.title}
           onChangeText={(title) => onChange({ ...draft, title })}
           size="$4"
@@ -40,7 +40,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.startTime')}</Label>
         <Input
-          accessibilityLabel={t('schedule.startTime')}
+          aria-label={t('schedule.startTime')}
           value={draft.startAt}
           onChangeText={(startAt) => onChange({ ...draft, startAt })}
           size="$4"
@@ -53,7 +53,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.remindMe')}</Label>
         <Input
-          accessibilityLabel={t('schedule.remindMe')}
+          aria-label={t('schedule.remindMe')}
           value={String(draft.reminderMinutesBefore)}
           onChangeText={(value) =>
             onChange({
@@ -89,7 +89,7 @@ export function ScheduleDraftForm({ draft, errors, onChange, onSubmit }: Schedul
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.description')}</Label>
         <TextArea
-          accessibilityLabel={t('schedule.description')}
+          aria-label={t('schedule.description')}
           value={draft.notes}
           onChangeText={(notes) => onChange({ ...draft, notes })}
           size="$4"

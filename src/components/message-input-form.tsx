@@ -28,7 +28,7 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
         {t('schedule.description')}
       </SizableText>
       <TextArea
-        accessibilityLabel={t('schedule.description')}
+        aria-label={t('schedule.description')}
         value={message}
         onChangeText={setMessage}
         size="$4"
