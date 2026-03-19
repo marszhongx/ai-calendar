@@ -3,14 +3,14 @@ import { ScrollView } from 'react-native'
 import { Button, Spinner, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useLocale } from '../src/context/LocaleContext'
+import { useLocale } from '@/context/LocaleContext'
 
-import { ScheduleDraftForm } from '../src/components/schedule-draft-form'
-import { createScheduleRepository } from '../src/features/schedule/repository'
-import { createReminderScheduler } from '../src/features/schedule/reminders'
-import { validateDraft } from '../src/features/schedule/validation'
-import { PENDING_DRAFT_KEY, Recurrence } from '../src/constants'
-import type { Schedule, ScheduleDraft } from '../src/types'
+import { ScheduleDraftForm } from '@/components/schedule-draft-form'
+import { createScheduleRepository } from '@/features/schedule/repository'
+import { createReminderScheduler } from '@/features/schedule/reminders'
+import { validateDraft } from '@/features/schedule/validation'
+import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
+import type { Schedule, ScheduleDraft } from '@/types'
 
 const fallbackDraft: ScheduleDraft = {
   title: '',

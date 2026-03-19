@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
-import config from '../../src/theme/tamagui.config';
-import { LocaleProvider } from '../../src/context/LocaleContext';
-import { Recurrence } from '../../src/constants';
-import { createScheduleRepository } from '../../src/features/schedule/repository';
-import type { Schedule } from '../../src/types';
+import config from '@/theme/tamagui.config';
+import { LocaleProvider } from '@/context/LocaleContext';
+import { Recurrence } from '@/constants';
+import { createScheduleRepository } from '@/features/schedule/repository';
+import type { Schedule } from '@/types';
 
 const mockRouterBack = (globalThis as Record<string, unknown>).__mockRouterBack as jest.Mock;
 

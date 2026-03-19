@@ -1,20 +1,20 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import config from '../../src/theme/tamagui.config';
-import { LocaleProvider } from '../../src/context/LocaleContext';
+import config from '@/theme/tamagui.config';
+import { LocaleProvider } from '@/context/LocaleContext';
 
 const mockRouterPush = (globalThis as Record<string, unknown>).__mockRouterPush as jest.Mock;
 const mockRouterDismissAll = (globalThis as Record<string, unknown>).__mockRouterDismissAll as jest.Mock;
 
 import dayjs from 'dayjs';
-import { Recurrence } from '../../src/constants';
+import { Recurrence } from '@/constants';
 import ConfigScreen from '../config';
 import DraftScreen from '../draft';
 import NewScheduleScreen from '../new';
 import IndexScreen from '../index';
-import type { ScheduleDraft } from '../../src/types';
-import { ScheduleList } from '../../src/components/schedule-list';
+import type { ScheduleDraft } from '@/types';
+import { ScheduleList } from '@/components/schedule-list';
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(

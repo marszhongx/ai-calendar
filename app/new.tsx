@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useLocale } from '../src/context/LocaleContext'
+import { useLocale } from '@/context/LocaleContext'
 
-import { MessageInputForm } from '../src/components/message-input-form'
-import { normalizeDraft } from '../src/features/schedule/normalizer'
-import { parseMessageWithAI } from '../src/features/schedule/parse-message'
-import { ConfigManager } from '../src/config/ai-config'
-import { PENDING_DRAFT_KEY } from '../src/constants'
-import type { ScheduleDraft } from '../src/types'
+import { MessageInputForm } from '@/components/message-input-form'
+import { normalizeDraft } from '@/features/schedule/normalizer'
+import { parseMessageWithAI } from '@/features/schedule/parse-message'
+import { ConfigManager } from '@/config/ai-config'
+import { PENDING_DRAFT_KEY } from '@/constants'
+import type { ScheduleDraft } from '@/types'
 
 type NewScheduleScreenProps = {
   onSubmit?(message: string): Promise<ScheduleDraft>

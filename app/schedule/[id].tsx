@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { Alert, Platform, ScrollView } from 'react-native'
 import { Spinner, YStack } from 'tamagui'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { useLocale } from '../../src/context/LocaleContext'
+import { useLocale } from '@/context/LocaleContext'
 
-import { ScheduleDraftForm } from '../../src/components/schedule-draft-form'
-import { createScheduleRepository } from '../../src/features/schedule/repository'
-import { createReminderScheduler } from '../../src/features/schedule/reminders'
-import { validateDraft } from '../../src/features/schedule/validation'
-import type { Schedule, ScheduleDraft } from '../../src/types'
+import { ScheduleDraftForm } from '@/components/schedule-draft-form'
+import { createScheduleRepository } from '@/features/schedule/repository'
+import { createReminderScheduler } from '@/features/schedule/reminders'
+import { validateDraft } from '@/features/schedule/validation'
+import type { Schedule, ScheduleDraft } from '@/types'
 
 function scheduleToDraft(schedule: Schedule): ScheduleDraft {
   return {

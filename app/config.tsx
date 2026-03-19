@@ -1,7 +1,7 @@
 import { YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
-import { useLocale } from '../src/context/LocaleContext'
-import { AIConfigForm } from '../src/components/ai-config-form'
+import { useLocale } from '@/context/LocaleContext'
+import { AIConfigForm } from '@/components/ai-config-form'
 
 export default function ConfigScreen() {
   const { t } = useLocale()

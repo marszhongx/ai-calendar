@@ -4,13 +4,13 @@ import { Button, SizableText, Spinner, XStack, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
-import { useLocale } from '../src/context/LocaleContext'
-import { ScheduleTab } from '../src/constants'
+import { useLocale } from '@/context/LocaleContext'
+import { ScheduleTab } from '@/constants'
 
-import { ScheduleList } from '../src/components/schedule-list'
-import { createScheduleRepository } from '../src/features/schedule/repository'
-import { createReminderScheduler } from '../src/features/schedule/reminders'
-import type { Schedule } from '../src/types'
+import { ScheduleList } from '@/components/schedule-list'
+import { createScheduleRepository } from '@/features/schedule/repository'
+import { createReminderScheduler } from '@/features/schedule/reminders'
+import type { Schedule } from '@/types'
 
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
   if (tab === ScheduleTab.ALL) return schedules
