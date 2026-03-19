@@ -9,7 +9,6 @@ const mockRouterDismissAll = (globalThis as Record<string, unknown>).__mockRoute
 
 import dayjs from 'dayjs';
 import { Recurrence } from '@/constants';
-import ConfigScreen from '../config';
 import DraftScreen from '../draft';
 import NewScheduleScreen from '../new';
 import IndexScreen from '../index';
@@ -268,15 +267,6 @@ describe('page navigation flow', () => {
 
     expect(screen.getByText('空备注日程')).toBeOnTheScreen();
     expect(screen.queryByTestId('schedule-notes-schedule-no-notes')).not.toBeOnTheScreen();
-  });
-
-  it('renders the config screen with provider buttons and form fields', () => {
-    renderWithProviders(<ConfigScreen />);
-
-    expect(screen.getByText('Google')).toBeOnTheScreen();
-    expect(screen.getByText('OpenAI')).toBeOnTheScreen();
-    expect(screen.getByText('Anthropic')).toBeOnTheScreen();
-    expect(screen.getByText('Save Settings')).toBeOnTheScreen();
   });
 
   it('navigates to new schedule page when FAB is pressed', () => {

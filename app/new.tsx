@@ -6,10 +6,9 @@ import { useLocale } from '@/context/LocaleContext'
 
 import { MessageInputForm } from '@/components/message-input-form'
 import { normalizeDraft } from '@/utils/schedule-normalizer'
-import { parseMessageWithAI } from '@/services/schedule-parse'
-import { ConfigManager } from '@/config/ai-config'
+import { parseMessage } from '@/services'
 import { PENDING_DRAFT_KEY } from '@/constants'
-import type { ScheduleDraft } from '@/types'
+import type { ScheduleDraft, ParsedSchedulePayload } from '@/types'
 
 type NewScheduleScreenProps = {
   onSubmit?(message: string): Promise<ScheduleDraft>
@@ -35,20 +34,11 @@ function getErrorMessage(error: unknown, t: (key: string) => string) {
 }
 
 async function defaultSubmit(message: string) {
-  const configManager = ConfigManager.getInstance()
-  const aiConfig = configManager.getAIConfig()
+  const deviceId = await AsyncStorage.getItem('deviceId');
+  if (!deviceId) throw new Error('service_unavailable');
 
-  if (!aiConfig.apiKey) {
-    throw new Error('service_unavailable')
-  }
-
-  const result = await parseMessageWithAI(message, aiConfig)
-
-  if (!result.ok) {
-    throw new Error(result.error)
-  }
-
-  return normalizeDraft(result.data)
+  const data = await parseMessage(message, deviceId) as ParsedSchedulePayload;
+  return normalizeDraft(data);
 }
 
 export default function NewScheduleScreen({ onSubmit = defaultSubmit }: NewScheduleScreenProps) {

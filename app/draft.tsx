@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Spinner, YStack } from 'tamagui'
+import { Spinner, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocale } from '@/context/LocaleContext'
 
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
-import { createScheduleRepository } from '@/services/schedule-repository'
-import { createReminderScheduler } from '@/services/schedule-reminders'
+import { createSchedule as apiCreateSchedule } from '@/services'
 import { validateDraft } from '@/utils/schedule-validation'
 import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import type { Schedule, ScheduleDraft } from '@/types'
@@ -48,12 +47,12 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
     })
   }, [initialDraft])
 
-  async function createSchedule(scheduleDraft: ScheduleDraft) {
-    const repository = createScheduleRepository()
-    const reminders = createReminderScheduler()
-    const now = new Date().toISOString()
-    const scheduleBase: Schedule = {
-      id: `schedule-${Date.now()}`,
+  async function handleCreateSchedule(scheduleDraft: ScheduleDraft) {
+    const deviceId = await AsyncStorage.getItem('deviceId');
+    if (!deviceId) throw new Error('Device not registered');
+
+    const result = await apiCreateSchedule({
+      deviceId,
       title: scheduleDraft.title,
       startAt: scheduleDraft.startAt,
       endAt: scheduleDraft.endAt,
@@ -61,19 +60,9 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
       reminderMinutesBefore: scheduleDraft.reminderMinutesBefore,
       recurrence: scheduleDraft.recurrence,
       notes: scheduleDraft.notes,
-      createdAt: now,
-      updatedAt: now,
-    }
+    });
 
-    try {
-      const notificationId = await reminders.scheduleReminder(scheduleBase, t)
-      const schedule = { ...scheduleBase, notificationId }
-      await repository.createSchedule(schedule)
-      return schedule
-    } catch (error) {
-      console.error('Failed to create schedule:', error)
-      throw error
-    }
+    return result as unknown as Schedule;
   }
 
   async function handleSubmit() {
@@ -86,7 +75,7 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
 
     setSubmitting(true)
     try {
-      const handler = onCreate ?? createSchedule
+      const handler = onCreate ?? handleCreateSchedule
       await handler(draft)
       router.dismissAll()
     } catch {

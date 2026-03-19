@@ -51,7 +51,7 @@ describe('createSchedule', () => {
   it('calls POST /api/schedules', async () => {
     const schedule = { deviceId: 'dev-1', title: '开会', startAt: '2026-03-20T10:00:00+08:00' };
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: '1', ...schedule }) });
-    const result = await createSchedule(schedule);
+    const result = await createSchedule(schedule) as { id: string };
     expect(result.id).toBe('1');
   });
 });

@@ -3,8 +3,24 @@ import { TamaguiProvider } from 'tamagui';
 import config from '@/theme/tamagui.config';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { Recurrence } from '@/constants';
-import { createScheduleRepository } from '@/services/schedule-repository';
 import type { Schedule } from '@/types';
+
+const mockListSchedules = jest.fn();
+const mockUpdateSchedule = jest.fn();
+
+jest.mock('@/services', () => ({
+  listSchedules: (...args: unknown[]) => mockListSchedules(...args),
+  updateSchedule: (...args: unknown[]) => mockUpdateSchedule(...args),
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn().mockResolvedValue('test-device-id'),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+  },
+}));
 
 const mockRouterBack = (globalThis as Record<string, unknown>).__mockRouterBack as jest.Mock;
 
@@ -33,16 +49,12 @@ const baseSchedule: Schedule = {
 };
 
 describe('schedule detail page', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     mockRouterBack.mockClear();
+    mockListSchedules.mockClear();
+    mockUpdateSchedule.mockClear();
     (globalThis as Record<string, unknown>).__mockSearchParams = { id: 'schedule-edit-1' };
-    const repository = createScheduleRepository();
-    await repository.createSchedule(baseSchedule);
-  });
-
-  afterEach(async () => {
-    const repository = createScheduleRepository();
-    await repository.deleteSchedule('schedule-edit-1');
+    mockListSchedules.mockResolvedValue([baseSchedule]);
   });
 
   it('loads and displays the schedule in the form', async () => {
@@ -56,6 +68,7 @@ describe('schedule detail page', () => {
   });
 
   it('saves edited schedule and navigates back', async () => {
+    mockUpdateSchedule.mockResolvedValue({ ...baseSchedule, title: '更新后的会议' });
     renderWithProviders(<ScheduleDetailScreen />);
 
     await waitFor(() => {
@@ -69,9 +82,10 @@ describe('schedule detail page', () => {
       expect(mockRouterBack).toHaveBeenCalled();
     });
 
-    const repository = createScheduleRepository();
-    const updated = await repository.getScheduleById('schedule-edit-1');
-    expect(updated?.title).toBe('更新后的会议');
+    expect(mockUpdateSchedule).toHaveBeenCalledWith(
+      'schedule-edit-1',
+      expect.objectContaining({ title: '更新后的会议' }),
+    );
   });
 
   it('navigates back when schedule is not found', async () => {

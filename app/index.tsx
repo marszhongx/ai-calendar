@@ -8,8 +8,8 @@ import { useLocale } from '@/context/LocaleContext'
 import { ScheduleTab } from '@/constants'
 
 import { ScheduleList } from '@/components/schedule-list'
-import { createScheduleRepository } from '@/services/schedule-repository'
-import { createReminderScheduler } from '@/services/schedule-reminders'
+import { listSchedules as apiListSchedules, deleteSchedule as apiDeleteSchedule } from '@/services'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { Schedule } from '@/types'
 
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
@@ -50,20 +50,23 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
 
       let cancelled = false
       setLoading(true)
-      createScheduleRepository()
-        .listSchedules()
-        .then((data) => {
-          if (!cancelled) {
-            setItems(data)
-            setError('')
-          }
-        })
-        .catch(() => {
-          if (!cancelled) setError(t('messages.dataLoadFailed'))
-        })
-        .finally(() => {
-          if (!cancelled) setLoading(false)
-        })
+
+      AsyncStorage.getItem('deviceId').then((deviceId) => {
+        if (!deviceId || cancelled) {
+          setLoading(false)
+          return
+        }
+        return apiListSchedules(deviceId) as Promise<Schedule[]>
+      }).then((data) => {
+        if (!cancelled && data) {
+          setItems(data)
+          setError('')
+        }
+      }).catch(() => {
+        if (!cancelled) setError(t('messages.dataLoadFailed'))
+      }).finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
       return () => { cancelled = true }
     }, [schedules, t])
@@ -71,12 +74,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
 
   const performDelete = useCallback(async (schedule: Schedule) => {
     try {
-      const repository = createScheduleRepository()
-      const reminders = createReminderScheduler()
-      if (schedule.notificationId) {
-        await reminders.cancelReminder(schedule.notificationId)
-      }
-      await repository.deleteSchedule(schedule.id)
+      await apiDeleteSchedule(schedule.id)
       setItems((prev) => prev.filter((item) => item.id !== schedule.id))
     } catch {
       if (Platform.OS === 'web') {
@@ -117,11 +115,6 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       <Stack.Screen
         options={{
           title: t('schedule.scheduleList'),
-          headerRight: () => (
-            <Button size="$3" chromeless onPress={() => router.push('/config')}>
-              <SizableText>⚙</SizableText>
-            </Button>
-          ),
         }}
       />
       <YStack flex={1} backgroundColor="$background" padding="$4">

@@ -5,8 +5,8 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useLocale } from '@/context/LocaleContext'
 
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
-import { createScheduleRepository } from '@/services/schedule-repository'
-import { createReminderScheduler } from '@/services/schedule-reminders'
+import { listSchedules as apiListSchedules, updateSchedule as apiUpdateSchedule } from '@/services'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { validateDraft } from '@/utils/schedule-validation'
 import type { Schedule, ScheduleDraft } from '@/types'
 
@@ -35,22 +35,26 @@ export default function ScheduleDetailScreen() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    createScheduleRepository()
-      .getScheduleById(id)
-      .then((found) => {
-        if (!found) {
-          if (Platform.OS === 'web') {
-            window.alert(t('messages.notFound'))
-          } else {
-            Alert.alert(t('messages.error'), t('messages.notFound'))
-          }
-          router.back()
-          return
+    AsyncStorage.getItem('deviceId').then(async (deviceId) => {
+      if (!deviceId) {
+        router.back()
+        return
+      }
+      const schedules = await apiListSchedules(deviceId) as Schedule[]
+      const found = schedules.find((s) => s.id === id)
+      if (!found) {
+        if (Platform.OS === 'web') {
+          window.alert(t('messages.notFound'))
+        } else {
+          Alert.alert(t('messages.error'), t('messages.notFound'))
         }
-        setSchedule(found)
-        setDraft(scheduleToDraft(found))
-        setLoading(false)
-      })
+        router.back()
+        return
+      }
+      setSchedule(found)
+      setDraft(scheduleToDraft(found))
+      setLoading(false)
+    })
   }, [id, router, t])
 
   const handleSubmit = useCallback(async () => {
@@ -62,11 +66,7 @@ export default function ScheduleDetailScreen() {
 
     setSubmitting(true)
     try {
-      const repository = createScheduleRepository()
-      const reminders = createReminderScheduler()
-
-      const updated: Schedule = {
-        ...schedule,
+      await apiUpdateSchedule(schedule.id, {
         title: draft.title,
         startAt: draft.startAt,
         endAt: draft.endAt,
@@ -74,18 +74,7 @@ export default function ScheduleDetailScreen() {
         reminderMinutesBefore: draft.reminderMinutesBefore,
         recurrence: draft.recurrence,
         notes: draft.notes,
-        updatedAt: new Date().toISOString(),
-      }
-
-      if (
-        schedule.reminderMinutesBefore !== draft.reminderMinutesBefore ||
-        schedule.startAt !== draft.startAt
-      ) {
-        const newNotificationId = await reminders.updateReminder(updated, t)
-        updated.notificationId = newNotificationId
-      }
-
-      await repository.updateSchedule(updated)
+      })
       router.back()
     } catch {
       setErrors([t('messages.saveFailed')])

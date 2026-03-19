@@ -11,13 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.58",
-    "@ai-sdk/google": "^3.0.43",
-    "@ai-sdk/openai": "^3.0.41",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@tamagui/babel-plugin": "^2.0.0-rc.26",
     "@tamagui/config": "^2.0.0-rc.26",
-    "ai": "^6.0.116",
     "dayjs": "^1.11.20",
     "expo": "~55.0.6",
     "expo-constants": "~55.0.9",
@@ -34,8 +30,7 @@
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.23.0",
     "react-native-web": "^0.21.0",
-    "tamagui": "^2.0.0-rc.26",
-    "zod": "^4.3.6"
+    "tamagui": "^2.0.0-rc.26"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
