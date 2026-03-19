@@ -36,9 +36,9 @@ export async function POST() {
 
   await sendPushNotifications(messages);
 
-  const ids = rows.map((r) => r.id);
+  const ids = rows.map((r) => r.id as string);
   await sql`
-    UPDATE schedules SET reminder_sent_at = NOW() WHERE id = ANY(${ids})
+    UPDATE schedules SET reminder_sent_at = NOW() WHERE id = ANY(${ids as unknown as string})
   `;
 
   return NextResponse.json({ sent: rows.length });
