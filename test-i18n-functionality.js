@@ -14,7 +14,7 @@ console.log('Testing Internationalization System...\n');
 i18n.locale = 'en';
 console.log('English:');
 console.log('  Save:', i18n.t('common.save'));
-console.log('  AI Settings:', i18n.t('ai_config.title'));
+console.log('  AI Settings:', i18n.t('aiConfig.title'));
 console.log('  Schedule:', i18n.t('schedule.title'));
 console.log('  Success:', i18n.t('messages.success'));
 
@@ -22,7 +22,7 @@ console.log('  Success:', i18n.t('messages.success'));
 i18n.locale = 'zh';
 console.log('\nChinese (Simplified):');
 console.log('  保存:', i18n.t('common.save'));
-console.log('  AI配置:', i18n.t('ai_config.title'));
+console.log('  AI配置:', i18n.t('aiConfig.title'));
 console.log('  日程安排:', i18n.t('schedule.title'));
 console.log('  成功:', i18n.t('messages.success'));
 
@@ -30,7 +30,7 @@ console.log('  成功:', i18n.t('messages.success'));
 i18n.locale = 'zh-TW';
 console.log('\nChinese (Traditional):');
 console.log('  儲存:', i18n.t('common.save'));
-console.log('  AI設定:', i18n.t('ai_config.title'));
+console.log('  AI設定:', i18n.t('aiConfig.title'));
 console.log('  行程安排:', i18n.t('schedule.title'));
 console.log('  成功:', i18n.t('messages.success'));
 

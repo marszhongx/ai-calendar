@@ -1,3 +1,4 @@
+import { Recurrence } from '../../../constants';
 import { validateDraft, validateSchedule } from '../validation';
 import type { Schedule, ScheduleDraft } from '../../../types';
 
@@ -9,7 +10,7 @@ describe('validateDraft', () => {
       endAt: '2026-03-17T16:00:00.000Z',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 30,
-      recurrence: 'WEEKLY',
+      recurrence: Recurrence.WEEKLY,
       notes: '准备原型',
       confidence: 0.92,
       missingFields: [],
@@ -24,7 +25,7 @@ describe('validateDraft', () => {
       startAt: '2026-03-17T15:00:00.000Z',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 30,
-      recurrence: 'NONE',
+      recurrence: Recurrence.NONE,
       notes: '',
       confidence: 0.8,
       missingFields: [],
@@ -42,7 +43,7 @@ describe('validateDraft', () => {
       startAt: '',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 60,
-      recurrence: 'NONE',
+      recurrence: Recurrence.NONE,
       notes: '',
       confidence: 0.88,
       missingFields: ['startAt'],
@@ -82,7 +83,7 @@ describe('validateSchedule', () => {
       endAt: '2026-03-17T16:00:00.000Z',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 30,
-      recurrence: 'NONE',
+      recurrence: Recurrence.NONE,
       notes: '',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',
@@ -99,7 +100,7 @@ describe('validateSchedule', () => {
       startAt: '2026-03-17T15:00:00.000Z',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 30,
-      recurrence: 'NONE',
+      recurrence: Recurrence.NONE,
       notes: '',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',

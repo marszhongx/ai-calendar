@@ -1,6 +1,5 @@
-import { RECURRENCE_VALUES } from '../constants';
-
-export type Recurrence = (typeof RECURRENCE_VALUES)[number];
+import { Recurrence } from '../constants';
+export { Recurrence };
 
 export type ScheduleDraft = {
   title: string;

@@ -9,7 +9,7 @@ import { ScheduleDraftForm } from '../src/components/schedule-draft-form'
 import { createScheduleRepository } from '../src/features/schedule/repository'
 import { createReminderScheduler } from '../src/features/schedule/reminders'
 import { validateDraft } from '../src/features/schedule/validation'
-import { PENDING_DRAFT_KEY } from '../src/constants'
+import { PENDING_DRAFT_KEY, Recurrence } from '../src/constants'
 import type { Schedule, ScheduleDraft } from '../src/types'
 
 const fallbackDraft: ScheduleDraft = {
@@ -17,7 +17,7 @@ const fallbackDraft: ScheduleDraft = {
   startAt: new Date().toISOString(),
   timezone: 'Asia/Shanghai',
   reminderMinutesBefore: 30,
-  recurrence: 'NONE',
+  recurrence: Recurrence.NONE,
   notes: '',
   confidence: 0.5,
   missingFields: [],

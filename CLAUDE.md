@@ -36,6 +36,7 @@ Cross-platform AI calendar app built with Expo 55 + React Native 0.83 + React 19
 - Result type (`src/lib/result.ts`) for error handling
 - No global state library; page-level useState + business logic functions
 - Types in `src/types/`: ScheduleDraft (editable), Schedule (persisted with id/timestamps/notificationId)
+- Enums use TypeScript `enum` in `src/constants/index.ts`（不单独文件），key 和 value 均为全大写形式（如 `enum ScheduleTab { TODAY = 'TODAY' }`）。所有新增枚举必须遵循此模式。
 
 ## Tech Stack
 

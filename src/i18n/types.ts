@@ -45,7 +45,7 @@ export interface TranslationKeys {
     apply: string;
     close: string;
   };
-  ai_config: {
+  aiConfig: {
     title: string;
     provider: string;
     apiKey: string;
@@ -111,6 +111,11 @@ export interface TranslationKeys {
     weekly: string;
     monthly: string;
     yearly: string;
+    tabToday: string;
+    tabTomorrow: string;
+    tabAll: string;
+    emptyToday: string;
+    emptyTomorrow: string;
   };
   messages: {
     success: string;

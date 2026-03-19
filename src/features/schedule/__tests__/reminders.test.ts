@@ -1,3 +1,4 @@
+import { Recurrence } from '../../../constants';
 import type { Schedule } from '../../../types';
 import { createReminderScheduler } from '../reminders';
 
@@ -9,7 +10,7 @@ describe('reminder scheduler', () => {
     endAt: '2026-03-17T16:00:00.000Z',
     timezone: 'Asia/Shanghai',
     reminderMinutesBefore: 30,
-    recurrence: 'WEEKLY',
+    recurrence: Recurrence.WEEKLY,
     notes: '',
     notificationId: undefined,
     createdAt: '2026-03-16T09:00:00.000Z',

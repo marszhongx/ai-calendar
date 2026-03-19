@@ -6,6 +6,7 @@ import type { Schedule } from '../types'
 
 type ScheduleListProps = {
   schedules: Schedule[]
+  emptyMessage?: string
   onDelete?(schedule: Schedule): void
 }
 
@@ -25,7 +26,7 @@ function formatDateTime(isoString: string, locale?: string) {
   }
 }
 
-export function ScheduleList({ schedules, onDelete }: ScheduleListProps) {
+export function ScheduleList({ schedules, emptyMessage, onDelete }: ScheduleListProps) {
   const { t, locale } = useLocale()
 
   const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
@@ -33,7 +34,7 @@ export function ScheduleList({ schedules, onDelete }: ScheduleListProps) {
   if (schedules.length === 0) {
     return (
       <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
-        <SizableText color="$placeholderColor">{t('schedule.emptyList')}</SizableText>
+        <SizableText color="$placeholderColor">{emptyMessage ?? t('schedule.emptyList')}</SizableText>
       </YStack>
     )
   }

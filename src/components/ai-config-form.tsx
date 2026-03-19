@@ -58,7 +58,7 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
       aiBaseUrl: baseUrl || undefined
     })
 
-    Alert.alert(t('messages.success'), t('ai_config.saveSuccess'))
+    Alert.alert(t('messages.success'), t('aiConfig.saveSuccess'))
 
     if (onConfigChange) {
       onConfigChange()
@@ -67,7 +67,7 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
 
   return (
     <YStack gap="$4" padding="$4" backgroundColor="$background" borderRadius="$4">
-      <FormField label={t('ai_config.provider')}>
+      <FormField label={t('aiConfig.provider')}>
         <XStack gap="$2">
           {(['google', 'openai', 'anthropic'] as const).map((p) => (
             <Button
@@ -83,11 +83,11 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
         </XStack>
       </FormField>
 
-      <FormField label={t('ai_config.modelName')}>
+      <FormField label={t('aiConfig.modelName')}>
         <Input
           value={model}
           onChangeText={setModel}
-          placeholder={t('ai_config.defaultModel')}
+          placeholder={t('aiConfig.defaultModel')}
           size="$4"
           borderWidth={1}
           borderColor="$borderColor"
@@ -95,11 +95,11 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
         />
       </FormField>
 
-      <FormField label={t('ai_config.apiKey')}>
+      <FormField label={t('aiConfig.apiKey')}>
         <Input
           value={apiKey}
           onChangeText={setApiKey}
-          placeholder={t('ai_config.apiKey')}
+          placeholder={t('aiConfig.apiKey')}
           secureTextEntry
           size="$4"
           borderWidth={1}
@@ -108,11 +108,11 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
         />
       </FormField>
 
-      <FormField label={t('ai_config.baseUrl')}>
+      <FormField label={t('aiConfig.baseUrl')}>
         <Input
           value={baseUrl}
           onChangeText={setBaseUrl}
-          placeholder={t('ai_config.baseUrlPlaceholder')}
+          placeholder={t('aiConfig.baseUrlPlaceholder')}
           keyboardType="url"
           size="$4"
           borderWidth={1}
@@ -128,7 +128,7 @@ export function AIConfigForm({ onConfigChange }: AIConfigFormProps) {
       ))}
 
       <Button size="$4" theme="active" onPress={handleSave}>
-        {t('ai_config.saveSettings')}
+        {t('aiConfig.saveSettings')}
       </Button>
     </YStack>
   )

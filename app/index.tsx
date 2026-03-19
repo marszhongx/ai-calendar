@@ -1,14 +1,22 @@
 import { useCallback, useState } from 'react'
 import { Alert, Platform } from 'react-native'
-import { Button, SizableText, Spinner, YStack } from 'tamagui'
+import { Button, SizableText, Spinner, XStack, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
+import dayjs from 'dayjs'
 import { useLocale } from '../src/context/LocaleContext'
+import { ScheduleTab } from '../src/constants'
 
 import { ScheduleList } from '../src/components/schedule-list'
 import { createScheduleRepository } from '../src/features/schedule/repository'
 import { createReminderScheduler } from '../src/features/schedule/reminders'
 import type { Schedule } from '../src/types'
+
+function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
+  if (tab === ScheduleTab.ALL) return schedules
+  const target = tab === ScheduleTab.TODAY ? dayjs() : dayjs().add(1, 'day')
+  return schedules.filter((s) => dayjs(s.startAt).isSame(target, 'day'))
+}
 
 type IndexScreenProps = {
   schedules?: Schedule[]
@@ -20,6 +28,21 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   const [items, setItems] = useState<Schedule[]>(schedules ?? [])
   const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState<ScheduleTab>(ScheduleTab.TODAY)
+
+  const TAB_LABELS: { key: ScheduleTab; label: string }[] = [
+    { key: ScheduleTab.TODAY, label: t('schedule.tabToday') },
+    { key: ScheduleTab.TOMORROW, label: t('schedule.tabTomorrow') },
+    { key: ScheduleTab.ALL, label: t('schedule.tabAll') },
+  ]
+
+  const filteredItems = filterSchedules(items, activeTab)
+
+  const emptyMessage = activeTab === ScheduleTab.TODAY
+    ? t('schedule.emptyToday')
+    : activeTab === ScheduleTab.TOMORROW
+      ? t('schedule.emptyTomorrow')
+      : undefined
 
   useFocusEffect(
     useCallback(() => {
@@ -98,6 +121,28 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         }}
       />
       <YStack flex={1} backgroundColor="$background" padding="$4">
+        <XStack
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius="$4"
+          overflow="hidden"
+          marginBottom="$3"
+        >
+          {TAB_LABELS.map(({ key, label }) => (
+            <Button
+              key={key}
+              flex={1}
+              size="$3"
+              borderRadius={0}
+              backgroundColor={activeTab === key ? '$blue10' : 'transparent'}
+              onPress={() => setActiveTab(key)}
+            >
+              <SizableText size="$3" color={activeTab === key ? 'white' : '$color'}>
+                {label}
+              </SizableText>
+            </Button>
+          ))}
+        </XStack>
         {loading ? (
           <YStack flex={1} justifyContent="center" alignItems="center">
             <Spinner size="large" />
@@ -105,7 +150,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         ) : error ? (
           <SizableText color="$red10">{error}</SizableText>
         ) : (
-          <ScheduleList schedules={items} onDelete={handleDelete} />
+          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onDelete={handleDelete} />
         )}
       </YStack>
       <Button

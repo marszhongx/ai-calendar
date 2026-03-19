@@ -7,6 +7,8 @@ import { LocaleProvider } from '../../src/context/LocaleContext';
 const mockRouterPush = (globalThis as Record<string, unknown>).__mockRouterPush as jest.Mock;
 const mockRouterDismissAll = (globalThis as Record<string, unknown>).__mockRouterDismissAll as jest.Mock;
 
+import dayjs from 'dayjs';
+import { Recurrence } from '../../src/constants';
 import ConfigScreen from '../config';
 import DraftScreen from '../draft';
 import NewScheduleScreen from '../new';
@@ -43,7 +45,7 @@ describe('page navigation flow', () => {
           startAt: new Date().toISOString(),
           timezone: 'Asia/Shanghai',
           reminderMinutesBefore: 30,
-          recurrence: 'NONE',
+          recurrence: Recurrence.NONE,
           notes: '',
           confidence: 0.5,
           missingFields: [],
@@ -58,7 +60,7 @@ describe('page navigation flow', () => {
     renderWithProviders(<IndexScreen schedules={[]} />);
 
     await waitFor(() => {
-      expect(screen.getByText('No schedules yet')).toBeOnTheScreen();
+      expect(screen.getByText('No schedules today')).toBeOnTheScreen();
     });
   });
 
@@ -118,7 +120,7 @@ describe('page navigation flow', () => {
         startAt: '2026-03-17T15:00:00.000Z',
         timezone: 'Asia/Shanghai',
         reminderMinutesBefore: 30,
-        recurrence: 'NONE',
+        recurrence: Recurrence.NONE,
         notes: '',
         confidence: 0.9,
         missingFields: [],
@@ -153,7 +155,7 @@ describe('page navigation flow', () => {
           startAt: '',
           timezone: 'Asia/Shanghai',
           reminderMinutesBefore: 30,
-          recurrence: 'NONE',
+          recurrence: Recurrence.NONE,
           notes: '',
           confidence: 0.4,
           missingFields: ['title', 'startAt'],
@@ -173,7 +175,7 @@ describe('page navigation flow', () => {
       startAt: '2026-03-17T15:00:00.000Z',
       timezone: 'Asia/Shanghai',
       reminderMinutesBefore: 10,
-      recurrence: 'WEEKLY',
+      recurrence: Recurrence.WEEKLY,
       notes: '带上原型',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',
@@ -188,7 +190,7 @@ describe('page navigation flow', () => {
           startAt: '2026-03-17T15:00:00.000Z',
           timezone: 'Asia/Shanghai',
           reminderMinutesBefore: 30,
-          recurrence: 'NONE',
+          recurrence: Recurrence.NONE,
           notes: '',
           confidence: 0.9,
           missingFields: [],
@@ -205,7 +207,7 @@ describe('page navigation flow', () => {
       expect(onCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           reminderMinutesBefore: 10,
-          recurrence: 'WEEKLY',
+          recurrence: Recurrence.WEEKLY,
           notes: '带上原型',
         }),
       );
@@ -217,21 +219,22 @@ describe('page navigation flow', () => {
   });
 
   it('renders schedule card with time range when endAt exists', () => {
+    const now = dayjs().hour(12).minute(0).second(0);
     renderWithProviders(
       <IndexScreen
         schedules={[
           {
             id: 'schedule-range',
             title: '团队会议',
-            startAt: '2026-03-18T09:00:00.000Z',
-            endAt: '2026-03-18T10:00:00.000Z',
+            startAt: now.toISOString(),
+            endAt: now.add(1, 'hour').toISOString(),
             timezone: 'Asia/Shanghai',
             reminderMinutesBefore: 10,
-            recurrence: 'NONE',
+            recurrence: Recurrence.NONE,
             notes: '',
             notificationId: 'n-1',
-            createdAt: '2026-03-17T09:00:00.000Z',
-            updatedAt: '2026-03-17T09:00:00.000Z',
+            createdAt: now.subtract(1, 'day').toISOString(),
+            updatedAt: now.subtract(1, 'day').toISOString(),
           },
         ]}
       />
@@ -242,20 +245,21 @@ describe('page navigation flow', () => {
   });
 
   it('hides notes when schedule notes is empty', () => {
+    const now = dayjs().hour(12).minute(0).second(0).toISOString();
     renderWithProviders(
       <IndexScreen
         schedules={[
           {
             id: 'schedule-no-notes',
             title: '空备注日程',
-            startAt: '2026-03-18T09:00:00.000Z',
+            startAt: now,
             timezone: 'Asia/Shanghai',
             reminderMinutesBefore: 0,
-            recurrence: 'NONE',
+            recurrence: Recurrence.NONE,
             notes: '',
             notificationId: 'n-2',
-            createdAt: '2026-03-17T09:00:00.000Z',
-            updatedAt: '2026-03-17T09:00:00.000Z',
+            createdAt: now,
+            updatedAt: now,
           },
         ]}
       />
@@ -280,5 +284,88 @@ describe('page navigation flow', () => {
     fireEvent.press(screen.getByText('+'));
 
     expect(mockRouterPush).toHaveBeenCalledWith('/new');
+  });
+
+  it('renders tab controls with Today selected by default', async () => {
+    renderWithProviders(<IndexScreen schedules={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Today')).toBeOnTheScreen();
+      expect(screen.getByText('Tomorrow')).toBeOnTheScreen();
+      expect(screen.getByText('All')).toBeOnTheScreen();
+    });
+  });
+
+  it('filters schedules by selected tab', async () => {
+    const today = dayjs().hour(12).minute(0).second(0).toISOString();
+    const tomorrow = dayjs().add(1, 'day').hour(12).minute(0).second(0).toISOString();
+
+    renderWithProviders(
+      <IndexScreen
+        schedules={[
+          {
+            id: 's-today',
+            title: '今日会议',
+            startAt: today,
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 10,
+            recurrence: Recurrence.NONE,
+            notes: '',
+            createdAt: today,
+            updatedAt: today,
+          },
+          {
+            id: 's-tomorrow',
+            title: '明日会议',
+            startAt: tomorrow,
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 10,
+            recurrence: Recurrence.NONE,
+            notes: '',
+            createdAt: today,
+            updatedAt: today,
+          },
+        ]}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('今日会议')).toBeOnTheScreen();
+    });
+    expect(screen.queryByText('明日会议')).not.toBeOnTheScreen();
+
+    fireEvent.press(screen.getByText('Tomorrow'));
+
+    await waitFor(() => {
+      expect(screen.getByText('明日会议')).toBeOnTheScreen();
+    });
+    expect(screen.queryByText('今日会议')).not.toBeOnTheScreen();
+
+    fireEvent.press(screen.getByText('All'));
+
+    await waitFor(() => {
+      expect(screen.getByText('今日会议')).toBeOnTheScreen();
+      expect(screen.getByText('明日会议')).toBeOnTheScreen();
+    });
+  });
+
+  it('shows tab-specific empty message when no schedules match', async () => {
+    renderWithProviders(<IndexScreen schedules={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No schedules today')).toBeOnTheScreen();
+    });
+
+    fireEvent.press(screen.getByText('Tomorrow'));
+
+    await waitFor(() => {
+      expect(screen.getByText('No schedules tomorrow')).toBeOnTheScreen();
+    });
+
+    fireEvent.press(screen.getByText('All'));
+
+    await waitFor(() => {
+      expect(screen.getByText('No schedules yet')).toBeOnTheScreen();
+    });
   });
 });

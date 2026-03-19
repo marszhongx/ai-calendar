@@ -44,7 +44,7 @@
     "apply": "套用",
     "close": "關閉"
   },
-  "ai_config": {
+  "aiConfig": {
     "title": "AI設定",
     "provider": "AI供應商",
     "apiKey": "API金鑰",
@@ -109,7 +109,12 @@
     "daily": "每日",
     "weekly": "每週",
     "monthly": "每月",
-    "yearly": "每年"
+    "yearly": "每年",
+    "tabToday": "今日",
+    "tabTomorrow": "明日",
+    "tabAll": "全部",
+    "emptyToday": "今日暫無日程",
+    "emptyTomorrow": "明日暫無日程"
   },
   "messages": {
     "success": "操作成功",

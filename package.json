@@ -18,6 +18,7 @@
     "@tamagui/babel-plugin": "^2.0.0-rc.26",
     "@tamagui/config": "^2.0.0-rc.26",
     "ai": "^6.0.116",
+    "dayjs": "^1.11.20",
     "expo": "~55.0.6",
     "expo-constants": "~55.0.8",
     "expo-linking": "~55.0.7",

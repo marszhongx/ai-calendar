@@ -1,3 +1,4 @@
+import { Recurrence } from '../../../constants';
 import type { Schedule } from '../../../types';
 import { createScheduleRepository } from '../repository';
 
@@ -14,7 +15,7 @@ describe('schedule repository', () => {
     endAt: '2026-03-17T16:00:00.000Z',
     timezone: 'Asia/Shanghai',
     reminderMinutesBefore: 30,
-    recurrence: 'NONE',
+    recurrence: Recurrence.NONE,
     notes: '',
     notificationId: 'notification-1',
     createdAt: '2026-03-16T09:00:00.000Z',

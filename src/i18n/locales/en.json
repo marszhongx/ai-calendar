@@ -44,7 +44,7 @@
     "apply": "Apply",
     "close": "Close"
   },
-  "ai_config": {
+  "aiConfig": {
     "title": "AI Settings",
     "provider": "AI Provider",
     "apiKey": "API Key",
@@ -109,7 +109,12 @@
     "daily": "Daily",
     "weekly": "Weekly",
     "monthly": "Monthly",
-    "yearly": "Yearly"
+    "yearly": "Yearly",
+    "tabToday": "Today",
+    "tabTomorrow": "Tomorrow",
+    "tabAll": "All",
+    "emptyToday": "No schedules today",
+    "emptyTomorrow": "No schedules tomorrow"
   },
   "messages": {
     "success": "Operation succeeded",

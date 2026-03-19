@@ -22,7 +22,7 @@ describe('基础国际化功能测试', () => {
   test('should translate correctly in English', () => {
     i18n.locale = 'en';
     expect(i18n.t('common.save')).toBe('Save');
-    expect(i18n.t('ai_config.title')).toBe('AI Settings');
+    expect(i18n.t('aiConfig.title')).toBe('AI Settings');
     expect(i18n.t('schedule.title')).toBe('Schedule');
     expect(i18n.t('messages.success')).toBe('Operation succeeded');
   });
@@ -30,7 +30,7 @@ describe('基础国际化功能测试', () => {
   test('should translate correctly in Chinese (Simplified)', () => {
     i18n.locale = 'zh';
     expect(i18n.t('common.save')).toBe('保存');
-    expect(i18n.t('ai_config.title')).toBe('AI配置');
+    expect(i18n.t('aiConfig.title')).toBe('AI配置');
     expect(i18n.t('schedule.title')).toBe('日程安排');
     expect(i18n.t('messages.success')).toBe('操作成功');
   });
@@ -38,7 +38,7 @@ describe('基础国际化功能测试', () => {
   test('should translate correctly in Chinese (Traditional)', () => {
     i18n.locale = 'zh-TW';
     expect(i18n.t('common.save')).toBe('儲存');
-    expect(i18n.t('ai_config.title')).toBe('AI設定');
+    expect(i18n.t('aiConfig.title')).toBe('AI設定');
     expect(i18n.t('schedule.title')).toBe('行程安排');
     expect(i18n.t('messages.success')).toBe('操作成功');
   });

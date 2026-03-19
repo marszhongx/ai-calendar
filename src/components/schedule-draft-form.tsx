@@ -1,5 +1,6 @@
 import { Button, Input, Label, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
+import { Recurrence } from '../constants'
 
 import type { ScheduleDraft } from '../types'
 
@@ -11,7 +12,7 @@ type ScheduleDraftFormProps = {
   onSubmit(): void
 }
 
-const RECURRENCE_OPTIONS = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'] as const
+const RECURRENCE_OPTIONS = Object.values(Recurrence)
 
 export function ScheduleDraftForm({ draft, errors, disabled, onChange, onSubmit }: ScheduleDraftFormProps) {
   const { t } = useLocale()

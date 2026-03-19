@@ -9,7 +9,7 @@ export default function ConfigScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t('ai_config.title') }} />
+      <Stack.Screen options={{ title: t('aiConfig.title') }} />
       <YStack flex={1} backgroundColor="$background" padding="$4">
         <AIConfigForm onConfigChange={() => router.dismissAll()} />
       </YStack>
