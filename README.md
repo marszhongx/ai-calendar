@@ -1,61 +1,79 @@
 # ai-calendar
 
-一个面向个人用户的跨平台 Expo MVP，用于把自然语言消息解析为单个日程草案，确认后本地保存并调度本地提醒。
+跨平台 AI 日程助手。用户输入自然语言描述，服务端 AI 解析为结构化日程，客户端确认后保存，服务端定时推送提醒。
 
-## MVP 范围
+## 项目结构
 
-- 粘贴文本消息
-- 调用解析接口获取结构化草案
-- 在客户端确认和编辑草案
-- 本地保存日程
-- 本地通知提醒
+```
+ai-calendar/
+├── app/                # Expo Router 页面（客户端）
+├── src/                # 客户端业务代码
+├── server/             # Next.js 后端 API
+└── docs/               # 设计文档
+```
 
-当前不包含：
+## 功能
 
-- 多事件拆分
-- 外部日历同步
-- 账号系统
-- 云同步
-- 语音输入
+- 自然语言输入，AI 解析为日程草案
+- 客户端确认 / 编辑草案后保存
+- 服务端持久化存储（Vercel Postgres）
+- 定时推送提醒（Expo Push + 服务端 Cron）
+- 支持单次 / 每日 / 每周 / 每月重复日程
+- 多语言（en、zh、zh-TW）
+
+当前不包含：多事件拆分、外部日历同步、账号系统、语音输入。
 
 ## 环境变量
 
-创建 `.env` 并配置：
+**客户端** — 创建根目录 `.env`：
 
 ```bash
-EXPO_PUBLIC_AI_API_KEY=your_ai_api_key
-EXPO_PUBLIC_AI_PROVIDER=google
-EXPO_PUBLIC_AI_MODEL_NAME=gemini-2.5-pro
-EXPO_PUBLIC_AI_BASE_URL=
+EXPO_PUBLIC_API_BASE_URL=http://localhost:3001
 ```
 
-可参考 `.env.example`。
+**服务端** — 创建 `server/.env`：
+
+```bash
+POSTGRES_URL=
+AI_API_KEY=
+AI_PROVIDER=openai
+AI_MODEL_NAME=grok-4-1-fast-non-reasoning
+AI_BASE_URL=https://yunwu.ai/v1
+```
 
 ## 启动
 
 ```bash
 npm install
-npm run start
+cd server && npm install && cd ..
+npm start              # 启动 Expo 客户端
+npm run server         # 启动服务端 (Next.js, 端口 3001)
 ```
 
 ## 测试
 
 ```bash
-npm test
-npm run typecheck
+npm test               # 客户端测试 (Jest)
+npm run typecheck      # TypeScript 类型检查
+cd server && npm test  # 服务端测试 (Vitest)
 ```
 
-## 当前实现说明
+## 核心流程
 
-- 路由：Expo Router 三页骨架
-- 存储：当前仓库层默认通过 `AsyncStorage` 持久化，并保留内存存储抽象用于测试与替换
-- 提醒：当前提醒调度层默认通过 Expo Notifications 调度，并保留可注入 driver 以便测试
-- 解析：已封装 parse API 客户端、标准化与校验边界
+1. 应用启动 → 生成设备 ID，上传 Push Token 到服务端
+2. 用户输入自然语言 → 服务端 AI 解析 → 返回结构化草案
+3. 用户确认 / 编辑草案 → 提交保存到服务端数据库
+4. 在列表页查看、编辑、删除日程
+5. 服务端 Cron 每分钟检查到期提醒 → 推送 Expo Push 通知
 
-## 核心验证路径
+## API 端点
 
-1. 在输入页输入文本
-2. 提交解析请求
-3. 在草案页确认或补全字段
-4. 创建后在列表页查看结果
-5. 调度本地提醒
+| 路由 | 方法 | 说明 |
+|------|------|------|
+| `/api/devices` | POST | 注册设备 & 上传 Push Token |
+| `/api/parse` | POST | AI 解析自然语言为日程 |
+| `/api/schedules` | GET | 获取设备的日程列表 |
+| `/api/schedules` | POST | 创建日程 |
+| `/api/schedules/[id]` | PUT | 更新日程 |
+| `/api/schedules/[id]` | DELETE | 删除日程 |
+| `/api/cron/send-reminders` | POST | Cron 触发，发送到期提醒 |
