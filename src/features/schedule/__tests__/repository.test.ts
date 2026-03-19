@@ -57,4 +57,17 @@ describe('schedule repository', () => {
 
     await expect(repository.listSchedules()).resolves.toEqual([]);
   });
+
+  it('gets a schedule by id', async () => {
+    const repository = createScheduleRepository();
+    await repository.createSchedule(baseSchedule);
+
+    await expect(repository.getScheduleById('schedule-1')).resolves.toEqual(baseSchedule);
+  });
+
+  it('returns undefined for non-existent schedule id', async () => {
+    const repository = createScheduleRepository();
+
+    await expect(repository.getScheduleById('non-existent')).resolves.toBeUndefined();
+  });
 });

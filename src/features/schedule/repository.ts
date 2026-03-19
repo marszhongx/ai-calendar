@@ -29,6 +29,10 @@ export function createScheduleRepository(storage: KeyValueStorage = asyncStorage
     async listSchedules() {
       return readSchedules(storage);
     },
+    async getScheduleById(id: string) {
+      const schedules = await readSchedules(storage);
+      return schedules.find((item) => item.id === id);
+    },
     async updateSchedule(schedule: Schedule) {
       const schedules = await readSchedules(storage);
       const updated = schedules.map((item) => (item.id === schedule.id ? schedule : item));
