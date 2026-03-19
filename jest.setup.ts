@@ -9,6 +9,8 @@ const mockRouterReplace = jest.fn();
 const mockRouterBack = jest.fn();
 const mockRouterDismissAll = jest.fn();
 
+let mockSearchParams: Record<string, string> = {};
+
 jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: mockRouterPush,
@@ -16,11 +18,22 @@ jest.mock('expo-router', () => ({
     back: mockRouterBack,
     dismissAll: mockRouterDismissAll,
   }),
+  useLocalSearchParams: () => mockSearchParams,
   Stack: { Screen: () => null },
 }));
 
 (globalThis as Record<string, unknown>).__mockRouterPush = mockRouterPush;
 (globalThis as Record<string, unknown>).__mockRouterDismissAll = mockRouterDismissAll;
+(globalThis as Record<string, unknown>).__mockRouterBack = mockRouterBack;
+
+Object.defineProperty(globalThis, '__mockSearchParams', {
+  set(value: Record<string, string>) {
+    mockSearchParams = value ?? {};
+  },
+  get() {
+    return mockSearchParams;
+  },
+});
 
 jest.mock('@react-navigation/native', () => ({
   useFocusEffect: (cb: () => void) => {
