@@ -1,6 +1,6 @@
-import { Recurrence } from '../../../constants';
-import { validateDraft, validateSchedule } from '../validation';
-import type { Schedule, ScheduleDraft } from '../../../types';
+import { Recurrence } from '../../constants';
+import { validateDraft, validateSchedule } from '../schedule-validation';
+import type { Schedule, ScheduleDraft } from '../../types';
 
 describe('validateDraft', () => {
   it('accepts a complete draft', () => {

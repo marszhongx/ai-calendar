@@ -1,5 +1,5 @@
-import { Recurrence } from '../../constants';
-import type { Schedule, ScheduleDraft, ValidationResult } from '../../types';
+import { Recurrence } from '../constants';
+import type { Schedule, ScheduleDraft, ValidationResult } from '../types';
 
 function isAllowedRecurrence(value: string) {
   return Object.values(Recurrence).includes(value as Recurrence);

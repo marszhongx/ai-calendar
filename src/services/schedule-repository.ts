@@ -1,5 +1,5 @@
-import { asyncStorage, type KeyValueStorage } from '../../lib/storage';
-import type { Schedule } from '../../types';
+import { asyncStorage, type KeyValueStorage } from '../lib/storage';
+import type { Schedule } from '../types';
 
 const SCHEDULES_STORAGE_KEY = 'schedules';
 

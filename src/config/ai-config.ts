@@ -1,5 +1,5 @@
 // src/config/ai-config.ts
-import { AIServiceConfig } from '../services';
+import { AIServiceConfig } from '../services/ai';
 
 export interface AppConfig {
   aiProvider: 'google' | 'openai' | 'anthropic';

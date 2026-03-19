@@ -1,6 +1,6 @@
-import { parseMessageWithAI } from '../parse-message';
+import { parseMessageWithAI } from '../schedule-parse';
 
-jest.mock('../../../services', () => {
+jest.mock('../ai', () => {
   const mockParseMessage = jest.fn();
   return {
     createAIService: jest.fn(() => ({ parseMessage: mockParseMessage })),
@@ -8,7 +8,7 @@ jest.mock('../../../services', () => {
   };
 });
 
-jest.mock('../../../config/ai-config', () => {
+jest.mock('../../config/ai-config', () => {
   const mockGetAIConfig = jest.fn();
   return {
     ConfigManager: {
@@ -20,8 +20,8 @@ jest.mock('../../../config/ai-config', () => {
   };
 });
 
-const { __mockParseMessage: mockParseMessage } = jest.requireMock('../../../services') as { __mockParseMessage: jest.Mock };
-const { __mockGetAIConfig: mockGetAIConfig } = jest.requireMock('../../../config/ai-config') as { __mockGetAIConfig: jest.Mock };
+const { __mockParseMessage: mockParseMessage } = jest.requireMock('../ai') as { __mockParseMessage: jest.Mock };
+const { __mockGetAIConfig: mockGetAIConfig } = jest.requireMock('../../config/ai-config') as { __mockGetAIConfig: jest.Mock };
 
 describe('parseMessageWithAI', () => {
   afterEach(() => {

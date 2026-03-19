@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-import { getRepeatTrigger, subtractMinutes } from '../../lib/date-time';
+import { getRepeatTrigger, subtractMinutes } from '../lib/date-time';
 import type { NotificationTriggerInput } from 'expo-notifications';
-import type { RepeatTrigger, Schedule } from '../../types';
+import type { RepeatTrigger, Schedule } from '../types';
 
 type DateTrigger = {
   type: 'date';

@@ -1,6 +1,6 @@
-import type { ParseMessageResult } from '../../types';
-import { createAIService, AIServiceConfig } from '../../services';
-import { ConfigManager } from '../../config/ai-config';
+import type { ParseMessageResult } from '../types';
+import { createAIService, AIServiceConfig } from './ai';
+import { ConfigManager } from '../config/ai-config';
 
 const PARSE_TIMEOUT_MS = 30_000;
 

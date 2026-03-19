@@ -1,6 +1,6 @@
-import { Recurrence } from '../../../constants';
-import type { Schedule } from '../../../types';
-import { createScheduleRepository } from '../repository';
+import { Recurrence } from '../../constants';
+import type { Schedule } from '../../types';
+import { createScheduleRepository } from '../schedule-repository';
 
 describe('schedule repository', () => {
   beforeEach(async () => {

@@ -1,4 +1,4 @@
-import { normalizeDraft } from '../normalizer';
+import { normalizeDraft } from '../schedule-normalizer';
 
 describe('normalizeDraft', () => {
   it('maps parsed payload fields into a schedule draft', () => {

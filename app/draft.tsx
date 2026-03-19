@@ -6,9 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocale } from '@/context/LocaleContext'
 
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
-import { createScheduleRepository } from '@/features/schedule/repository'
-import { createReminderScheduler } from '@/features/schedule/reminders'
-import { validateDraft } from '@/features/schedule/validation'
+import { createScheduleRepository } from '@/services/schedule-repository'
+import { createReminderScheduler } from '@/services/schedule-reminders'
+import { validateDraft } from '@/utils/schedule-validation'
 import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import type { Schedule, ScheduleDraft } from '@/types'
 

@@ -3,7 +3,7 @@ import { TamaguiProvider } from 'tamagui';
 import config from '@/theme/tamagui.config';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { Recurrence } from '@/constants';
-import { createScheduleRepository } from '@/features/schedule/repository';
+import { createScheduleRepository } from '@/services/schedule-repository';
 import type { Schedule } from '@/types';
 
 const mockRouterBack = (globalThis as Record<string, unknown>).__mockRouterBack as jest.Mock;

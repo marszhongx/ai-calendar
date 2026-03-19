@@ -8,8 +8,8 @@ import { useLocale } from '@/context/LocaleContext'
 import { ScheduleTab } from '@/constants'
 
 import { ScheduleList } from '@/components/schedule-list'
-import { createScheduleRepository } from '@/features/schedule/repository'
-import { createReminderScheduler } from '@/features/schedule/reminders'
+import { createScheduleRepository } from '@/services/schedule-repository'
+import { createReminderScheduler } from '@/services/schedule-reminders'
 import type { Schedule } from '@/types'
 
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {

@@ -1,5 +1,5 @@
-import { Recurrence } from '../../constants';
-import type { ParsedSchedulePayload, ScheduleDraft } from '../../types';
+import { Recurrence } from '../constants';
+import type { ParsedSchedulePayload, ScheduleDraft } from '../types';
 
 function toRecurrence(value?: string): Recurrence {
   if (value === Recurrence.DAILY || value === Recurrence.WEEKLY || value === Recurrence.MONTHLY) {

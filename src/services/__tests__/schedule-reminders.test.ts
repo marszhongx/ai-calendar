@@ -1,6 +1,6 @@
-import { Recurrence } from '../../../constants';
-import type { Schedule } from '../../../types';
-import { createReminderScheduler } from '../reminders';
+import { Recurrence } from '../../constants';
+import type { Schedule } from '../../types';
+import { createReminderScheduler } from '../schedule-reminders';
 
 describe('reminder scheduler', () => {
   const schedule: Schedule = {
