@@ -14,6 +14,7 @@ import DraftScreen from '../draft';
 import NewScheduleScreen from '../new';
 import IndexScreen from '../index';
 import type { ScheduleDraft } from '../../src/types';
+import { ScheduleList } from '../../src/components/schedule-list';
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(
@@ -347,6 +348,74 @@ describe('page navigation flow', () => {
       expect(screen.getByText('今日会议')).toBeOnTheScreen();
       expect(screen.getByText('明日会议')).toBeOnTheScreen();
     });
+  });
+
+  it('renders custom submit label when submitLabel prop is provided', () => {
+    renderWithProviders(
+      <DraftScreen
+        initialDraft={{
+          title: 'Test',
+          startAt: new Date().toISOString(),
+          timezone: 'Asia/Shanghai',
+          reminderMinutesBefore: 30,
+          recurrence: Recurrence.NONE,
+          notes: '',
+          confidence: 0.9,
+          missingFields: [],
+        }}
+        submitLabel="Save"
+      />
+    );
+
+    expect(screen.getByText('Save')).toBeOnTheScreen();
+    expect(screen.queryByText('Create Schedule')).not.toBeOnTheScreen();
+  });
+
+  it('calls onPress when a schedule card is tapped', () => {
+    const onPress = jest.fn();
+    const now = dayjs().hour(12).minute(0).second(0).toISOString();
+    const schedule = {
+      id: 's-tap',
+      title: '可点击日程',
+      startAt: now,
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 10,
+      recurrence: Recurrence.NONE,
+      notes: '',
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    renderWithProviders(
+      <ScheduleList schedules={[schedule]} onPress={onPress} />
+    );
+
+    fireEvent.press(screen.getByText('可点击日程'));
+    expect(onPress).toHaveBeenCalledWith(schedule);
+  });
+
+  it('navigates to schedule detail when a schedule card is tapped', async () => {
+    const now = dayjs().hour(12).minute(0).second(0).toISOString();
+    renderWithProviders(
+      <IndexScreen
+        schedules={[
+          {
+            id: 's-detail',
+            title: '点击查看详情',
+            startAt: now,
+            timezone: 'Asia/Shanghai',
+            reminderMinutesBefore: 10,
+            recurrence: Recurrence.NONE,
+            notes: '',
+            createdAt: now,
+            updatedAt: now,
+          },
+        ]}
+      />
+    );
+
+    fireEvent.press(screen.getByText('点击查看详情'));
+    expect(mockRouterPush).toHaveBeenCalledWith('/schedule/s-detail');
   });
 
   it('shows tab-specific empty message when no schedules match', async () => {

@@ -8,13 +8,14 @@ type ScheduleDraftFormProps = {
   draft: ScheduleDraft
   errors: string[]
   disabled?: boolean
+  submitLabel?: string
   onChange(draft: ScheduleDraft): void
   onSubmit(): void
 }
 
 const RECURRENCE_OPTIONS = Object.values(Recurrence)
 
-export function ScheduleDraftForm({ draft, errors, disabled, onChange, onSubmit }: ScheduleDraftFormProps) {
+export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChange, onSubmit }: ScheduleDraftFormProps) {
   const { t } = useLocale()
 
   const recurrenceLabels: Record<string, string> = {
@@ -113,7 +114,7 @@ export function ScheduleDraftForm({ draft, errors, disabled, onChange, onSubmit 
         onPress={onSubmit}
         disabled={disabled}
       >
-        {t('schedule.create')}
+        {submitLabel ?? t('schedule.create')}
       </Button>
 
       {errors.map((error) => (

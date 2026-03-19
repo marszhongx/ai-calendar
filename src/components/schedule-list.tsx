@@ -1,4 +1,4 @@
-import { FlatList } from 'react-native'
+import { FlatList, Pressable } from 'react-native'
 import { Button, Card, SizableText, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
 
@@ -8,6 +8,7 @@ type ScheduleListProps = {
   schedules: Schedule[]
   emptyMessage?: string
   onDelete?(schedule: Schedule): void
+  onPress?(schedule: Schedule): void
 }
 
 function formatDateTime(isoString: string, locale?: string) {
@@ -26,7 +27,7 @@ function formatDateTime(isoString: string, locale?: string) {
   }
 }
 
-export function ScheduleList({ schedules, emptyMessage, onDelete }: ScheduleListProps) {
+export function ScheduleList({ schedules, emptyMessage, onDelete, onPress }: ScheduleListProps) {
   const { t, locale } = useLocale()
 
   const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
@@ -44,34 +45,36 @@ export function ScheduleList({ schedules, emptyMessage, onDelete }: ScheduleList
       data={schedules}
       keyExtractor={(item) => item.id}
       renderItem={({ item: schedule }) => (
-        <Card borderWidth={1} borderColor="$borderColor" padding="$4" borderRadius="$4" marginBottom="$3">
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <SizableText size="$5" fontWeight="bold" flex={1}>
-                {schedule.title}
+        <Pressable onPress={() => onPress?.(schedule)}>
+          <Card borderWidth={1} borderColor="$borderColor" padding="$4" borderRadius="$4" marginBottom="$3">
+            <YStack gap="$2">
+              <XStack justifyContent="space-between" alignItems="center">
+                <SizableText size="$5" fontWeight="bold" flex={1}>
+                  {schedule.title}
+                </SizableText>
+                {onDelete ? (
+                  <Button
+                    size="$2"
+                    theme="red"
+                    onPress={() => onDelete(schedule)}
+                  >
+                    {t('common.delete')}
+                  </Button>
+                ) : null}
+              </XStack>
+              <SizableText size="$3" color="$placeholderColor">
+                {schedule.endAt
+                  ? `${formatDateTime(schedule.startAt, intlLocale)} - ${formatDateTime(schedule.endAt, intlLocale)}`
+                  : formatDateTime(schedule.startAt, intlLocale)}
               </SizableText>
-              {onDelete ? (
-                <Button
-                  size="$2"
-                  theme="red"
-                  onPress={() => onDelete(schedule)}
-                >
-                  {t('common.delete')}
-                </Button>
+              {schedule.notes ? (
+                <SizableText testID={`schedule-notes-${schedule.id}`} size="$3">
+                  {schedule.notes}
+                </SizableText>
               ) : null}
-            </XStack>
-            <SizableText size="$3" color="$placeholderColor">
-              {schedule.endAt
-                ? `${formatDateTime(schedule.startAt, intlLocale)} - ${formatDateTime(schedule.endAt, intlLocale)}`
-                : formatDateTime(schedule.startAt, intlLocale)}
-            </SizableText>
-            {schedule.notes ? (
-              <SizableText testID={`schedule-notes-${schedule.id}`} size="$3">
-                {schedule.notes}
-              </SizableText>
-            ) : null}
-          </YStack>
-        </Card>
+            </YStack>
+          </Card>
+        </Pressable>
       )}
     />
   )

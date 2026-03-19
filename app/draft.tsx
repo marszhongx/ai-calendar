@@ -25,10 +25,11 @@ const fallbackDraft: ScheduleDraft = {
 
 type DraftScreenProps = {
   initialDraft?: ScheduleDraft
+  submitLabel?: string
   onCreate?(draft: ScheduleDraft): Promise<Schedule>
 }
 
-export default function DraftScreen({ initialDraft, onCreate }: DraftScreenProps) {
+export default function DraftScreen({ initialDraft, submitLabel, onCreate }: DraftScreenProps) {
   const { t } = useLocale()
   const router = useRouter()
   const [draft, setDraft] = useState<ScheduleDraft>(initialDraft ?? fallbackDraft)
@@ -111,7 +112,7 @@ export default function DraftScreen({ initialDraft, onCreate }: DraftScreenProps
       <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
       <ScrollView>
         <YStack flex={1} backgroundColor="$background" padding="$4" gap="$3">
-          <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} disabled={submitting} />
+          <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} disabled={submitting} submitLabel={submitLabel} />
           {submitting ? (
             <Spinner size="large" />
           ) : null}

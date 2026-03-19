@@ -87,6 +87,10 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
     }
   }, [t])
 
+  const handlePress = useCallback((schedule: Schedule) => {
+    router.push(`/schedule/${schedule.id}`)
+  }, [router])
+
   const handleDelete = useCallback((schedule: Schedule) => {
     if (Platform.OS === 'web') {
       if (window.confirm(t('schedule.deleteConfirm'))) {
@@ -150,7 +154,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         ) : error ? (
           <SizableText color="$red10">{error}</SizableText>
         ) : (
-          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onDelete={handleDelete} />
+          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onDelete={handleDelete} onPress={handlePress} />
         )}
       </YStack>
       <Button
