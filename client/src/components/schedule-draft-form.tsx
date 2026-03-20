@@ -84,6 +84,7 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
                 backgroundColor={selected ? '$blue10' : '$background'}
                 borderWidth={1}
                 borderColor={selected ? '$blue10' : '$borderColor'}
+                pressStyle={{ backgroundColor: selected ? '$blue11' : '$backgroundHover' }}
                 onPress={() => onChange({ ...draft, recurrence: option })}
                 disabled={disabled}
               >
