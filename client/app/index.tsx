@@ -30,9 +30,10 @@ function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
 }
 
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
-  if (tab === ScheduleTab.ALL) return schedules
+  const sorted = [...schedules].sort((a, b) => dayjs(a.startAt).valueOf() - dayjs(b.startAt).valueOf())
+  if (tab === ScheduleTab.ALL) return sorted
   const target = tab === ScheduleTab.TODAY ? dayjs() : dayjs().add(1, 'day')
-  return schedules.filter((s) => occursOnDay(s, target))
+  return sorted.filter((s) => occursOnDay(s, target))
 }
 
 type IndexScreenProps = {
