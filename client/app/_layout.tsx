@@ -36,7 +36,12 @@ async function ensureDeviceRegistered() {
     if (status !== 'granted') return;
 
     const projectId = Constants.expoConfig?.extra?.eas?.projectId;
-    const token = await Notifications.getExpoPushTokenAsync(projectId ? { projectId } : undefined);
+    if (!projectId) {
+      await registerDevice(deviceId, null, Platform.OS);
+      return;
+    }
+
+    const token = await Notifications.getExpoPushTokenAsync({ projectId });
     await registerDevice(deviceId, token.data, Platform.OS);
   } catch (error) {
     console.error('Device registration failed:', error);

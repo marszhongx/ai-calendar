@@ -32,6 +32,13 @@
     "plugins": [
       "expo-localization",
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b923c9e6-3dfa-4842-850d-dce6c1b6ed81"
+      }
+    },
+    "owner": "marszhong"
   }
 }
