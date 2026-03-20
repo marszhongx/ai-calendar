@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm start              # Start Expo dev server
+npm start              # Start Expo dev server (port 3000)
 npm run server         # Start server (Next.js, port 3001)
 npm run android        # Run on Android
 npm run ios            # Run on iOS
@@ -49,6 +49,7 @@ Monorepo: cross-platform Expo client + Next.js backend API. Users describe event
   - `cron/send-reminders/route.ts` — POST: cron-triggered push notification sender
 - **Libs** (`server/lib/`): `db.ts` (Vercel Postgres), `ai.ts` (AI SDK / OpenAI-compatible), `expo-push.ts` (Expo Push SDK)
 - **Database**: Vercel Postgres (Neon). Tables: `devices` (id, push_token, platform), `schedules` (id, device_id, title, start_at, end_at, timezone, reminder_minutes_before, recurrence, notes, reminder_sent_at).
+- **Middleware** (`server/middleware.ts`): CORS handling for `/api/*` routes. Allows `localhost:3000` (dev) and `ALLOWED_ORIGIN` env var (production).
 - **Migration**: `server/scripts/migrate.ts` — run with `cd server && npm run migrate`
 
 ### Device Identity
