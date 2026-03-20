@@ -3,14 +3,14 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { z } from 'zod';
 
 const scheduleSchema = z.object({
-  title: z.string().describe('Schedule title'),
-  start_time: z.string().describe('Start time in ISO 8601 format'),
-  end_time: z.optional(z.string()).describe('End time in ISO 8601 format'),
-  timezone: z.optional(z.string()).describe('Timezone identifier'),
-  reminder_minutes_before: z.optional(z.number()).describe('Minutes before to send reminder'),
-  recurrence: z.optional(z.string()).describe('Recurrence frequency'),
-  notes: z.optional(z.string()).describe('Additional notes'),
-  confidence: z.optional(z.number()).describe('Confidence score between 0 and 1'),
+  title: z.string().describe('Short event title extracted from the message'),
+  start_time: z.string().describe('Start time in ISO 8601 with UTC offset, e.g. "2026-03-20T23:00:00+08:00"'),
+  end_time: z.optional(z.string()).describe('End time in ISO 8601 with UTC offset, e.g. "2026-03-20T23:30:00+08:00"'),
+  timezone: z.string().describe('IANA timezone identifier, e.g. "Asia/Shanghai"'),
+  reminder_minutes_before: z.number().describe('Minutes before event to send reminder. Default 10 if not specified'),
+  recurrence: z.enum(['NONE', 'DAILY', 'WEEKLY', 'MONTHLY']).describe('Recurrence frequency. NONE if not repeating'),
+  notes: z.optional(z.string()).describe('Original user message as notes'),
+  confidence: z.number().min(0).max(1).describe('Confidence score between 0 and 1'),
 });
 
 export type ParsedSchedule = z.infer<typeof scheduleSchema>;

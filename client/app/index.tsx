@@ -12,10 +12,27 @@ import { listSchedules as apiListSchedules, deleteSchedule as apiDeleteSchedule 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { Schedule } from '@/types'
 
+function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
+  const start = dayjs(schedule.startAt)
+  if (start.isSame(target, 'day')) return true
+  if (start.isAfter(target, 'day')) return false
+
+  switch (schedule.recurrence) {
+    case 'DAILY':
+      return true
+    case 'WEEKLY':
+      return start.day() === target.day()
+    case 'MONTHLY':
+      return start.date() === target.date()
+    default:
+      return false
+  }
+}
+
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
   if (tab === ScheduleTab.ALL) return schedules
   const target = tab === ScheduleTab.TODAY ? dayjs() : dayjs().add(1, 'day')
-  return schedules.filter((s) => dayjs(s.startAt).isSame(target, 'day'))
+  return schedules.filter((s) => occursOnDay(s, target))
 }
 
 type IndexScreenProps = {
