@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Platform, useColorScheme } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
 import { Stack } from 'expo-router'
+import Constants from 'expo-constants'
 import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { LocaleProvider } from '@/context/LocaleContext'
@@ -34,7 +35,8 @@ async function ensureDeviceRegistered() {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== 'granted') return;
 
-    const token = await Notifications.getExpoPushTokenAsync();
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    const token = await Notifications.getExpoPushTokenAsync(projectId ? { projectId } : undefined);
     await registerDevice(deviceId, token.data, Platform.OS);
   } catch (error) {
     console.error('Device registration failed:', error);
