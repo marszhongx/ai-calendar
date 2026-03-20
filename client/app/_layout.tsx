@@ -27,8 +27,8 @@ async function ensureDeviceRegistered() {
       await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
     }
 
-    if (Platform.OS === 'web') {
-      await registerDevice(deviceId, null, 'web');
+    if (Platform.OS === 'web' || !Constants.isDevice) {
+      await registerDevice(deviceId, null, Platform.OS);
       return;
     }
 
