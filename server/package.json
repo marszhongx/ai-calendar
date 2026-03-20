@@ -8,23 +8,30 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "migrate": "tsx scripts/migrate.ts"
+    "migrate": "tsx scripts/migrate.ts",
+    "reset-db": "tsx scripts/reset-db.ts && tsx scripts/migrate.ts",
+    "db:generate": "node --env-file=../.env ../node_modules/.bin/drizzle-kit generate",
+    "db:migrate": "node --env-file=../.env ../node_modules/.bin/drizzle-kit migrate",
+    "db:push": "node --env-file=../.env ../node_modules/.bin/drizzle-kit push",
+    "db:studio": "node --env-file=../.env ../node_modules/.bin/drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
+    "ai": "^6.0.116",
+    "drizzle-orm": "^0.45.1",
+    "expo-server-sdk": "^3.13.0",
+    "pg": "^8.20.0",
     "next": "^15.3.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@vercel/postgres": "^0.10.0",
-    "ai": "^6.0.116",
-    "@ai-sdk/openai": "^3.0.41",
-    "zod": "^4.3.6",
-    "expo-server-sdk": "^3.13.0"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.1.0",
-    "vitest": "^3.2.1",
-    "tsx": "^4.19.0"
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.1"
   }
 }

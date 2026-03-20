@@ -1,10 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockSql = vi.hoisted(() => Object.assign(
-  vi.fn().mockResolvedValue({ rows: [] }),
-  { query: vi.fn() }
-));
-vi.mock('@vercel/postgres', () => ({ sql: mockSql }));
+const { mockReturning, mockDeleteWhere } = vi.hoisted(() => {
+  const mockReturning = vi.fn().mockResolvedValue([]);
+  const mockDeleteWhere = vi.fn().mockResolvedValue(undefined);
+  return { mockReturning, mockDeleteWhere };
+});
+
+vi.mock('@/lib/db', () => ({
+  db: {
+    update: vi.fn().mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          returning: mockReturning,
+        }),
+      }),
+    }),
+    delete: vi.fn().mockReturnValue({
+      where: mockDeleteWhere,
+    }),
+  },
+  schema: { schedules: 'schedules' },
+}));
+
+vi.mock('drizzle-orm', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('drizzle-orm')>();
+  return { ...actual };
+});
 
 import { PUT, DELETE } from './route';
 
@@ -27,7 +48,7 @@ describe('PUT /api/schedules/[id]', () => {
   });
 
   it('updates and returns schedule', async () => {
-    mockSql.mockResolvedValueOnce({ rows: [{ id: 'sched-1', title: '更新' }] });
+    mockReturning.mockResolvedValueOnce([{ id: 'sched-1', title: '更新' }]);
     const res = await PUT(mockPutRequest({
       title: '更新',
       startAt: '2026-03-20T10:00:00+08:00',
@@ -40,7 +61,7 @@ describe('PUT /api/schedules/[id]', () => {
   });
 
   it('returns 404 if schedule not found', async () => {
-    mockSql.mockResolvedValueOnce({ rows: [] });
+    mockReturning.mockResolvedValueOnce([]);
     const res = await PUT(mockPutRequest({
       title: 'test',
       startAt: '2026-03-20T10:00:00+08:00',
@@ -51,7 +72,6 @@ describe('PUT /api/schedules/[id]', () => {
 
 describe('DELETE /api/schedules/[id]', () => {
   it('returns 200 on delete', async () => {
-    mockSql.mockResolvedValueOnce({ rowCount: 1 });
     const res = await DELETE(
       new Request('http://localhost/api/schedules/sched-1', { method: 'DELETE' }),
       { params }

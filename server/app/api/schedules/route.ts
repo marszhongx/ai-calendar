@@ -1,4 +1,5 @@
-import { sql } from '@/lib/db';
+import { db, schema } from '@/lib/db';
+import { eq, asc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -9,9 +10,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing deviceId' }, { status: 400 });
   }
 
-  const { rows } = await sql`
-    SELECT * FROM schedules WHERE device_id = ${deviceId} ORDER BY start_at ASC
-  `;
+  const rows = await db
+    .select()
+    .from(schema.schedules)
+    .where(eq(schema.schedules.deviceId, deviceId))
+    .orderBy(asc(schema.schedules.startAt));
 
   return NextResponse.json(rows);
 }
@@ -24,11 +27,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const { rows } = await sql`
-    INSERT INTO schedules (device_id, title, start_at, end_at, timezone, reminder_minutes_before, recurrence, notes)
-    VALUES (${deviceId}, ${title}, ${startAt}, ${endAt || null}, ${timezone || 'Asia/Shanghai'}, ${reminderMinutesBefore || 30}, ${recurrence || 'NONE'}, ${notes || ''})
-    RETURNING *
-  `;
+  const rows = await db
+    .insert(schema.schedules)
+    .values({
+      deviceId,
+      title,
+      startAt: new Date(startAt),
+      endAt: endAt ? new Date(endAt) : null,
+      timezone: timezone || 'Asia/Shanghai',
+      reminderMinutesBefore: reminderMinutesBefore || 30,
+      recurrence: recurrence || 'NONE',
+      notes: notes || '',
+    })
+    .returning();
 
   return NextResponse.json(rows[0], { status: 201 });
 }

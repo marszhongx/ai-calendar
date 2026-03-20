@@ -1,4 +1,5 @@
-import { sql } from '@/lib/db';
+import { db, schema } from '@/lib/db';
+import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -12,20 +13,21 @@ export async function PUT(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const { rows } = await sql`
-    UPDATE schedules SET
-      title = ${title},
-      start_at = ${startAt},
-      end_at = ${endAt || null},
-      timezone = ${timezone || 'Asia/Shanghai'},
-      reminder_minutes_before = ${reminderMinutesBefore || 30},
-      recurrence = ${recurrence || 'NONE'},
-      notes = ${notes || ''},
-      reminder_sent_at = NULL,
-      updated_at = NOW()
-    WHERE id = ${id}
-    RETURNING *
-  `;
+  const rows = await db
+    .update(schema.schedules)
+    .set({
+      title,
+      startAt: new Date(startAt),
+      endAt: endAt ? new Date(endAt) : null,
+      timezone: timezone || 'Asia/Shanghai',
+      reminderMinutesBefore: reminderMinutesBefore || 30,
+      recurrence: recurrence || 'NONE',
+      notes: notes || '',
+      reminderSentAt: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.schedules.id, id))
+    .returning();
 
   if (rows.length === 0) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -36,6 +38,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
 
 export async function DELETE(_request: Request, { params }: RouteContext) {
   const { id } = await params;
-  await sql`DELETE FROM schedules WHERE id = ${id}`;
+  await db.delete(schema.schedules).where(eq(schema.schedules.id, id));
   return NextResponse.json({ ok: true });
 }

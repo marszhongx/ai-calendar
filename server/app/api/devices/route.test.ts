@@ -1,12 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@vercel/postgres', () => {
-  const mockSql = Object.assign(
-    vi.fn().mockResolvedValue({ rows: [] }),
-    { query: vi.fn() }
-  );
-  return { sql: mockSql };
+const { mockOnConflictDoUpdate } = vi.hoisted(() => {
+  const mockOnConflictDoUpdate = vi.fn().mockResolvedValue(undefined);
+  return { mockOnConflictDoUpdate };
 });
+
+vi.mock('@/lib/db', () => ({
+  db: {
+    insert: vi.fn().mockReturnValue({
+      values: vi.fn().mockReturnValue({
+        onConflictDoUpdate: mockOnConflictDoUpdate,
+      }),
+    }),
+  },
+  schema: { devices: 'devices' },
+}));
 
 import { POST } from './route';
 

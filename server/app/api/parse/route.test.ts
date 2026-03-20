@@ -4,10 +4,6 @@ vi.mock('@/lib/ai', () => ({
   parseMessage: vi.fn(),
 }));
 
-vi.mock('@vercel/postgres', () => ({
-  sql: Object.assign(vi.fn().mockResolvedValue({ rows: [{ id: 'dev-1' }] }), {}),
-}));
-
 import { POST } from './route';
 import { parseMessage } from '@/lib/ai';
 

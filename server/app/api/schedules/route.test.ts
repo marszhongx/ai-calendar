@@ -1,13 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const { mockSql } = vi.hoisted(() => {
-  const mockSql = Object.assign(
-    vi.fn().mockResolvedValue({ rows: [] }),
-    { query: vi.fn() }
-  );
-  return { mockSql };
+const { mockOrderBy, mockReturning } = vi.hoisted(() => {
+  const mockOrderBy = vi.fn().mockResolvedValue([]);
+  const mockReturning = vi.fn().mockResolvedValue([]);
+  return { mockOrderBy, mockReturning };
 });
-vi.mock('@vercel/postgres', () => ({ sql: mockSql }));
+
+vi.mock('@/lib/db', () => ({
+  db: {
+    select: vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          orderBy: mockOrderBy,
+        }),
+      }),
+    }),
+    insert: vi.fn().mockReturnValue({
+      values: vi.fn().mockReturnValue({
+        returning: mockReturning,
+      }),
+    }),
+  },
+  schema: { schedules: 'schedules' },
+}));
+
+vi.mock('drizzle-orm', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('drizzle-orm')>();
+  return { ...actual };
+});
 
 import { GET, POST } from './route';
 
@@ -32,7 +52,7 @@ describe('GET /api/schedules', () => {
   });
 
   it('returns schedules list', async () => {
-    mockSql.mockResolvedValueOnce({ rows: [{ id: '1', title: 'test' }] });
+    mockOrderBy.mockResolvedValueOnce([{ id: '1', title: 'test' }]);
     const res = await GET(mockGetRequest('dev-1'));
     const data = await res.json();
     expect(res.status).toBe(200);
@@ -47,9 +67,7 @@ describe('POST /api/schedules', () => {
   });
 
   it('creates schedule and returns it', async () => {
-    mockSql.mockResolvedValueOnce({
-      rows: [{ id: 'new-1', title: '开会', device_id: 'dev-1' }],
-    });
+    mockReturning.mockResolvedValueOnce([{ id: 'new-1', title: '开会', deviceId: 'dev-1' }]);
     const res = await POST(mockPostRequest({
       deviceId: 'dev-1',
       title: '开会',
