@@ -43,5 +43,4 @@ client/android
 
 # Next.js
 server/.next/
-docs/superpowers/
 .superpowers/
