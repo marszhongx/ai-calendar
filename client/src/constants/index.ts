@@ -27,3 +27,14 @@ export const CARD_COLORS = [
   '#F3E5F5', // light magenta
   '#E0F7FA', // light cyan
 ]
+
+export const CARD_PROGRESS_COLORS = [
+  '#C8E6C9', // green
+  '#F8BBD0', // pink
+  '#D1C4E9', // purple
+  '#FFE0B2', // orange
+  '#BBDEFB', // blue
+  '#FFF176', // yellow
+  '#E1BEE7', // magenta
+  '#B2EBF2', // cyan
+]
