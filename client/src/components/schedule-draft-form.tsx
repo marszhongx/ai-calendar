@@ -1,6 +1,7 @@
 import { Button, Input, Label, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
 import { Recurrence } from '../constants'
+import { DateTimePickerField } from './date-time-picker'
 
 import type { ScheduleDraft } from '../types'
 
@@ -16,7 +17,7 @@ type ScheduleDraftFormProps = {
 const RECURRENCE_OPTIONS = Object.values(Recurrence)
 
 export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChange, onSubmit }: ScheduleDraftFormProps) {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
 
   const recurrenceLabels: Record<string, string> = {
     NONE: t('schedule.never'),
@@ -43,15 +44,11 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
 
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.startTime')}</Label>
-        <Input
-          aria-label={t('schedule.startTime')}
+        <DateTimePickerField
           value={draft.startAt}
-          onChangeText={(startAt) => onChange({ ...draft, startAt })}
-          size="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
+          onChange={(startAt) => onChange({ ...draft, startAt })}
           disabled={disabled}
+          locale={locale}
         />
       </YStack>
 

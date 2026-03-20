@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "^9.1.0",
     "@tamagui/babel-plugin": "^2.0.0-rc.26",
     "@tamagui/config": "^2.0.0-rc.26",
     "dayjs": "^1.11.20",
