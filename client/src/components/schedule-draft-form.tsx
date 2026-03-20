@@ -75,17 +75,24 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
       <YStack gap="$2">
         <Label fontSize="$4" fontWeight="bold">{t('schedule.repeat')}</Label>
         <XStack gap="$2" flexWrap="wrap">
-          {RECURRENCE_OPTIONS.map((option) => (
-            <Button
-              key={option}
-              size="$3"
-              theme={draft.recurrence === option ? 'active' : undefined}
-              onPress={() => onChange({ ...draft, recurrence: option })}
-              disabled={disabled}
-            >
-              {recurrenceLabels[option]}
-            </Button>
-          ))}
+          {RECURRENCE_OPTIONS.map((option) => {
+            const selected = draft.recurrence === option
+            return (
+              <Button
+                key={option}
+                size="$3"
+                backgroundColor={selected ? '$blue10' : '$background'}
+                borderWidth={1}
+                borderColor={selected ? '$blue10' : '$borderColor'}
+                onPress={() => onChange({ ...draft, recurrence: option })}
+                disabled={disabled}
+              >
+                <SizableText size="$3" color={selected ? 'white' : '$color'}>
+                  {recurrenceLabels[option]}
+                </SizableText>
+              </Button>
+            )
+          })}
         </XStack>
         <SizableText size="$3" color="$colorFocus">{draft.recurrence}</SizableText>
       </YStack>
