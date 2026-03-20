@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
+  "http://localhost:4398",
   process.env.ALLOWED_ORIGIN,
 ].filter(Boolean);
 

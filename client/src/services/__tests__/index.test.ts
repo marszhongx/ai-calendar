@@ -5,7 +5,7 @@ global.fetch = mockFetch;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  process.env.EXPO_PUBLIC_API_BASE_URL = 'http://localhost:3001';
+  process.env.EXPO_PUBLIC_API_BASE_URL = 'http://localhost:4399';
 });
 
 describe('registerDevice', () => {
@@ -13,7 +13,7 @@ describe('registerDevice', () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) });
     await registerDevice('dev-1', 'ExponentPushToken[xxx]', 'ios');
     expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:3001/api/devices',
+      'http://localhost:4399/api/devices',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ deviceId: 'dev-1', pushToken: 'ExponentPushToken[xxx]', platform: 'ios' }),
@@ -41,7 +41,7 @@ describe('listSchedules', () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
     await listSchedules('dev-1');
     expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:3001/api/schedules?deviceId=dev-1',
+      'http://localhost:4399/api/schedules?deviceId=dev-1',
       expect.objectContaining({ method: 'GET' }),
     );
   });
@@ -61,7 +61,7 @@ describe('updateSchedule', () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: '1', title: '更新' }) });
     await updateSchedule('1', { title: '更新', startAt: '2026-03-20T10:00:00+08:00' });
     expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:3001/api/schedules/1',
+      'http://localhost:4399/api/schedules/1',
       expect.objectContaining({ method: 'PUT' }),
     );
   });
@@ -72,7 +72,7 @@ describe('deleteSchedule', () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) });
     await deleteSchedule('1');
     expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:3001/api/schedules/1',
+      'http://localhost:4399/api/schedules/1',
       expect.objectContaining({ method: 'DELETE' }),
     );
   });

@@ -1,4 +1,4 @@
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4399';
 const TIMEOUT_MS = 30_000;
 
 class ApiError extends Error {
