@@ -80,6 +80,7 @@
     "startTime": "Start Time",
     "endTime": "End Time",
     "description": "Description",
+    "aiInputPlaceholder": "Enter your schedule...",
     "location": "Location",
     "attendees": "Attendees",
     "priority": "Priority",

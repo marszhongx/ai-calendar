@@ -12,3 +12,18 @@ export enum ScheduleTab {
 }
 
 export const PENDING_DRAFT_KEY = 'pending-draft'
+
+export const ACCENT_COLOR = '#E8725C'
+export const ACCENT_COLOR_PRESSED = '#D4634E'
+export const PAGE_BACKGROUND = '#FFF8F6'
+
+export const CARD_COLORS = [
+  '#E8F5E9', // light green
+  '#FCE4EC', // light pink
+  '#EDE7F6', // light purple
+  '#FFF3E0', // light orange
+  '#E3F2FD', // light blue
+  '#FFF9C4', // light yellow
+  '#F3E5F5', // light magenta
+  '#E0F7FA', // light cyan
+]

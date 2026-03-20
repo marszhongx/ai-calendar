@@ -5,7 +5,7 @@ import { Stack, useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import { useLocale } from '@/context/LocaleContext'
-import { ScheduleTab } from '@/constants'
+import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, PAGE_BACKGROUND, ScheduleTab } from '@/constants'
 
 import { ScheduleList } from '@/components/schedule-list'
 import { listSchedules as apiListSchedules, deleteSchedule as apiDeleteSchedule } from '@/services'
@@ -143,22 +143,23 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
           title: t('schedule.scheduleList'),
         }}
       />
-      <YStack flex={1} backgroundColor="$background" padding="$4">
-        <XStack
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          overflow="hidden"
-          marginBottom="$3"
-        >
+      <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+        <XStack gap="$2" marginBottom="$3">
           {TAB_LABELS.map(({ key, label }) => (
             <Button
               key={key}
-              flex={1}
               size="$3"
-              borderRadius={0}
-              backgroundColor={activeTab === key ? '$blue10' : 'transparent'}
+              borderRadius={20}
+              backgroundColor={activeTab === key ? ACCENT_COLOR : 'transparent'}
+              borderWidth={activeTab === key ? 0 : 1}
+              borderColor="$borderColor"
               onPress={() => setActiveTab(key)}
+              hoverStyle={{
+                backgroundColor: activeTab === key ? ACCENT_COLOR : '$backgroundHover',
+              }}
+              pressStyle={{
+                backgroundColor: activeTab === key ? ACCENT_COLOR : '$backgroundPress',
+              }}
             >
               <SizableText size="$3" color={activeTab === key ? 'white' : '$color'}>
                 {label}
@@ -173,20 +174,22 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         ) : error ? (
           <SizableText color="$red10">{error}</SizableText>
         ) : (
-          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onDelete={handleDelete} onPress={handlePress} />
+          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onPress={handlePress} />
         )}
       </YStack>
       <Button
-        size="$6"
+        size="$5"
         circular
-        theme="active"
+        backgroundColor={ACCENT_COLOR}
         position="absolute"
         bottom={24}
         right={24}
         elevation="$4"
         onPress={() => router.push('/new')}
+        hoverStyle={{ backgroundColor: ACCENT_COLOR }}
+        pressStyle={{ backgroundColor: ACCENT_COLOR_PRESSED }}
       >
-        +
+        <SizableText color="white" size="$8" fontWeight="bold" marginTop={-2}>+</SizableText>
       </Button>
     </>
   )

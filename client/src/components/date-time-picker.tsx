@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Platform, Pressable } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { SizableText, YStack } from 'tamagui'
+import { SizableText, XStack, YStack } from 'tamagui'
 
 type DateTimePickerFieldProps = {
   value: string
@@ -10,7 +10,7 @@ type DateTimePickerFieldProps = {
   locale?: string
 }
 
-function formatForDisplay(isoString: string, locale?: string): string {
+function formatDatePart(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)
     if (isNaN(date.getTime())) return isoString
@@ -18,11 +18,22 @@ function formatForDisplay(isoString: string, locale?: string): string {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+    }).format(date)
+  } catch {
+    return isoString
+  }
+}
+
+function formatTimePart(isoString: string, locale?: string): string {
+  try {
+    const date = new Date(isoString)
+    if (isNaN(date.getTime())) return ''
+    return new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
     }).format(date)
   } catch {
-    return isoString
+    return ''
   }
 }
 
@@ -55,14 +66,14 @@ export function DateTimePickerField({ value, onChange, disabled, locale }: DateT
         }}
         disabled={disabled}
         style={{
-          fontSize: 16,
-          padding: 12,
-          borderRadius: 8,
-          border: '1px solid var(--borderColor, #ccc)',
-          backgroundColor: 'transparent',
+          fontSize: 14,
+          padding: '8px 12px',
+          borderRadius: 12,
+          border: '1px solid #e0e0e0',
+          backgroundColor: '#f5f5f5',
           color: 'inherit',
-          width: '100%',
-          boxSizing: 'border-box',
+          flex: 1,
+          boxSizing: 'border-box' as const,
         }}
       />
     )
@@ -82,6 +93,8 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
   const [show, setShow] = useState(false)
   const [mode, setMode] = useState<'date' | 'time'>('date')
   const [tempDate, setTempDate] = useState(value)
+
+  const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
 
   const openPicker = () => {
     if (disabled) return
@@ -113,17 +126,28 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
   return (
     <YStack>
       <Pressable onPress={openPicker}>
-        <SizableText
-          size="$4"
-          paddingVertical="$3"
-          paddingHorizontal="$3"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          opacity={disabled ? 0.5 : 1}
-        >
-          {formatForDisplay(value.toISOString(), locale)}
-        </SizableText>
+        <XStack gap="$2" alignItems="center">
+          <SizableText
+            size="$3"
+            paddingVertical="$2"
+            paddingHorizontal="$3"
+            backgroundColor="$backgroundHover"
+            borderRadius={12}
+            opacity={disabled ? 0.5 : 1}
+          >
+            {formatDatePart(value.toISOString(), intlLocale)}
+          </SizableText>
+          <SizableText
+            size="$3"
+            paddingVertical="$2"
+            paddingHorizontal="$3"
+            backgroundColor="$backgroundHover"
+            borderRadius={12}
+            opacity={disabled ? 0.5 : 1}
+          >
+            {formatTimePart(value.toISOString(), intlLocale)}
+          </SizableText>
+        </XStack>
       </Pressable>
 
       {show && (

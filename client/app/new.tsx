@@ -7,7 +7,7 @@ import { useLocale } from '@/context/LocaleContext'
 import { MessageInputForm } from '@/components/message-input-form'
 import { normalizeDraft } from '@/utils/schedule-normalizer'
 import { parseMessage } from '@/services'
-import { PENDING_DRAFT_KEY } from '@/constants'
+import { PAGE_BACKGROUND, PENDING_DRAFT_KEY } from '@/constants'
 import type { ScheduleDraft, ParsedSchedulePayload } from '@/types'
 
 type NewScheduleScreenProps = {
@@ -61,7 +61,7 @@ export default function NewScheduleScreen({ onSubmit = defaultSubmit }: NewSched
   return (
     <>
       <Stack.Screen options={{ title: t('schedule.newSchedule') }} />
-      <YStack flex={1} backgroundColor="$background" padding="$4">
+      <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
         <MessageInputForm onSubmit={handleSubmit} error={error} />
       </YStack>
     </>

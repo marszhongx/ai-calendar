@@ -1,33 +1,47 @@
 import { FlatList, Pressable } from 'react-native'
-import { Button, Card, SizableText, XStack, YStack } from 'tamagui'
+import { SizableText, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
+import { CARD_COLORS } from '../constants'
 
 import type { Schedule } from '../types'
 
 type ScheduleListProps = {
   schedules: Schedule[]
   emptyMessage?: string
-  onDelete?(schedule: Schedule): void
   onPress?(schedule: Schedule): void
 }
 
-function formatDateTime(isoString: string, locale?: string) {
+function getCardColor(index: number): string {
+  return CARD_COLORS[index % CARD_COLORS.length]
+}
+
+function formatDate(isoString: string, locale?: string) {
   try {
     const date = new Date(isoString)
     if (isNaN(date.getTime())) return isoString
     return new Intl.DateTimeFormat(locale, {
-      year: 'numeric',
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     }).format(date)
   } catch {
     return isoString
   }
 }
 
-export function ScheduleList({ schedules, emptyMessage, onDelete, onPress }: ScheduleListProps) {
+function formatTime(isoString: string, locale?: string) {
+  try {
+    const date = new Date(isoString)
+    if (isNaN(date.getTime())) return ''
+    return new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date)
+  } catch {
+    return ''
+  }
+}
+
+export function ScheduleList({ schedules, emptyMessage, onPress }: ScheduleListProps) {
   const { t, locale } = useLocale()
 
   const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
@@ -44,36 +58,34 @@ export function ScheduleList({ schedules, emptyMessage, onDelete, onPress }: Sch
     <FlatList
       data={schedules}
       keyExtractor={(item) => item.id}
-      renderItem={({ item: schedule }) => (
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item: schedule, index }) => (
         <Pressable onPress={() => onPress?.(schedule)}>
-          <Card borderWidth={1} borderColor="$borderColor" padding="$4" borderRadius="$4" marginBottom="$3">
-            <YStack gap="$2">
-              <XStack justifyContent="space-between" alignItems="center">
-                <SizableText size="$5" fontWeight="bold" flex={1}>
-                  {schedule.title}
-                </SizableText>
-                {onDelete ? (
-                  <Button
-                    size="$2"
-                    theme="red"
-                    onPress={(e) => { e.stopPropagation(); onDelete(schedule) }}
-                  >
-                    {t('common.delete')}
-                  </Button>
-                ) : null}
-              </XStack>
-              <SizableText size="$3" color="$placeholderColor">
-                {schedule.endAt
-                  ? `${formatDateTime(schedule.startAt, intlLocale)} - ${formatDateTime(schedule.endAt, intlLocale)}`
-                  : formatDateTime(schedule.startAt, intlLocale)}
+          <XStack
+            backgroundColor={getCardColor(index)}
+            borderRadius={16}
+            paddingHorizontal="$4"
+            paddingVertical="$3"
+            marginBottom="$2.5"
+            alignItems="center"
+          >
+            <SizableText
+              size="$5"
+              fontWeight="bold"
+              flex={1}
+              numberOfLines={1}
+            >
+              {schedule.title}
+            </SizableText>
+            <YStack alignItems="flex-end" marginLeft="$3" flexShrink={0}>
+              <SizableText size="$2" color="$placeholderColor">
+                {formatDate(schedule.startAt, intlLocale)}
               </SizableText>
-              {schedule.notes ? (
-                <SizableText testID={`schedule-notes-${schedule.id}`} size="$3">
-                  {schedule.notes}
-                </SizableText>
-              ) : null}
+              <SizableText size="$2" color="$placeholderColor">
+                {formatTime(schedule.startAt, intlLocale)}
+              </SizableText>
             </YStack>
-          </Card>
+          </XStack>
         </Pressable>
       )}
     />

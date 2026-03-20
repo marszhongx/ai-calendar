@@ -8,7 +8,7 @@ import { useLocale } from '@/context/LocaleContext'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { createSchedule as apiCreateSchedule } from '@/services'
 import { validateDraft } from '@/utils/schedule-validation'
-import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
+import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import type { Schedule, ScheduleDraft } from '@/types'
 
 const fallbackDraft: ScheduleDraft = {
@@ -100,7 +100,7 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
     <>
       <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
       <ScrollView>
-        <YStack flex={1} backgroundColor="$background" padding="$4" gap="$3">
+        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4" gap="$3">
           <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} disabled={submitting} submitLabel={submitLabel} />
           {submitting ? (
             <Spinner size="large" />

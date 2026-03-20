@@ -34,7 +34,7 @@ describe('page navigation flow', () => {
   it('renders the new schedule screen with input form', () => {
     renderWithProviders(<NewScheduleScreen />);
 
-    expect(screen.getByText('Description')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Enter your schedule...')).toBeOnTheScreen();
   });
 
   it('renders the draft screen', () => {
@@ -68,7 +68,7 @@ describe('page navigation flow', () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'));
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '这是一条无法解析的消息');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '这是一条无法解析的消息');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     await waitFor(() => {
@@ -83,7 +83,7 @@ describe('page navigation flow', () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('service_unavailable'));
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '服务暂不可用');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '服务暂不可用');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     expect(await screen.findByText('Server error')).toBeOnTheScreen();
@@ -93,7 +93,7 @@ describe('page navigation flow', () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('empty_response'));
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '返回为空');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '返回为空');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     expect(await screen.findByText('Data loading failed')).toBeOnTheScreen();
@@ -103,7 +103,7 @@ describe('page navigation flow', () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('invalid_format'));
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '格式异常');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '格式异常');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     expect(await screen.findByText('Data validation error')).toBeOnTheScreen();
@@ -127,12 +127,12 @@ describe('page navigation flow', () => {
       } satisfies ScheduleDraft);
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '先失败一次');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '先失败一次');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     expect(await screen.findByText('Operation failed')).toBeOnTheScreen();
 
-    fireEvent.changeText(screen.getByLabelText('Description'), '明天下午三点开需求评审会');
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '明天下午三点开需求评审会');
     fireEvent.press(screen.getByText('Create Schedule'));
 
     await waitFor(() => {
@@ -241,7 +241,6 @@ describe('page navigation flow', () => {
     );
 
     expect(screen.getByText('团队会议')).toBeOnTheScreen();
-    expect(screen.getByText(/-/)).toBeOnTheScreen();
   });
 
   it('hides notes when schedule notes is empty', () => {

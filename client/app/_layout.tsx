@@ -8,6 +8,7 @@ import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { LocaleProvider } from '@/context/LocaleContext'
 import { registerDevice } from '@/services'
+import { ACCENT_COLOR, PAGE_BACKGROUND } from '@/constants'
 import config from '@/theme/tamagui.config'
 
 const DEVICE_ID_KEY = 'deviceId'
@@ -74,7 +75,15 @@ export default function RootLayout() {
     <TamaguiProvider config={config} defaultTheme={theme}>
       <Theme name={theme}>
         <LocaleProvider>
-          <Stack screenOptions={{ headerShown: true }} />
+          <Stack
+            screenOptions={{
+              headerShown: true,
+              headerStyle: { backgroundColor: PAGE_BACKGROUND },
+              headerShadowVisible: false,
+              headerTintColor: ACCENT_COLOR,
+              contentStyle: { backgroundColor: PAGE_BACKGROUND },
+            }}
+          />
         </LocaleProvider>
       </Theme>
     </TamaguiProvider>

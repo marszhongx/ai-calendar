@@ -8,6 +8,7 @@ import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { listSchedules as apiListSchedules, updateSchedule as apiUpdateSchedule } from '@/services'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { validateDraft } from '@/utils/schedule-validation'
+import { PAGE_BACKGROUND } from '@/constants'
 import type { Schedule, ScheduleDraft } from '@/types'
 
 function scheduleToDraft(schedule: Schedule): ScheduleDraft {
@@ -98,7 +99,7 @@ export default function ScheduleDetailScreen() {
     <>
       <Stack.Screen options={{ title: draft?.title ?? t('schedule.title') }} />
       <ScrollView>
-        <YStack flex={1} backgroundColor="$background" padding="$4" gap="$3">
+        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4" gap="$3">
           {draft ? (
             <ScheduleDraftForm
               draft={draft}

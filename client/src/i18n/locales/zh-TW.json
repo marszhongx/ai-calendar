@@ -80,6 +80,7 @@
     "startTime": "開始時間",
     "endTime": "結束時間",
     "description": "描述",
+    "aiInputPlaceholder": "輸入你的日程...",
     "location": "地點",
     "attendees": "參與者",
     "priority": "優先順序",
