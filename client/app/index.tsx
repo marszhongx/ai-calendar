@@ -29,11 +29,19 @@ function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
   }
 }
 
+function timeOfDay(iso: string): number {
+  const d = dayjs(iso)
+  return d.hour() * 60 + d.minute()
+}
+
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
-  const sorted = [...schedules].sort((a, b) => dayjs(a.startAt).valueOf() - dayjs(b.startAt).valueOf())
-  if (tab === ScheduleTab.ALL) return sorted
+  if (tab === ScheduleTab.ALL) {
+    return [...schedules].sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf())
+  }
   const target = tab === ScheduleTab.TODAY ? dayjs() : dayjs().add(1, 'day')
-  return sorted.filter((s) => occursOnDay(s, target))
+  return schedules
+    .filter((s) => occursOnDay(s, target))
+    .sort((a, b) => timeOfDay(a.startAt) - timeOfDay(b.startAt))
 }
 
 type IndexScreenProps = {
