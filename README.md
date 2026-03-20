@@ -6,9 +6,9 @@
 
 ```
 ai-calendar/
-├── app/                # Expo Router 页面（客户端）
-├── src/                # 客户端业务代码
+├── client/             # Expo 客户端（app/ 页面 + src/ 业务代码）
 ├── server/             # Next.js 后端 API
+├── package.json        # 根 package.json（npm workspaces）
 └── docs/               # 设计文档
 ```
 
@@ -25,37 +25,34 @@ ai-calendar/
 
 ## 环境变量
 
-**客户端** — 创建根目录 `.env`：
+根目录创建 `.env`（参考 `.env.example`）：
 
 ```bash
+# Client (Expo)
 EXPO_PUBLIC_API_BASE_URL=http://localhost:3001
-```
 
-**服务端** — 创建 `server/.env`：
-
-```bash
-POSTGRES_URL=
+# Server (Next.js)
 AI_API_KEY=
 AI_PROVIDER=openai
-AI_MODEL_NAME=grok-4-1-fast-non-reasoning
+AI_MODEL_NAME=grok-4-1-fast-reasoning
 AI_BASE_URL=https://yunwu.ai/v1
 ```
 
 ## 启动
 
 ```bash
-npm install
-cd server && npm install && cd ..
-npm start              # 启动 Expo 客户端
-npm run server         # 启动服务端 (Next.js, 端口 3001)
+npm install              # 安装所有 workspace 依赖
+npm start                # 启动 Expo 客户端（端口 3000）
+npm run server           # 启动服务端（Next.js，端口 3001）
 ```
 
 ## 测试
 
 ```bash
-npm test               # 客户端测试 (Jest)
-npm run typecheck      # TypeScript 类型检查
-cd server && npm test  # 服务端测试 (Vitest)
+npm test                 # 客户端测试 (Jest)
+npm run test:server      # 服务端测试 (Vitest)
+npm run test:all         # 全部测试
+npm run typecheck:all    # 全部 TypeScript 类型检查
 ```
 
 ## 核心流程
