@@ -66,6 +66,7 @@ Server cron (`/api/cron/send-reminders`) runs every minute. Queries schedules wh
 - No global state library; page-level useState + business logic functions
 - Result type (`client/src/lib/result.ts`) for error handling
 - Enums use TypeScript `enum` in `client/src/constants/index.ts`（不单独文件），key 和 value 均为全大写形式（如 `enum ScheduleTab { TODAY = 'TODAY' }`）。所有新增枚举必须遵循此模式。
+- 覆写 Tamagui 组件样式时，必须同时处理 4 种状态：default、hover（`hoverStyle`）、press（`pressStyle`）、disabled。避免某个状态下背景色与文字色冲突导致内容不可见。
 
 ## Tech Stack
 
