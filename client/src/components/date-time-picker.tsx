@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Platform, Pressable } from 'react-native'
+import { Modal, Platform, Pressable } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { SizableText, XStack, YStack } from 'tamagui'
+import { Button, SizableText, XStack, YStack } from 'tamagui'
 
 type DateTimePickerFieldProps = {
   value: string
@@ -105,7 +105,7 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
 
   const handleChange = (_event: unknown, selectedDate?: Date) => {
     if (!selectedDate) {
-      setShow(false)
+      if (Platform.OS === 'android') setShow(false)
       return
     }
 
@@ -119,8 +119,20 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
       }
     } else {
       setTempDate(selectedDate)
-      onChange(selectedDate.toISOString())
     }
+  }
+
+  const handleIOSConfirm = () => {
+    if (mode === 'date') {
+      setMode('time')
+    } else {
+      onChange(tempDate.toISOString())
+      setShow(false)
+    }
+  }
+
+  const handleIOSCancel = () => {
+    setShow(false)
   }
 
   return (
@@ -150,11 +162,42 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
         </XStack>
       </Pressable>
 
-      {show && (
+      {show && Platform.OS === 'ios' && (
+        <Modal transparent animationType="slide">
+          <Pressable
+            style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
+            onPress={handleIOSCancel}
+          >
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <YStack backgroundColor="$background" borderTopLeftRadius={16} borderTopRightRadius={16} paddingBottom="$6">
+                <XStack justifyContent="space-between" alignItems="center" padding="$3">
+                  <Button chromeless size="$3" onPress={handleIOSCancel}>
+                    <Button.Text color="$color">取消</Button.Text>
+                  </Button>
+                  <SizableText size="$3" fontWeight="600">
+                    {mode === 'date' ? '选择日期' : '选择时间'}
+                  </SizableText>
+                  <Button chromeless size="$3" onPress={handleIOSConfirm}>
+                    <Button.Text color="$blue10">{mode === 'date' ? '下一步' : '确定'}</Button.Text>
+                  </Button>
+                </XStack>
+                <DateTimePicker
+                  value={tempDate}
+                  mode={mode}
+                  display="spinner"
+                  onChange={handleChange}
+                />
+              </YStack>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      )}
+
+      {show && Platform.OS === 'android' && (
         <DateTimePicker
           value={tempDate}
           mode={mode}
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          display="default"
           onChange={handleChange}
         />
       )}
