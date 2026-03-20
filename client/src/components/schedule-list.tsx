@@ -56,7 +56,7 @@ export function ScheduleList({ schedules, emptyMessage, onDelete, onPress }: Sch
                   <Button
                     size="$2"
                     theme="red"
-                    onPress={() => onDelete(schedule)}
+                    onPress={(e) => { e.stopPropagation(); onDelete(schedule) }}
                   >
                     {t('common.delete')}
                   </Button>
