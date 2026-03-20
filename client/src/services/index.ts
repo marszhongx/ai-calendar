@@ -35,7 +35,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 }
 
-export function registerDevice(deviceId: string, pushToken: string, platform: string) {
+export function registerDevice(deviceId: string, pushToken: string | null, platform: string) {
   return request('/api/devices', {
     method: 'POST',
     body: JSON.stringify({ deviceId, pushToken, platform }),

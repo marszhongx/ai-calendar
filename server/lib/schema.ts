@@ -2,7 +2,7 @@ import { pgTable, uuid, text, integer, timestamp, index } from 'drizzle-orm/pg-c
 
 export const devices = pgTable('devices', {
   id: uuid('id').primaryKey(),
-  pushToken: text('push_token').notNull(),
+  pushToken: text('push_token'),
   platform: text('platform').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

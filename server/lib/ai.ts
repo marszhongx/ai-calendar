@@ -1,4 +1,4 @@
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { z } from 'zod';
 
@@ -23,11 +23,19 @@ export async function parseMessage(message: string): Promise<ParsedSchedule> {
 
   const model = provider.chat(process.env.AI_MODEL_NAME || 'grok-4-1-fast-non-reasoning');
 
-  const result = await generateObject({
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0];
+  const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+
+  const prompt = `Current date: ${currentDate} (${currentWeekday}). Parse the following schedule request and return structured data:\n\n"${message}"\n\nReturn the corresponding field data as required.`;
+
+  const result = await generateText({
     model,
-    schema: scheduleSchema,
-    prompt: `Parse the following schedule request and return structured data:\n\n"${message}"\n\nReturn the corresponding field data as required.`,
+    output: Output.object({ schema: scheduleSchema }),
+    prompt,
   });
 
-  return result.object;
+  console.log('[AI] request:', JSON.stringify(result.request, null, 2));
+  console.log('[AI] output:', JSON.stringify(result.output));
+  return result.output!;
 }

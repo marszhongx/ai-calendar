@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { deviceId, pushToken, platform } = body;
 
-  if (!deviceId || !pushToken || !platform) {
+  if (!deviceId || !platform) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
