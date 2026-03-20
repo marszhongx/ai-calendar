@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Platform, useColorScheme } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
 import { Stack } from 'expo-router'
+import * as Application from 'expo-application'
 import Constants from 'expo-constants'
 import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -19,13 +20,26 @@ function generateUUID() {
   });
 }
 
+async function getHardwareDeviceId(): Promise<string | null> {
+  try {
+    if (Platform.OS === 'ios') {
+      return await Application.getIosIdForVendorAsync()
+    }
+    if (Platform.OS === 'android') {
+      return Application.getAndroidId()
+    }
+  } catch {}
+  return null
+}
+
 async function ensureDeviceRegistered() {
   try {
-    let deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY);
+    const hardwareId = await getHardwareDeviceId()
+    let deviceId = hardwareId || await AsyncStorage.getItem(DEVICE_ID_KEY);
     if (!deviceId) {
       deviceId = generateUUID();
-      await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
     }
+    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
 
     if (Platform.OS === 'web' || !Constants.isDevice) {
       await registerDevice(deviceId, null, Platform.OS);
