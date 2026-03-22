@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Platform, useColorScheme } from 'react-native'
+import { Platform } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
 import { Stack } from 'expo-router'
 import * as Application from 'expo-application'
@@ -64,8 +64,7 @@ async function ensureDeviceRegistered() {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
-  const theme = colorScheme === 'dark' ? 'dark' : 'light'
+  const theme = 'light'
 
   useEffect(() => {
     ensureDeviceRegistered();

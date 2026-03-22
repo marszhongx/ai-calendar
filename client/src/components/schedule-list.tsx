@@ -123,10 +123,10 @@ export function ScheduleList({ schedules, emptyMessage, onPress }: ScheduleListP
                 {schedule.title}
               </SizableText>
               <YStack alignItems="flex-end" marginLeft="$3" flexShrink={0} zIndex={1}>
-                <SizableText size="$2" color="$placeholderColor">
+                <SizableText size="$2" color="#666666">
                   {formatDate(schedule.startAt, intlLocale)}
                 </SizableText>
-                <SizableText size="$2" color="$placeholderColor">
+                <SizableText size="$2" color="#666666">
                   {formatTime(schedule.startAt, intlLocale)}
                 </SizableText>
               </YStack>

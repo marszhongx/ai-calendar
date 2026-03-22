@@ -70,8 +70,8 @@ export function DateTimePickerField({ value, onChange, disabled, locale }: DateT
           padding: '8px 12px',
           borderRadius: 12,
           border: '1px solid #e0e0e0',
-          backgroundColor: '#f5f5f5',
-          color: 'inherit',
+          backgroundColor: '#FFF0ED',
+          color: '#1a1a1a',
           flex: 1,
           boxSizing: 'border-box' as const,
         }}
