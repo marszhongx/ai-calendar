@@ -88,12 +88,12 @@ describe('schedule detail page', () => {
     );
   });
 
-  it('navigates back when schedule is not found', async () => {
+  it('shows not found state when schedule does not exist', async () => {
     (globalThis as Record<string, unknown>).__mockSearchParams = { id: 'non-existent' };
     renderWithProviders(<ScheduleDetailScreen />);
 
     await waitFor(() => {
-      expect(mockRouterBack).toHaveBeenCalled();
+      expect(screen.getByText('Schedule not found')).toBeOnTheScreen();
     });
   });
 });

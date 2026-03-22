@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
-import { Animated } from 'react-native'
+import { Animated, type DimensionValue } from 'react-native'
 import { YStack } from 'tamagui'
 
 type SkeletonCardProps = {
   count?: number
 }
 
-function SkeletonLine({ width, height, delay }: { width: string; height: number; delay: number }) {
+function SkeletonLine({ width, height, delay }: { width: DimensionValue; height: number; delay: number }) {
   const opacity = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
