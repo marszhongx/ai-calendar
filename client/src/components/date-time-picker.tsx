@@ -2,50 +2,14 @@ import { useState } from 'react'
 import { Modal, Platform, Pressable } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
+import { useLocale } from '../context/LocaleContext'
+import { formatDatePart, formatTimePart, toDatetimeLocalValue } from '../lib/date-format'
 
 type DateTimePickerFieldProps = {
   value: string
   onChange(isoString: string): void
   disabled?: boolean
   locale?: string
-}
-
-function formatDatePart(isoString: string, locale?: string): string {
-  try {
-    const date = new Date(isoString)
-    if (isNaN(date.getTime())) return isoString
-    return new Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date)
-  } catch {
-    return isoString
-  }
-}
-
-function formatTimePart(isoString: string, locale?: string): string {
-  try {
-    const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
-    return new Intl.DateTimeFormat(locale, {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-  } catch {
-    return ''
-  }
-}
-
-function toDatetimeLocalValue(isoString: string): string {
-  try {
-    const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
-    const pad = (n: number) => String(n).padStart(2, '0')
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-  } catch {
-    return ''
-  }
 }
 
 export function DateTimePickerField({ value, onChange, disabled, locale }: DateTimePickerFieldProps) {
@@ -70,7 +34,7 @@ export function DateTimePickerField({ value, onChange, disabled, locale }: DateT
           padding: '8px 12px',
           borderRadius: 12,
           border: '1px solid #e0e0e0',
-          backgroundColor: '#FFF0ED',
+          backgroundColor: '#F3F4F6',
           color: '#1a1a1a',
           flex: 1,
           boxSizing: 'border-box' as const,
@@ -90,6 +54,7 @@ type NativeDateTimePickerProps = {
 }
 
 function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateTimePickerProps) {
+  const { t } = useLocale()
   const [show, setShow] = useState(false)
   const [mode, setMode] = useState<'date' | 'time'>('date')
   const [tempDate, setTempDate] = useState(value)
@@ -172,13 +137,13 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
               <YStack backgroundColor="$background" borderTopLeftRadius={16} borderTopRightRadius={16} paddingBottom="$6">
                 <XStack justifyContent="space-between" alignItems="center" padding="$3">
                   <Button chromeless size="$3" onPress={handleIOSCancel}>
-                    <Button.Text color="$color">取消</Button.Text>
+                    <Button.Text color="$color">{t('picker.cancel')}</Button.Text>
                   </Button>
                   <SizableText size="$3" fontWeight="600">
-                    {mode === 'date' ? '选择日期' : '选择时间'}
+                    {mode === 'date' ? t('picker.selectDate') : t('picker.selectTime')}
                   </SizableText>
                   <Button chromeless size="$3" onPress={handleIOSConfirm}>
-                    <Button.Text color="$blue10">{mode === 'date' ? '下一步' : '确定'}</Button.Text>
+                    <Button.Text color="$blue10">{mode === 'date' ? t('picker.next') : t('picker.confirm')}</Button.Text>
                   </Button>
                 </XStack>
                 <DateTimePicker

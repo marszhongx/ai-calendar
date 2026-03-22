@@ -1,7 +1,9 @@
-import { Button, Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
+import { Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
-import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, Recurrence } from '../constants'
+import { LABEL_COLOR, Recurrence } from '../constants'
 import { DateTimePickerField } from './date-time-picker'
+import { PillButton } from './pill-button'
+import { AccentButton } from './accent-button'
 
 import type { ScheduleDraft } from '../types'
 
@@ -44,7 +46,7 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
     <YStack gap="$3">
       {/* Title */}
       <FormSection>
-        <SizableText size="$3" color={ACCENT_COLOR} fontWeight="600">
+        <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
           {t('schedule.eventName')}
         </SizableText>
         <Input
@@ -63,7 +65,7 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
 
       {/* Start / End Time */}
       <FormSection>
-        <SizableText size="$3" color={ACCENT_COLOR} fontWeight="600">
+        <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
           {t('schedule.startTime')}
         </SizableText>
         <DateTimePickerField
@@ -76,29 +78,21 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
 
       {/* Recurrence */}
       <FormSection>
-        <SizableText size="$3" color={ACCENT_COLOR} fontWeight="600">
+        <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
           {t('schedule.repeat')}
         </SizableText>
         <XStack gap="$2" flexWrap="wrap">
           {RECURRENCE_OPTIONS.map((option) => {
             const selected = draft.recurrence === option
             return (
-              <Button
+              <PillButton
                 key={option}
-                size="$3"
-                borderRadius={20}
-                backgroundColor={selected ? ACCENT_COLOR : 'transparent'}
-                borderWidth={1}
-                borderColor={selected ? ACCENT_COLOR : '$borderColor'}
-                hoverStyle={{ backgroundColor: selected ? ACCENT_COLOR : '$backgroundHover' }}
-                pressStyle={{ backgroundColor: selected ? ACCENT_COLOR_PRESSED : '$backgroundPress' }}
+                selected={selected}
                 onPress={() => onChange({ ...draft, recurrence: option })}
                 disabled={disabled}
               >
-                <SizableText size="$3" color={selected ? 'white' : '$color'}>
-                  {recurrenceLabels[option]}
-                </SizableText>
-              </Button>
+                {recurrenceLabels[option]}
+              </PillButton>
             )
           })}
         </XStack>
@@ -106,7 +100,7 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
 
       {/* Reminder */}
       <FormSection>
-        <SizableText size="$3" color={ACCENT_COLOR} fontWeight="600">
+        <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
           {t('schedule.remindMe')}
         </SizableText>
         <XStack alignItems="center" gap="$3">
@@ -129,14 +123,14 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
             textAlign="center"
           />
           <SizableText size="$2" color="$placeholderColor" flexShrink={0}>
-            min
+            {t('schedule.minutes')}
           </SizableText>
         </XStack>
       </FormSection>
 
       {/* Notes */}
       <FormSection>
-        <SizableText size="$3" color={ACCENT_COLOR} fontWeight="600">
+        <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
           {t('schedule.description')}
         </SizableText>
         <TextArea
@@ -154,25 +148,13 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
       </FormSection>
 
       {/* Submit */}
-      <Button
-        size="$5"
-        backgroundColor={ACCENT_COLOR}
-        borderRadius={16}
-        onPress={onSubmit}
-        disabled={disabled}
-        hoverStyle={{ backgroundColor: ACCENT_COLOR }}
-        pressStyle={{ backgroundColor: ACCENT_COLOR_PRESSED }}
-        disabledStyle={{ opacity: 0.5 }}
-      >
-        <SizableText color="white" fontWeight="bold" size="$4">
-          {submitLabel ?? t('schedule.create')}
-        </SizableText>
-      </Button>
+      <AccentButton label={submitLabel ?? t('schedule.create')} onPress={onSubmit} disabled={disabled} />
 
       {errors.map((error) => (
-        <SizableText key={error} color="$red10" textAlign="center">
-          {error}
-        </SizableText>
+        <XStack key={error} backgroundColor="#FEF2F2" borderRadius={12} padding="$3" alignItems="center" gap="$2">
+          <SizableText size="$3">⚠️</SizableText>
+          <SizableText color="#DC2626" size="$3" flex={1}>{error}</SizableText>
+        </XStack>
       ))}
     </YStack>
   )

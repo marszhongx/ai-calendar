@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Spinner, YStack } from 'tamagui'
+import { YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocale } from '@/context/LocaleContext'
 
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
+import { SkeletonCard } from '@/components/skeleton-card'
 import { createSchedule as apiCreateSchedule } from '@/services'
 import { validateDraft } from '@/utils/schedule-validation'
 import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
@@ -89,8 +90,8 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
     return (
       <>
         <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
-        <YStack flex={1} justifyContent="center" alignItems="center">
-          <Spinner size="large" />
+        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+          <SkeletonCard count={5} />
         </YStack>
       </>
     )
@@ -102,9 +103,6 @@ export default function DraftScreen({ initialDraft, submitLabel, onCreate }: Dra
       <ScrollView>
         <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4" gap="$3">
           <ScheduleDraftForm draft={draft} errors={errors} onChange={setDraft} onSubmit={handleSubmit} disabled={submitting} submitLabel={submitLabel} />
-          {submitting ? (
-            <Spinner size="large" />
-          ) : null}
         </YStack>
       </ScrollView>
     </>

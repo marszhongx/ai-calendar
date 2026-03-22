@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Button, SizableText, Spinner, TextArea, YStack } from 'tamagui'
+import { SizableText, Spinner, TextArea, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
-import { ACCENT_COLOR, ACCENT_COLOR_PRESSED } from '../constants'
+import { AccentButton } from './accent-button'
 
 type MessageInputFormProps = {
   onSubmit(message: string): Promise<void>
@@ -43,25 +43,17 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
           placeholder={t('schedule.aiInputPlaceholder')}
         />
       </YStack>
-      <Button
-        size="$5"
-        backgroundColor={ACCENT_COLOR}
-        borderRadius={16}
+      <AccentButton
+        label={t('schedule.create')}
         onPress={handleSubmit}
         disabled={submitting}
         icon={submitting ? <Spinner size="small" /> : undefined}
-        hoverStyle={{ backgroundColor: ACCENT_COLOR }}
-        pressStyle={{ backgroundColor: ACCENT_COLOR_PRESSED }}
-        disabledStyle={{ opacity: 0.5 }}
-      >
-        <SizableText color="white" fontWeight="bold" size="$4">
-          {t('schedule.create')}
-        </SizableText>
-      </Button>
+      />
       {error ? (
-        <SizableText color="$red10" textAlign="center">
-          {error}
-        </SizableText>
+        <XStack backgroundColor="#FEF2F2" borderRadius={12} padding="$3" alignItems="center" gap="$2">
+          <SizableText size="$3">⚠️</SizableText>
+          <SizableText color="#DC2626" size="$3" flex={1}>{error}</SizableText>
+        </XStack>
       ) : null}
     </YStack>
   )
