@@ -115,7 +115,18 @@
     "tabTomorrow": "Tomorrow",
     "tabAll": "All",
     "emptyToday": "No schedules today",
-    "emptyTomorrow": "No schedules tomorrow"
+    "emptyTomorrow": "No schedules tomorrow",
+    "emptyTodayHint": "Tap + to create with natural language",
+    "emptyTomorrowHint": "No plans yet for tomorrow",
+    "emptyListHint": "Tap + to get started",
+    "notFound": "Schedule not found"
+  },
+  "picker": {
+    "cancel": "Cancel",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "next": "Next",
+    "confirm": "Done"
   },
   "messages": {
     "success": "Operation succeeded",

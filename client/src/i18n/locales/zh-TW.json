@@ -115,7 +115,18 @@
     "tabTomorrow": "明日",
     "tabAll": "全部",
     "emptyToday": "今日暫無日程",
-    "emptyTomorrow": "明日暫無日程"
+    "emptyTomorrow": "明日暫無日程",
+    "emptyTodayHint": "點擊 + 用自然語言建立日程",
+    "emptyTomorrowHint": "明天暫無安排",
+    "emptyListHint": "點擊 + 開始建立",
+    "notFound": "未找到該日程"
+  },
+  "picker": {
+    "cancel": "取消",
+    "selectDate": "選擇日期",
+    "selectTime": "選擇時間",
+    "next": "下一步",
+    "confirm": "確定"
   },
   "messages": {
     "success": "操作成功",
