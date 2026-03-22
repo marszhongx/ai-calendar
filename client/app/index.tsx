@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Alert, Platform } from 'react-native'
-import { Button, SizableText, Spinner, XStack, YStack } from 'tamagui'
+import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { Stack, useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
@@ -8,8 +8,11 @@ import { useLocale } from '@/context/LocaleContext'
 import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, PAGE_BACKGROUND, ScheduleTab } from '@/constants'
 
 import { ScheduleList } from '@/components/schedule-list'
+import { PillButton } from '@/components/pill-button'
+import { EmptyState } from '@/components/empty-state'
+import { SkeletonCard } from '@/components/skeleton-card'
 import { listSchedules as apiListSchedules, deleteSchedule as apiDeleteSchedule } from '@/services'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useDeviceId } from '@/hooks/useDeviceId'
 import type { Schedule } from '@/types'
 
 function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
@@ -55,6 +58,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<ScheduleTab>(ScheduleTab.TODAY)
+  const { deviceId } = useDeviceId()
 
   const TAB_LABELS: { key: ScheduleTab; label: string }[] = [
     { key: ScheduleTab.TODAY, label: t('schedule.tabToday') },
@@ -64,28 +68,17 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
 
   const filteredItems = filterSchedules(items, activeTab)
 
-  const emptyMessage = activeTab === ScheduleTab.TODAY
-    ? t('schedule.emptyToday')
-    : activeTab === ScheduleTab.TOMORROW
-      ? t('schedule.emptyTomorrow')
-      : undefined
-
   useFocusEffect(
     useCallback(() => {
       if (schedules) return
+      if (deviceId === null) return
 
       let cancelled = false
       setLoading(true)
 
-      AsyncStorage.getItem('deviceId').then((deviceId) => {
-        if (!deviceId || cancelled) {
-          setLoading(false)
-          return
-        }
-        return apiListSchedules(deviceId) as Promise<Schedule[]>
-      }).then((data) => {
+      apiListSchedules(deviceId).then((data) => {
         if (!cancelled && data) {
-          setItems(data)
+          setItems(data as Schedule[])
           setError('')
         }
       }).catch(() => {
@@ -95,7 +88,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       })
 
       return () => { cancelled = true }
-    }, [schedules, t])
+    }, [schedules, t, deviceId])
   )
 
   const performDelete = useCallback(async (schedule: Schedule) => {
@@ -146,35 +139,29 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
         <XStack gap="$2" marginBottom="$3">
           {TAB_LABELS.map(({ key, label }) => (
-            <Button
+            <PillButton
               key={key}
-              size="$3"
-              borderRadius={20}
-              backgroundColor={activeTab === key ? ACCENT_COLOR : 'transparent'}
-              borderWidth={activeTab === key ? 0 : 1}
-              borderColor="$borderColor"
+              selected={activeTab === key}
               onPress={() => setActiveTab(key)}
-              hoverStyle={{
-                backgroundColor: activeTab === key ? ACCENT_COLOR : '$backgroundHover',
-              }}
-              pressStyle={{
-                backgroundColor: activeTab === key ? ACCENT_COLOR : '$backgroundPress',
-              }}
             >
-              <SizableText size="$3" color={activeTab === key ? 'white' : '$color'}>
-                {label}
-              </SizableText>
-            </Button>
+              {label}
+            </PillButton>
           ))}
         </XStack>
         {loading ? (
-          <YStack flex={1} justifyContent="center" alignItems="center">
-            <Spinner size="large" />
-          </YStack>
+          <SkeletonCard />
         ) : error ? (
           <SizableText color="$red10">{error}</SizableText>
+        ) : filteredItems.length === 0 ? (
+          activeTab === ScheduleTab.TODAY ? (
+            <EmptyState icon="☀️" iconBg="#FEF2F0" title={t('schedule.emptyToday')} subtitle={t('schedule.emptyTodayHint')} />
+          ) : activeTab === ScheduleTab.TOMORROW ? (
+            <EmptyState icon="🌙" iconBg="#EFF1FE" title={t('schedule.emptyTomorrow')} subtitle={t('schedule.emptyTomorrowHint')} />
+          ) : (
+            <EmptyState icon="📋" iconBg="#F0F5F2" title={t('schedule.emptyList')} subtitle={t('schedule.emptyListHint')} />
+          )
         ) : (
-          <ScheduleList schedules={filteredItems} emptyMessage={emptyMessage} onPress={handlePress} />
+          <ScheduleList schedules={filteredItems} onPress={handlePress} showDate={activeTab === ScheduleTab.ALL} />
         )}
       </YStack>
       <Button
