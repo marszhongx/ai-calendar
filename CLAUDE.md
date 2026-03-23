@@ -59,9 +59,10 @@ Monorepo (npm workspaces): cross-platform Expo client (`client/`) + Next.js back
   - `schedules/[id]/route.ts` — PUT (update), DELETE (delete)
   - `cron/send-reminders/route.ts` — POST: cron-triggered push notification sender
 - **Libs** (`server/lib/`): `db.ts` (Vercel Postgres), `ai.ts` (AI SDK / OpenAI-compatible), `expo-push.ts` (Expo Push SDK)
-- **Database**: Vercel Postgres (Neon). Tables: `devices` (id, push_token, platform), `schedules` (id, device_id, title, start_at, end_at, timezone, reminder_minutes_before, recurrence, notes, reminder_sent_at).
+- **Database**: Vercel Postgres (Neon), tables in `public` schema. Tables: `devices` (id, push_token, platform), `schedules` (id, device_id, title, start_at, end_at, timezone, reminder_minutes_before, recurrence, notes, reminder_sent_at).
 - **Middleware** (`server/middleware.ts`): CORS handling for `/api/*` routes. Allows `localhost:4398` (dev) and `ALLOWED_ORIGIN` env var (production).
-- **Migration**: `server/scripts/migrate.ts` — run with `cd server && npm run migrate`
+- **Migration**: `cd server && npm run migrate` (drizzle-kit migrate) or `npm run db:push` (direct schema push)
+- **Scripts**: 独立脚本必须用 `.js` 编写，避免依赖 tsx 等 TypeScript 运行时。
 
 ### Device Identity
 
