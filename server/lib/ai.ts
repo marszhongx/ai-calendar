@@ -6,17 +6,10 @@ const scheduleSchema = z.object({
   title: z.string().describe('Short event title extracted from the message'),
   start_time: z
     .string()
-    .describe(
-      'Start time in ISO 8601 with UTC offset, e.g. "2026-03-20T23:00:00+08:00"',
-    ),
+    .describe('Start time in ISO 8601 UTC, e.g. "2026-03-20T15:00:00Z"'),
   end_time: z
     .optional(z.string())
-    .describe(
-      'End time in ISO 8601 with UTC offset, e.g. "2026-03-20T23:30:00+08:00"',
-    ),
-  timezone: z
-    .string()
-    .describe('IANA timezone identifier, e.g. "Asia/Shanghai"'),
+    .describe('End time in ISO 8601 UTC, e.g. "2026-03-20T15:30:00Z"'),
   reminder_minutes_before: z
     .number()
     .describe(
@@ -35,7 +28,10 @@ const scheduleSchema = z.object({
 
 export type ParsedSchedule = z.infer<typeof scheduleSchema>
 
-export async function parseMessage(message: string): Promise<ParsedSchedule> {
+export async function parseMessage(
+  message: string,
+  timezone?: string,
+): Promise<ParsedSchedule> {
   const provider = createOpenAI({
     apiKey: process.env.AI_API_KEY,
     baseURL: process.env.AI_BASE_URL || undefined,
@@ -45,11 +41,12 @@ export async function parseMessage(message: string): Promise<ParsedSchedule> {
     process.env.AI_MODEL_NAME || 'grok-4-1-fast-non-reasoning',
   )
 
+  const tz = timezone || 'Asia/Shanghai'
   const now = new Date()
-  const currentDate = now.toISOString().split('T')[0]
-  const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' })
+    .toLocaleString('sv-SE', { timeZone: tz })
+    .replace(' ', 'T')
 
-  const prompt = `Current date: ${currentDate} (${currentWeekday}). Parse the following schedule request and return structured data:\n\n"${message}"\n\nReturn the corresponding field data as required.`
+  const prompt = `Current time: ${now} (${tz}). Parse the following schedule request:\n\n"${message}"`
 
   const result = await generateText({
     model,

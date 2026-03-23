@@ -29,7 +29,6 @@ export const schedules = pgTable(
     title: text('title').notNull(),
     startAt: timestamp('start_at', { withTimezone: true }).notNull(),
     endAt: timestamp('end_at', { withTimezone: true }),
-    timezone: text('timezone').notNull().default('Asia/Shanghai'),
     reminderMinutesBefore: integer('reminder_minutes_before')
       .notNull()
       .default(30),

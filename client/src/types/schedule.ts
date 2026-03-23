@@ -6,7 +6,6 @@ export type ScheduleDraft = {
   title: string
   startAt: string
   endAt?: string
-  timezone: string
   reminderMinutesBefore: number
   recurrence: Recurrence
   notes: string
@@ -20,7 +19,6 @@ export type Schedule = {
   title: string
   startAt: string
   endAt?: string
-  timezone: string
   reminderMinutesBefore: number
   recurrence: Recurrence
   notes: string
@@ -39,7 +37,6 @@ export type ParsedSchedulePayload = {
   title?: string
   start_time?: string
   end_time?: string
-  timezone?: string
   reminder_minutes_before?: number
   recurrence?: string
   notes?: string

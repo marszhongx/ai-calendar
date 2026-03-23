@@ -6,7 +6,7 @@ describe('normalizeDraft', () => {
       title: '需求评审会',
       start_time: '2026-03-17T15:00:00.000Z',
       end_time: '2026-03-17T16:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminder_minutes_before: 45,
       recurrence: 'WEEKLY',
       notes: '带上原型',
@@ -17,7 +17,7 @@ describe('normalizeDraft', () => {
       title: '需求评审会',
       startAt: '2026-03-17T15:00:00.000Z',
       endAt: '2026-03-17T16:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 45,
       recurrence: 'WEEKLY',
       notes: '带上原型',
@@ -31,7 +31,6 @@ describe('normalizeDraft', () => {
     const result = normalizeDraft({
       title: '医生复诊',
       start_time: '2026-03-21T02:00:00.000Z',
-      timezone: 'Asia/Shanghai',
     })
 
     expect(result.reminderMinutesBefore).toBe(30)
@@ -48,7 +47,6 @@ describe('normalizeDraft', () => {
     const result = normalizeDraft({
       title: '',
       start_time: '',
-      timezone: 'Asia/Shanghai',
     })
 
     expect(result.missingFields).toEqual(['title', 'startAt'])
@@ -58,7 +56,7 @@ describe('normalizeDraft', () => {
     const result = normalizeDraft({
       title: '开会',
       start_time: '',
-      timezone: 'Asia/Shanghai',
+
       confidence: 0.3,
     })
 

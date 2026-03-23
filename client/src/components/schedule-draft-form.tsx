@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { LABEL_COLOR, Recurrence } from '../constants'
 import { useLocale } from '../context/LocaleContext'
@@ -13,6 +14,7 @@ type ScheduleDraftFormProps = {
   submitLabel?: string
   onChange(draft: ScheduleDraft): void
   onSubmit(): void
+  onReparse?(): Promise<void>
 }
 
 const RECURRENCE_OPTIONS = Object.values(Recurrence)
@@ -38,8 +40,20 @@ export function ScheduleDraftForm({
   submitLabel,
   onChange,
   onSubmit,
+  onReparse,
 }: ScheduleDraftFormProps) {
   const { t, locale } = useLocale()
+  const [reparsing, setReparsing] = useState(false)
+
+  async function handleReparse() {
+    if (!onReparse) return
+    setReparsing(true)
+    try {
+      await onReparse()
+    } finally {
+      setReparsing(false)
+    }
+  }
 
   const recurrenceLabels: Record<string, string> = {
     NONE: t('schedule.never'),
@@ -50,6 +64,27 @@ export function ScheduleDraftForm({
 
   return (
     <YStack gap="$3">
+      {/* Original Message */}
+      {draft.originalMessage ? (
+        <FormSection>
+          <XStack justifyContent="space-between" alignItems="center">
+            <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
+              {t('schedule.originalMessage')}
+            </SizableText>
+            <PillButton
+              selected={false}
+              onPress={handleReparse}
+              disabled={disabled || reparsing}
+            >
+              {reparsing ? t('schedule.reParsing') : t('schedule.reParse')}
+            </PillButton>
+          </XStack>
+          <SizableText size="$3" color="$color11">
+            {draft.originalMessage}
+          </SizableText>
+        </FormSection>
+      ) : null}
+
       {/* Title */}
       <FormSection>
         <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">

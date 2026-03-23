@@ -44,7 +44,6 @@ const baseSchedule: Schedule = {
   id: 'schedule-edit-1',
   title: '需求评审会',
   startAt: '2026-03-20T15:00:00.000Z',
-  timezone: 'Asia/Shanghai',
   reminderMinutesBefore: 30,
   recurrence: Recurrence.NONE,
   notes: '带上原型',

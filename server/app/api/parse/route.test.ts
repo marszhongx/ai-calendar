@@ -29,7 +29,7 @@ describe('POST /api/parse', () => {
     mockParseMessage.mockResolvedValue({
       title: '开会',
       start_time: '2026-03-20T10:00:00+08:00',
-      timezone: 'Asia/Shanghai',
+
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       confidence: 0.95,

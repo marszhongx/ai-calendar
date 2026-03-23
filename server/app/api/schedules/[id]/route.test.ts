@@ -56,7 +56,7 @@ describe('PUT /api/schedules/[id]', () => {
       mockPutRequest({
         title: '更新',
         startAt: '2026-03-20T10:00:00+08:00',
-        timezone: 'Asia/Shanghai',
+
         reminderMinutesBefore: 15,
         recurrence: 'NONE',
         notes: '',

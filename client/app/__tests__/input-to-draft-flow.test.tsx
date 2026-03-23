@@ -48,7 +48,7 @@ describe('page navigation flow', () => {
         initialDraft={{
           title: '',
           startAt: new Date().toISOString(),
-          timezone: 'Asia/Shanghai',
+
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
@@ -138,7 +138,6 @@ describe('page navigation flow', () => {
       .mockResolvedValueOnce({
         title: '需求评审会',
         startAt: '2026-03-17T15:00:00.000Z',
-        timezone: 'Asia/Shanghai',
         reminderMinutesBefore: 30,
         recurrence: Recurrence.NONE,
         notes: '',
@@ -180,7 +179,7 @@ describe('page navigation flow', () => {
         initialDraft={{
           title: '',
           startAt: '',
-          timezone: 'Asia/Shanghai',
+
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
@@ -217,7 +216,7 @@ describe('page navigation flow', () => {
         initialDraft={{
           title: '需求评审会',
           startAt: '2026-03-17T15:00:00.000Z',
-          timezone: 'Asia/Shanghai',
+
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
@@ -258,7 +257,7 @@ describe('page navigation flow', () => {
             title: '团队会议',
             startAt: now.toISOString(),
             endAt: now.add(1, 'hour').toISOString(),
-            timezone: 'Asia/Shanghai',
+
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
@@ -283,7 +282,7 @@ describe('page navigation flow', () => {
             id: 'schedule-no-notes',
             title: '空备注日程',
             startAt: now,
-            timezone: 'Asia/Shanghai',
+
             reminderMinutesBefore: 0,
             recurrence: Recurrence.NONE,
             notes: '',
@@ -336,7 +335,7 @@ describe('page navigation flow', () => {
             id: 's-today',
             title: '今日会议',
             startAt: today,
-            timezone: 'Asia/Shanghai',
+
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
@@ -348,7 +347,7 @@ describe('page navigation flow', () => {
             id: 's-tomorrow',
             title: '明日会议',
             startAt: tomorrow,
-            timezone: 'Asia/Shanghai',
+
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
@@ -386,7 +385,7 @@ describe('page navigation flow', () => {
         initialDraft={{
           title: 'Test',
           startAt: new Date().toISOString(),
-          timezone: 'Asia/Shanghai',
+
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
@@ -435,7 +434,7 @@ describe('page navigation flow', () => {
             id: 's-detail',
             title: '点击查看详情',
             startAt: now,
-            timezone: 'Asia/Shanghai',
+
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',

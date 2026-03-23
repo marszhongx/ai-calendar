@@ -119,7 +119,10 @@
     "emptyTodayHint": "Tap + to create with natural language",
     "emptyTomorrowHint": "No plans yet for tomorrow",
     "emptyListHint": "Tap + to get started",
-    "notFound": "Schedule not found"
+    "notFound": "Schedule not found",
+    "originalMessage": "Original Message",
+    "reParse": "Re-parse",
+    "reParsing": "Parsing..."
   },
   "picker": {
     "cancel": "Cancel",

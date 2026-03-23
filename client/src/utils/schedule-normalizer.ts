@@ -24,7 +24,6 @@ export function normalizeDraft(
     title,
     startAt,
     endAt: payload.end_time?.trim() || undefined,
-    timezone: payload.timezone?.trim() || 'Asia/Shanghai',
     reminderMinutesBefore: payload.reminder_minutes_before ?? 30,
     recurrence: toRecurrence(payload.recurrence),
     notes: payload.notes?.trim() ?? '',

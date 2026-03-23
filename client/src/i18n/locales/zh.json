@@ -119,7 +119,10 @@
     "emptyTodayHint": "点击 + 用自然语言创建日程",
     "emptyTomorrowHint": "明天暂无安排",
     "emptyListHint": "点击 + 开始创建",
-    "notFound": "未找到该日程"
+    "notFound": "未找到该日程",
+    "originalMessage": "原始消息",
+    "reParse": "重新解析",
+    "reParsing": "解析中..."
   },
   "picker": {
     "cancel": "取消",

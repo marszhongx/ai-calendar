@@ -8,7 +8,7 @@ describe('validateDraft', () => {
       title: '需求评审会',
       startAt: '2026-03-17T15:00:00.000Z',
       endAt: '2026-03-17T16:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 30,
       recurrence: Recurrence.WEEKLY,
       notes: '准备原型',
@@ -24,7 +24,7 @@ describe('validateDraft', () => {
     const draft: ScheduleDraft = {
       title: '',
       startAt: '2026-03-17T15:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',
@@ -43,7 +43,7 @@ describe('validateDraft', () => {
     const draft: ScheduleDraft = {
       title: '医生复诊',
       startAt: '',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 60,
       recurrence: Recurrence.NONE,
       notes: '',
@@ -62,7 +62,7 @@ describe('validateDraft', () => {
     const draft = {
       title: '周会',
       startAt: '2026-03-17T15:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 10,
       recurrence: 'yearly',
       notes: '',
@@ -84,7 +84,7 @@ describe('validateSchedule', () => {
       title: '需求评审会',
       startAt: '2026-03-17T15:00:00.000Z',
       endAt: '2026-03-17T16:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',
@@ -102,7 +102,7 @@ describe('validateSchedule', () => {
       id: '',
       title: '需求评审会',
       startAt: '2026-03-17T15:00:00.000Z',
-      timezone: 'Asia/Shanghai',
+
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',

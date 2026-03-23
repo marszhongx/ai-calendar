@@ -3,7 +3,7 @@ import { parseMessage } from '@/lib/ai'
 
 export async function POST(request: Request) {
   const body = await request.json()
-  const { message, deviceId } = body
+  const { message, deviceId, timezone } = body
 
   if (!message || !deviceId) {
     return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const parsed = await parseMessage(message)
+    const parsed = await parseMessage(message, timezone)
     return NextResponse.json(parsed)
   } catch (error) {
     console.error('AI parse error:', error)

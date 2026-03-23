@@ -50,9 +50,10 @@ export function registerDevice(
 }
 
 export function parseMessage(message: string, deviceId: string) {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   return request('/api/parse', {
     method: 'POST',
-    body: JSON.stringify({ message, deviceId }),
+    body: JSON.stringify({ message, deviceId, timezone }),
   })
 }
 

@@ -7,15 +7,8 @@ type RouteContext = { params: Promise<{ id: string }> }
 export async function PUT(request: Request, { params }: RouteContext) {
   const { id } = await params
   const body = await request.json()
-  const {
-    title,
-    startAt,
-    endAt,
-    timezone,
-    reminderMinutesBefore,
-    recurrence,
-    notes,
-  } = body
+  const { title, startAt, endAt, reminderMinutesBefore, recurrence, notes } =
+    body
 
   if (!title || !startAt) {
     return NextResponse.json(
@@ -30,7 +23,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
       title,
       startAt: new Date(startAt),
       endAt: endAt ? new Date(endAt) : null,
-      timezone: timezone || 'Asia/Shanghai',
       reminderMinutesBefore: reminderMinutesBefore || 30,
       recurrence: recurrence || 'NONE',
       notes: notes || '',

@@ -7,14 +7,14 @@ import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
 import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { createSchedule as apiCreateSchedule } from '@/services'
-import type { Schedule, ScheduleDraft } from '@/types'
+import { createSchedule, parseMessage } from '@/services'
+import type { ParsedSchedulePayload, Schedule, ScheduleDraft } from '@/types'
+import { normalizeDraft } from '@/utils/schedule-normalizer'
 import { validateDraft } from '@/utils/schedule-validation'
 
 const fallbackDraft: ScheduleDraft = {
   title: '',
   startAt: new Date().toISOString(),
-  timezone: 'Asia/Shanghai',
   reminderMinutesBefore: 30,
   recurrence: Recurrence.NONE,
   notes: '',
@@ -58,12 +58,11 @@ export default function DraftScreen({
     const deviceId = await AsyncStorage.getItem('deviceId')
     if (!deviceId) throw new Error('Device not registered')
 
-    const result = await apiCreateSchedule({
+    const result = await createSchedule({
       deviceId,
       title: scheduleDraft.title,
       startAt: scheduleDraft.startAt,
       endAt: scheduleDraft.endAt,
-      timezone: scheduleDraft.timezone,
       reminderMinutesBefore: scheduleDraft.reminderMinutesBefore,
       recurrence: scheduleDraft.recurrence,
       notes: scheduleDraft.notes,
@@ -71,6 +70,19 @@ export default function DraftScreen({
     })
 
     return result as unknown as Schedule
+  }
+
+  async function handleReparse() {
+    if (!draft.originalMessage) return
+    const deviceId = await AsyncStorage.getItem('deviceId')
+    if (!deviceId) return
+
+    const data = (await parseMessage(
+      draft.originalMessage,
+      deviceId,
+    )) as ParsedSchedulePayload
+    setDraft(normalizeDraft(data, draft.originalMessage))
+    setErrors([])
   }
 
   async function handleSubmit() {
@@ -119,6 +131,7 @@ export default function DraftScreen({
             errors={errors}
             onChange={setDraft}
             onSubmit={handleSubmit}
+            onReparse={handleReparse}
             disabled={submitting}
             submitLabel={submitLabel}
           />

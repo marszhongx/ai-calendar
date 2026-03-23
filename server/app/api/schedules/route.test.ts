@@ -75,7 +75,7 @@ describe('POST /api/schedules', () => {
         deviceId: 'dev-1',
         title: '开会',
         startAt: '2026-03-20T10:00:00+08:00',
-        timezone: 'Asia/Shanghai',
+
         reminderMinutesBefore: 30,
         recurrence: 'NONE',
         notes: '',
