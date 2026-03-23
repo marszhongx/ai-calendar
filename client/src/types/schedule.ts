@@ -43,6 +43,16 @@ export type ParsedSchedulePayload = {
   confidence?: number
 }
 
+export type SchedulePayload = {
+  title: string
+  startAt: string
+  endAt?: string
+  reminderMinutesBefore: number
+  recurrence: Recurrence
+  notes: string
+  originalMessage?: string
+}
+
 export type ParseMessageSuccess = {
   ok: true
   data: ParsedSchedulePayload

@@ -1,4 +1,10 @@
-import { normalizeDraft } from '../schedule-normalizer'
+import { Recurrence } from '../../constants'
+import type { Schedule, ScheduleDraft } from '../../types'
+import {
+  draftToPayload,
+  normalizeDraft,
+  scheduleToDraft,
+} from '../schedule-normalizer'
 
 describe('normalizeDraft', () => {
   it('maps parsed payload fields into a schedule draft', () => {
@@ -62,5 +68,62 @@ describe('normalizeDraft', () => {
 
     expect(result.confidence).toBe(0.3)
     expect(result.missingFields).toContain('startAt')
+  })
+})
+
+describe('scheduleToDraft', () => {
+  it('converts a Schedule to ScheduleDraft', () => {
+    const schedule: Schedule = {
+      id: 'sched-1',
+      title: '开会',
+      startAt: '2026-03-20T10:00:00Z',
+      endAt: '2026-03-20T11:00:00Z',
+      reminderMinutesBefore: 15,
+      recurrence: Recurrence.WEEKLY,
+      notes: '带资料',
+      originalMessage: '每周三开会',
+      createdAt: '2026-03-19T00:00:00Z',
+      updatedAt: '2026-03-19T00:00:00Z',
+    }
+    const draft = scheduleToDraft(schedule)
+    expect(draft).toEqual({
+      title: '开会',
+      startAt: '2026-03-20T10:00:00Z',
+      endAt: '2026-03-20T11:00:00Z',
+      reminderMinutesBefore: 15,
+      recurrence: Recurrence.WEEKLY,
+      notes: '带资料',
+      originalMessage: '每周三开会',
+      confidence: 1,
+      missingFields: [],
+    })
+  })
+})
+
+describe('draftToPayload', () => {
+  it('converts a ScheduleDraft to SchedulePayload', () => {
+    const draft: ScheduleDraft = {
+      title: '开会',
+      startAt: '2026-03-20T10:00:00Z',
+      endAt: '2026-03-20T11:00:00Z',
+      reminderMinutesBefore: 15,
+      recurrence: Recurrence.WEEKLY,
+      notes: '带资料',
+      originalMessage: '每周三开会',
+      confidence: 0.9,
+      missingFields: [],
+    }
+    const payload = draftToPayload(draft)
+    expect(payload).toEqual({
+      title: '开会',
+      startAt: '2026-03-20T10:00:00Z',
+      endAt: '2026-03-20T11:00:00Z',
+      reminderMinutesBefore: 15,
+      recurrence: 'WEEKLY',
+      notes: '带资料',
+      originalMessage: '每周三开会',
+    })
+    expect(payload).not.toHaveProperty('confidence')
+    expect(payload).not.toHaveProperty('missingFields')
   })
 })

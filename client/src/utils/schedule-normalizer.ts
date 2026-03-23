@@ -1,5 +1,10 @@
 import { Recurrence } from '../constants'
-import type { ParsedSchedulePayload, ScheduleDraft } from '../types'
+import type {
+  ParsedSchedulePayload,
+  Schedule,
+  ScheduleDraft,
+  SchedulePayload,
+} from '../types'
 
 function toRecurrence(value?: string): Recurrence {
   if (
@@ -33,5 +38,31 @@ export function normalizeDraft(
       ...(title ? [] : ['title' as const]),
       ...(startAt ? [] : ['startAt' as const]),
     ],
+  }
+}
+
+export function scheduleToDraft(schedule: Schedule): ScheduleDraft {
+  return {
+    title: schedule.title,
+    startAt: schedule.startAt,
+    endAt: schedule.endAt,
+    reminderMinutesBefore: schedule.reminderMinutesBefore,
+    recurrence: schedule.recurrence,
+    notes: schedule.notes,
+    originalMessage: schedule.originalMessage,
+    confidence: 1,
+    missingFields: [],
+  }
+}
+
+export function draftToPayload(draft: ScheduleDraft): SchedulePayload {
+  return {
+    title: draft.title,
+    startAt: draft.startAt,
+    endAt: draft.endAt,
+    reminderMinutesBefore: draft.reminderMinutesBefore,
+    recurrence: draft.recurrence,
+    notes: draft.notes,
+    originalMessage: draft.originalMessage,
   }
 }

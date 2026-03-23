@@ -12,5 +12,6 @@ export type {
   Recurrence,
   Schedule,
   ScheduleDraft,
+  SchedulePayload,
   ValidationResult,
 } from './schedule'
