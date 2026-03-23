@@ -1,8 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import { Stack, useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
-import { Alert, Platform } from 'react-native'
+import { useCallback, useMemo, useState } from 'react'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
 import { PillButton } from '@/components/pill-button'
@@ -13,14 +12,12 @@ import {
   ACCENT_COLOR,
   ACCENT_COLOR_PRESSED,
   PAGE_BACKGROUND,
+  Recurrence,
   ScheduleTab,
 } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { useDeviceId } from '@/hooks/useDeviceId'
-import {
-  deleteSchedule as apiDeleteSchedule,
-  listSchedules as apiListSchedules,
-} from '@/services'
+import { listSchedules as apiListSchedules } from '@/services'
 import type { Schedule } from '@/types'
 
 function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
@@ -29,11 +26,11 @@ function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
   if (start.isAfter(target, 'day')) return false
 
   switch (schedule.recurrence) {
-    case 'DAILY':
+    case Recurrence.DAILY:
       return true
-    case 'WEEKLY':
+    case Recurrence.WEEKLY:
       return start.day() === target.day()
-    case 'MONTHLY':
+    case Recurrence.MONTHLY:
       return start.date() === target.date()
     default:
       return false
@@ -76,7 +73,10 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
     { key: ScheduleTab.ALL, label: t('schedule.tabAll') },
   ]
 
-  const filteredItems = filterSchedules(items, activeTab)
+  const filteredItems = useMemo(
+    () => filterSchedules(items, activeTab),
+    [items, activeTab],
+  )
 
   useFocusEffect(
     useCallback(() => {
@@ -106,47 +106,11 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
     }, [schedules, t, deviceId]),
   )
 
-  const performDelete = useCallback(
-    async (schedule: Schedule) => {
-      try {
-        await apiDeleteSchedule(schedule.id)
-        setItems((prev) => prev.filter((item) => item.id !== schedule.id))
-      } catch {
-        if (Platform.OS === 'web') {
-          window.alert(t('messages.deleteFailed'))
-        } else {
-          Alert.alert(t('messages.error'), t('messages.deleteFailed'))
-        }
-      }
-    },
-    [t],
-  )
-
   const handlePress = useCallback(
     (schedule: Schedule) => {
       router.push(`/schedule/${schedule.id}`)
     },
     [router],
-  )
-
-  const _handleDelete = useCallback(
-    (schedule: Schedule) => {
-      if (Platform.OS === 'web') {
-        if (window.confirm(t('schedule.deleteConfirm'))) {
-          performDelete(schedule)
-        }
-      } else {
-        Alert.alert(t('schedule.delete'), t('schedule.deleteConfirm'), [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('common.delete'),
-            style: 'destructive',
-            onPress: () => performDelete(schedule),
-          },
-        ])
-      }
-    },
-    [t, performDelete],
   )
 
   return (

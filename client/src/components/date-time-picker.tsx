@@ -7,6 +7,7 @@ import {
   formatDatePart,
   formatTimePart,
   toDatetimeLocalValue,
+  toIntlLocale,
 } from '../lib/date-format'
 
 type DateTimePickerFieldProps = {
@@ -80,8 +81,7 @@ function NativeDateTimePicker({
   const [mode, setMode] = useState<'date' | 'time'>('date')
   const [tempDate, setTempDate] = useState(value)
 
-  const intlLocale =
-    locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
+  const intlLocale = toIntlLocale(locale ?? 'en')
 
   const openPicker = () => {
     if (disabled) return

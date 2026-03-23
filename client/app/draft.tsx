@@ -5,7 +5,12 @@ import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
+import {
+  DEVICE_ID_KEY,
+  PAGE_BACKGROUND,
+  PENDING_DRAFT_KEY,
+  Recurrence,
+} from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { createSchedule, parseMessage } from '@/services'
 import type { ParsedSchedulePayload, Schedule, ScheduleDraft } from '@/types'
@@ -55,7 +60,7 @@ export default function DraftScreen({
   }, [initialDraft])
 
   async function handleCreateSchedule(scheduleDraft: ScheduleDraft) {
-    const deviceId = await AsyncStorage.getItem('deviceId')
+    const deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY)
     if (!deviceId) throw new Error('Device not registered')
 
     const result = await createSchedule({
@@ -74,7 +79,7 @@ export default function DraftScreen({
 
   async function handleReparse() {
     if (!draft.originalMessage) return
-    const deviceId = await AsyncStorage.getItem('deviceId')
+    const deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY)
     if (!deviceId) return
 
     const data = (await parseMessage(

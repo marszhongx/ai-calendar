@@ -6,12 +6,10 @@ import { Stack } from 'expo-router'
 import { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
-import { ACCENT_COLOR, PAGE_BACKGROUND } from '@/constants'
+import { ACCENT_COLOR, DEVICE_ID_KEY, PAGE_BACKGROUND } from '@/constants'
 import { LocaleProvider } from '@/context/LocaleContext'
 import { registerDevice } from '@/services'
 import config from '@/theme/tamagui.config'
-
-const DEVICE_ID_KEY = 'deviceId'
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {

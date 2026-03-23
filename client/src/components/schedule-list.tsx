@@ -2,7 +2,7 @@ import { FlatList, Pressable } from 'react-native'
 import { SizableText, YStack } from 'tamagui'
 import { CARD_COLORS, Recurrence, SECONDARY_TEXT } from '../constants'
 import { useLocale } from '../context/LocaleContext'
-import { formatDate, formatTime } from '../lib/date-format'
+import { formatDate, formatTime, toIntlLocale } from '../lib/date-format'
 import type { Schedule } from '../types'
 
 type ScheduleListProps = {
@@ -21,8 +21,7 @@ export function ScheduleList({
   onPress,
 }: ScheduleListProps) {
   const { t, locale } = useLocale()
-  const intlLocale =
-    locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
+  const intlLocale = toIntlLocale(locale)
 
   return (
     <FlatList

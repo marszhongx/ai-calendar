@@ -5,6 +5,7 @@ import { useLocale } from '../context/LocaleContext'
 import type { ScheduleDraft } from '../types'
 import { AccentButton } from './accent-button'
 import { DateTimePickerField } from './date-time-picker'
+import { ErrorBanner } from './error-banner'
 import { PillButton } from './pill-button'
 
 type ScheduleDraftFormProps = {
@@ -198,19 +199,7 @@ export function ScheduleDraftForm({
       />
 
       {errors.map((error) => (
-        <XStack
-          key={error}
-          backgroundColor="#FEF2F2"
-          borderRadius={12}
-          padding="$3"
-          alignItems="center"
-          gap="$2"
-        >
-          <SizableText size="$3">⚠️</SizableText>
-          <SizableText color="#DC2626" size="$3" flex={1}>
-            {error}
-          </SizableText>
-        </XStack>
+        <ErrorBanner key={error} message={error} />
       ))}
     </YStack>
   )

@@ -1,5 +1,6 @@
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:4399'
 const TIMEOUT_MS = 30_000
+const DEVICE_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 class ApiError extends Error {
   status: number
@@ -50,10 +51,9 @@ export function registerDevice(
 }
 
 export function parseMessage(message: string, deviceId: string) {
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   return request('/api/parse', {
     method: 'POST',
-    body: JSON.stringify({ message, deviceId, timezone }),
+    body: JSON.stringify({ message, deviceId, timezone: DEVICE_TIMEZONE }),
   })
 }
 

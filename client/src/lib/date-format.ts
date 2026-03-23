@@ -1,3 +1,7 @@
+export function toIntlLocale(locale: string): string {
+  return locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
+}
+
 export function formatDate(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)

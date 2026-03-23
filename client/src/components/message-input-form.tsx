@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { SizableText, Spinner, TextArea, XStack, YStack } from 'tamagui'
+import { Spinner, TextArea, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
 import { AccentButton } from './accent-button'
+import { ErrorBanner } from './error-banner'
 
 type MessageInputFormProps = {
   onSubmit(message: string): Promise<void>
@@ -53,20 +54,7 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
         disabled={submitting}
         icon={submitting ? <Spinner size="small" /> : undefined}
       />
-      {error ? (
-        <XStack
-          backgroundColor="#FEF2F2"
-          borderRadius={12}
-          padding="$3"
-          alignItems="center"
-          gap="$2"
-        >
-          <SizableText size="$3">⚠️</SizableText>
-          <SizableText color="#DC2626" size="$3" flex={1}>
-            {error}
-          </SizableText>
-        </XStack>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
     </YStack>
   )
 }
