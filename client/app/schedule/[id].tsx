@@ -8,33 +8,18 @@ import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
 import { PAGE_BACKGROUND } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { useDeviceId } from '@/hooks/useDeviceId'
 import {
   listSchedules as apiListSchedules,
   updateSchedule as apiUpdateSchedule,
 } from '@/services'
-import type { Schedule, ScheduleDraft } from '@/types'
+import type { ScheduleDraft } from '@/types'
+import { draftToPayload, scheduleToDraft } from '@/utils/schedule-normalizer'
 import { validateDraft } from '@/utils/schedule-validation'
-
-function scheduleToDraft(schedule: Schedule): ScheduleDraft {
-  return {
-    title: schedule.title,
-    startAt: schedule.startAt,
-    endAt: schedule.endAt,
-    reminderMinutesBefore: schedule.reminderMinutesBefore,
-    recurrence: schedule.recurrence,
-    notes: schedule.notes,
-    originalMessage: schedule.originalMessage,
-    confidence: 1,
-    missingFields: [],
-  }
-}
 
 export default function ScheduleDetailScreen() {
   const { t } = useLocale()
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { deviceId, loading: deviceLoading } = useDeviceId()
   const [draft, setDraft] = useState<ScheduleDraft | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -42,13 +27,11 @@ export default function ScheduleDetailScreen() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (!deviceId) return
-
     let cancelled = false
-    apiListSchedules(deviceId)
+    apiListSchedules()
       .then((schedules) => {
         if (cancelled) return
-        const found = (schedules as Schedule[]).find((s) => s.id === id)
+        const found = schedules.find((s) => s.id === id)
         if (!found) {
           setNotFound(true)
         } else {
@@ -65,7 +48,7 @@ export default function ScheduleDetailScreen() {
     return () => {
       cancelled = true
     }
-  }, [id, deviceId, t])
+  }, [id, t])
 
   const handleSubmit = useCallback(async () => {
     if (!draft) return
@@ -76,14 +59,8 @@ export default function ScheduleDetailScreen() {
 
     setSubmitting(true)
     try {
-      await apiUpdateSchedule(id, {
-        title: draft.title,
-        startAt: draft.startAt,
-        endAt: draft.endAt,
-        reminderMinutesBefore: draft.reminderMinutesBefore,
-        recurrence: draft.recurrence,
-        notes: draft.notes,
-      })
+      const { originalMessage, ...payload } = draftToPayload(draft)
+      await apiUpdateSchedule(id, payload)
       router.back()
     } catch {
       setErrors([t('messages.saveFailed')])
@@ -92,7 +69,7 @@ export default function ScheduleDetailScreen() {
     }
   }, [draft, id, router, t])
 
-  if (loading || deviceLoading) {
+  if (loading) {
     return (
       <>
         <Stack.Screen options={{ title: t('schedule.title') }} />

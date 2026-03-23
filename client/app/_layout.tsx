@@ -8,7 +8,7 @@ import { Platform } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
 import { ACCENT_COLOR, DEVICE_ID_KEY, PAGE_BACKGROUND } from '@/constants'
 import { LocaleProvider } from '@/context/LocaleContext'
-import { registerDevice } from '@/services'
+import { registerDevice, setDeviceId } from '@/services'
 import config from '@/theme/tamagui.config'
 
 function generateUUID() {
@@ -39,9 +39,10 @@ async function ensureDeviceRegistered() {
     if (deviceId !== stored) {
       await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId)
     }
+    setDeviceId(deviceId)
 
     if (Platform.OS === 'web' || !Constants.isDevice) {
-      await registerDevice(deviceId, null, Platform.OS)
+      await registerDevice(null, Platform.OS)
       return
     }
 
@@ -50,12 +51,12 @@ async function ensureDeviceRegistered() {
 
     const projectId = Constants.expoConfig?.extra?.eas?.projectId
     if (!projectId) {
-      await registerDevice(deviceId, null, Platform.OS)
+      await registerDevice(null, Platform.OS)
       return
     }
 
     const token = await Notifications.getExpoPushTokenAsync({ projectId })
-    await registerDevice(deviceId, token.data, Platform.OS)
+    await registerDevice(token.data, Platform.OS)
   } catch (error) {
     console.error('Device registration failed:', error)
   }

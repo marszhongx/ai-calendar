@@ -3,7 +3,7 @@ import { Stack, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { YStack } from 'tamagui'
 import { MessageInputForm } from '@/components/message-input-form'
-import { DEVICE_ID_KEY, PAGE_BACKGROUND, PENDING_DRAFT_KEY } from '@/constants'
+import { PAGE_BACKGROUND, PENDING_DRAFT_KEY } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { parseMessage } from '@/services'
 import type { ParsedSchedulePayload, ScheduleDraft } from '@/types'
@@ -33,10 +33,7 @@ function getErrorMessage(error: unknown, t: (key: string) => string) {
 }
 
 async function defaultSubmit(message: string) {
-  const deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY)
-  if (!deviceId) throw new Error('service_unavailable')
-
-  const data = (await parseMessage(message, deviceId)) as ParsedSchedulePayload
+  const data = (await parseMessage(message)) as ParsedSchedulePayload
   return normalizeDraft(data, message)
 }
 

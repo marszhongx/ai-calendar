@@ -5,16 +5,11 @@ import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import {
-  DEVICE_ID_KEY,
-  PAGE_BACKGROUND,
-  PENDING_DRAFT_KEY,
-  Recurrence,
-} from '@/constants'
+import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { createSchedule, parseMessage } from '@/services'
 import type { ParsedSchedulePayload, Schedule, ScheduleDraft } from '@/types'
-import { normalizeDraft } from '@/utils/schedule-normalizer'
+import { draftToPayload, normalizeDraft } from '@/utils/schedule-normalizer'
 import { validateDraft } from '@/utils/schedule-validation'
 
 const fallbackDraft: ScheduleDraft = {
@@ -69,31 +64,14 @@ export default function DraftScreen({
   }, [initialDraft])
 
   async function handleCreateSchedule(scheduleDraft: ScheduleDraft) {
-    const deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY)
-    if (!deviceId) throw new Error('Device not registered')
-
-    const result = await createSchedule({
-      deviceId,
-      title: scheduleDraft.title,
-      startAt: scheduleDraft.startAt,
-      endAt: scheduleDraft.endAt,
-      reminderMinutesBefore: scheduleDraft.reminderMinutesBefore,
-      recurrence: scheduleDraft.recurrence,
-      notes: scheduleDraft.notes,
-      originalMessage: scheduleDraft.originalMessage,
-    })
-
-    return result as unknown as Schedule
+    return createSchedule(draftToPayload(scheduleDraft))
   }
 
   async function handleReparse() {
     if (!draft.originalMessage) return
-    const deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY)
-    if (!deviceId) return
 
     const data = (await parseMessage(
       draft.originalMessage,
-      deviceId,
     )) as ParsedSchedulePayload
     setDraft(normalizeDraft(data, draft.originalMessage))
     setErrors([])

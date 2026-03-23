@@ -16,7 +16,6 @@ import {
   ScheduleTab,
 } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { useDeviceId } from '@/hooks/useDeviceId'
 import { listSchedules as apiListSchedules } from '@/services'
 import type { Schedule } from '@/types'
 
@@ -65,7 +64,6 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<ScheduleTab>(ScheduleTab.TODAY)
-  const { deviceId } = useDeviceId()
 
   const TAB_LABELS = useMemo(
     () => [
@@ -84,15 +82,14 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   useFocusEffect(
     useCallback(() => {
       if (schedules) return
-      if (deviceId === null) return
 
       let cancelled = false
       setLoading(true)
 
-      apiListSchedules(deviceId)
+      apiListSchedules()
         .then((data) => {
           if (!cancelled && data) {
-            setItems(data as Schedule[])
+            setItems(data)
             setError('')
           }
         })
@@ -106,7 +103,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       return () => {
         cancelled = true
       }
-    }, [schedules, t, deviceId]),
+    }, [schedules, t]),
   )
 
   const handlePress = useCallback(
