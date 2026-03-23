@@ -9,10 +9,15 @@ import { POST } from './route'
 
 const mockParseMessage = vi.mocked(parseMessage)
 
+const deviceId = 'dev-1'
+
 function mockRequest(body: unknown) {
   return new Request('http://localhost/api/parse', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Device-Id': deviceId,
+    },
     body: JSON.stringify(body),
   })
 }
@@ -20,8 +25,18 @@ function mockRequest(body: unknown) {
 describe('POST /api/parse', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('returns 401 if X-Device-Id header is missing', async () => {
+    const req = new Request('http://localhost/api/parse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'test' }),
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(401)
+  })
+
   it('returns 400 if message is missing', async () => {
-    const res = await POST(mockRequest({ deviceId: 'xxx' }))
+    const res = await POST(mockRequest({}))
     expect(res.status).toBe(400)
   })
 
@@ -35,9 +50,7 @@ describe('POST /api/parse', () => {
       confidence: 0.95,
     })
 
-    const res = await POST(
-      mockRequest({ message: '明天十点开会', deviceId: 'dev-1' }),
-    )
+    const res = await POST(mockRequest({ message: '明天十点开会' }))
     const data = await res.json()
 
     expect(res.status).toBe(200)
@@ -47,7 +60,7 @@ describe('POST /api/parse', () => {
   it('returns 500 on AI failure', async () => {
     mockParseMessage.mockRejectedValue(new Error('AI error'))
 
-    const res = await POST(mockRequest({ message: 'test', deviceId: 'dev-1' }))
+    const res = await POST(mockRequest({ message: 'test' }))
     expect(res.status).toBe(500)
   })
 })

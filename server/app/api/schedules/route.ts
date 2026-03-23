@@ -1,14 +1,12 @@
 import { asc, eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { db, schema } from '@/lib/db'
+import { requireDeviceId } from '@/lib/device-id'
+import { isValidDate, isValidRecurrence, parseJsonBody } from '@/lib/validate'
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const deviceId = searchParams.get('deviceId')
-
-  if (!deviceId) {
-    return NextResponse.json({ error: 'Missing deviceId' }, { status: 400 })
-  }
+  const { deviceId, error: authError } = requireDeviceId(request)
+  if (authError) return authError
 
   const rows = await db
     .select()
@@ -20,9 +18,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  const { deviceId, error: authError } = requireDeviceId(request)
+  if (authError) return authError
+
+  const { data: body, error: parseError } = await parseJsonBody(request)
+  if (parseError) return parseError
+
   const {
-    deviceId,
     title,
     startAt,
     endAt,
@@ -30,11 +32,57 @@ export async function POST(request: Request) {
     recurrence,
     notes,
     originalMessage,
-  } = body
+  } = body as Record<string, unknown>
 
-  if (!deviceId || !title || !startAt) {
+  if (
+    !title ||
+    typeof title !== 'string' ||
+    !startAt ||
+    typeof startAt !== 'string'
+  ) {
     return NextResponse.json(
       { error: 'Missing required fields' },
+      { status: 400 },
+    )
+  }
+
+  if (title.length > 200) {
+    return NextResponse.json({ error: 'Title too long' }, { status: 400 })
+  }
+
+  if (typeof notes === 'string' && notes.length > 2000) {
+    return NextResponse.json({ error: 'Notes too long' }, { status: 400 })
+  }
+
+  if (!isValidDate(startAt)) {
+    return NextResponse.json({ error: 'Invalid startAt date' }, { status: 400 })
+  }
+
+  if (endAt && typeof endAt === 'string') {
+    if (!isValidDate(endAt)) {
+      return NextResponse.json({ error: 'Invalid endAt date' }, { status: 400 })
+    }
+    if (new Date(endAt) <= new Date(startAt)) {
+      return NextResponse.json(
+        { error: 'endAt must be after startAt' },
+        { status: 400 },
+      )
+    }
+  }
+
+  const reminder =
+    typeof reminderMinutesBefore === 'number' ? reminderMinutesBefore : 30
+  if (!Number.isInteger(reminder) || reminder < 0 || reminder > 1440) {
+    return NextResponse.json(
+      { error: 'reminderMinutesBefore must be 0-1440' },
+      { status: 400 },
+    )
+  }
+
+  const rec = typeof recurrence === 'string' ? recurrence : 'NONE'
+  if (!isValidRecurrence(rec)) {
+    return NextResponse.json(
+      { error: 'Invalid recurrence value' },
       { status: 400 },
     )
   }
@@ -45,11 +93,12 @@ export async function POST(request: Request) {
       deviceId,
       title,
       startAt: new Date(startAt),
-      endAt: endAt ? new Date(endAt) : null,
-      reminderMinutesBefore: reminderMinutesBefore || 30,
-      recurrence: recurrence || 'NONE',
-      notes: notes || '',
-      originalMessage: originalMessage || '',
+      endAt: endAt && typeof endAt === 'string' ? new Date(endAt) : null,
+      reminderMinutesBefore: reminder,
+      recurrence: rec,
+      notes: typeof notes === 'string' ? notes : '',
+      originalMessage:
+        typeof originalMessage === 'string' ? originalMessage : '',
     })
     .returning()
 

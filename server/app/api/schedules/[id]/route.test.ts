@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { mockReturning, mockDeleteWhere } = vi.hoisted(() => {
+const { mockReturning, mockDeleteReturning } = vi.hoisted(() => {
   const mockReturning = vi.fn().mockResolvedValue([])
-  const mockDeleteWhere = vi.fn().mockResolvedValue(undefined)
-  return { mockReturning, mockDeleteWhere }
+  const mockDeleteReturning = vi.fn().mockResolvedValue([])
+  return { mockReturning, mockDeleteReturning }
 })
 
 vi.mock('@/lib/db', () => ({
@@ -16,7 +16,9 @@ vi.mock('@/lib/db', () => ({
       }),
     }),
     delete: vi.fn().mockReturnValue({
-      where: mockDeleteWhere,
+      where: vi.fn().mockReturnValue({
+        returning: mockDeleteReturning,
+      }),
     }),
   },
   schema: { schedules: 'schedules' },
@@ -29,18 +31,42 @@ vi.mock('drizzle-orm', async (importOriginal) => {
 
 import { DELETE, PUT } from './route'
 
+const deviceId = 'dev-1'
 const params = Promise.resolve({ id: 'sched-1' })
 
 function mockPutRequest(body: unknown) {
   return new Request('http://localhost/api/schedules/sched-1', {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Device-Id': deviceId,
+    },
     body: JSON.stringify(body),
+  })
+}
+
+function mockDeleteRequest() {
+  return new Request('http://localhost/api/schedules/sched-1', {
+    method: 'DELETE',
+    headers: { 'X-Device-Id': deviceId },
   })
 }
 
 describe('PUT /api/schedules/[id]', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('returns 401 if X-Device-Id header is missing', async () => {
+    const req = new Request('http://localhost/api/schedules/sched-1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'test',
+        startAt: '2026-03-20T10:00:00+08:00',
+      }),
+    })
+    const res = await PUT(req, { params })
+    expect(res.status).toBe(401)
+  })
 
   it('returns 400 if title is missing', async () => {
     const res = await PUT(
@@ -56,7 +82,6 @@ describe('PUT /api/schedules/[id]', () => {
       mockPutRequest({
         title: '更新',
         startAt: '2026-03-20T10:00:00+08:00',
-
         reminderMinutesBefore: 15,
         recurrence: 'NONE',
         notes: '',
@@ -80,13 +105,25 @@ describe('PUT /api/schedules/[id]', () => {
 })
 
 describe('DELETE /api/schedules/[id]', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('returns 401 if X-Device-Id header is missing', async () => {
+    const req = new Request('http://localhost/api/schedules/sched-1', {
+      method: 'DELETE',
+    })
+    const res = await DELETE(req, { params })
+    expect(res.status).toBe(401)
+  })
+
   it('returns 200 on delete', async () => {
-    const res = await DELETE(
-      new Request('http://localhost/api/schedules/sched-1', {
-        method: 'DELETE',
-      }),
-      { params },
-    )
+    mockDeleteReturning.mockResolvedValueOnce([{ id: 'sched-1' }])
+    const res = await DELETE(mockDeleteRequest(), { params })
     expect(res.status).toBe(200)
+  })
+
+  it('returns 404 if schedule not found', async () => {
+    mockDeleteReturning.mockResolvedValueOnce([])
+    const res = await DELETE(mockDeleteRequest(), { params })
+    expect(res.status).toBe(404)
   })
 })
