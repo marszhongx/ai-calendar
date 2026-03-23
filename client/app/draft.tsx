@@ -3,6 +3,7 @@ import { Stack, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
+import { ErrorBanner } from '@/components/error-banner'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
 import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
@@ -118,6 +119,9 @@ export default function DraftScreen({
           padding="$4"
           gap="$3"
         >
+          {draft.confidence < 0.6 && (
+            <ErrorBanner message={t('validation.lowConfidence')} />
+          )}
           <ScheduleDraftForm
             draft={draft}
             errors={errors}

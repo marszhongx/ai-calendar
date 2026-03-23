@@ -79,31 +79,22 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
     [items, activeTab],
   )
 
+  const fetchSchedules = useCallback(() => {
+    setLoading(true)
+    setError('')
+    apiListSchedules()
+      .then((data) => {
+        if (data) setItems(data)
+      })
+      .catch(() => setError(t('messages.dataLoadFailed')))
+      .finally(() => setLoading(false))
+  }, [t])
+
   useFocusEffect(
     useCallback(() => {
       if (schedules) return
-
-      let cancelled = false
-      setLoading(true)
-
-      apiListSchedules()
-        .then((data) => {
-          if (!cancelled && data) {
-            setItems(data)
-            setError('')
-          }
-        })
-        .catch(() => {
-          if (!cancelled) setError(t('messages.dataLoadFailed'))
-        })
-        .finally(() => {
-          if (!cancelled) setLoading(false)
-        })
-
-      return () => {
-        cancelled = true
-      }
-    }, [schedules, t]),
+      fetchSchedules()
+    }, [schedules, fetchSchedules]),
   )
 
   const handlePress = useCallback(
@@ -135,7 +126,12 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         {loading ? (
           <SkeletonCard />
         ) : error ? (
-          <SizableText color="$red10">{error}</SizableText>
+          <YStack alignItems="center" gap="$3" paddingVertical="$6">
+            <SizableText color="$red10">{error}</SizableText>
+            <PillButton selected={false} onPress={fetchSchedules}>
+              {t('messages.retry')}
+            </PillButton>
+          </YStack>
         ) : filteredItems.length === 0 ? (
           activeTab === ScheduleTab.TODAY ? (
             <EmptyState

@@ -119,6 +119,22 @@ export function ScheduleDraftForm({
           disabled={disabled}
           locale={locale}
         />
+        <SizableText
+          size="$3"
+          color={LABEL_COLOR}
+          fontWeight="500"
+          marginTop="$2"
+        >
+          {t('schedule.endTime')}
+        </SizableText>
+        <DateTimePickerField
+          value={draft.endAt ?? ''}
+          onChange={(endAt) =>
+            onChange({ ...draft, endAt: endAt || undefined })
+          }
+          disabled={disabled}
+          locale={locale}
+        />
       </FormSection>
 
       {/* Recurrence */}
@@ -152,14 +168,15 @@ export function ScheduleDraftForm({
           <Input
             aria-label={t('schedule.remindMe')}
             value={String(draft.reminderMinutesBefore)}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
+              const num = Number(value)
               onChange({
                 ...draft,
-                reminderMinutesBefore: Number.isNaN(Number(value))
+                reminderMinutesBefore: Number.isNaN(num)
                   ? 0
-                  : Number(value),
+                  : Math.max(0, Math.min(1440, Math.trunc(num))),
               })
-            }
+            }}
             size="$3"
             borderWidth={0}
             backgroundColor="$backgroundHover"
