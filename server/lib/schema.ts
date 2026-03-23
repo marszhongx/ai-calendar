@@ -23,9 +23,7 @@ export const schedules = pgTable(
   'schedules',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    deviceId: uuid('device_id')
-      .notNull()
-      .references(() => devices.id),
+    deviceId: uuid('device_id').notNull(),
     title: text('title').notNull(),
     startAt: timestamp('start_at', { withTimezone: true }).notNull(),
     endAt: timestamp('end_at', { withTimezone: true }),
@@ -43,13 +41,5 @@ export const schedules = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [
-    index('idx_schedules_device_id').on(table.deviceId),
-    index('idx_schedules_reminder').on(
-      table.startAt,
-      table.reminderMinutesBefore,
-      table.recurrence,
-      table.reminderSentAt,
-    ),
-  ],
+  (table) => [index('idx_schedules_device_id').on(table.deviceId)],
 )

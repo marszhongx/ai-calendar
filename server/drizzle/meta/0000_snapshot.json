@@ -1,5 +1,5 @@
 {
-  "id": "fcb976f2-8f0e-43fd-9994-9993d2f2cc6f",
+  "id": "b9d92e10-a0d7-4615-9811-6db0f6954dda",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -148,56 +148,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "idx_schedules_reminder": {
-          "name": "idx_schedules_reminder",
-          "columns": [
-            {
-              "expression": "start_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "reminder_minutes_before",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "recurrence",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "reminder_sent_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
-      "foreignKeys": {
-        "schedules_device_id_devices_id_fk": {
-          "name": "schedules_device_id_devices_id_fk",
-          "tableFrom": "schedules",
-          "tableTo": "devices",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

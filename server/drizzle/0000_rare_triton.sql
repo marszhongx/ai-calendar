@@ -21,6 +21,4 @@ CREATE TABLE "schedules" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "schedules" ADD CONSTRAINT "schedules_device_id_devices_id_fk" FOREIGN KEY ("device_id") REFERENCES "public"."devices"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "idx_schedules_device_id" ON "schedules" USING btree ("device_id");--> statement-breakpoint
-CREATE INDEX "idx_schedules_reminder" ON "schedules" USING btree ("start_at","reminder_minutes_before","recurrence","reminder_sent_at");
+CREATE INDEX "idx_schedules_device_id" ON "schedules" USING btree ("device_id");

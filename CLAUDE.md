@@ -59,7 +59,7 @@ Monorepo (npm workspaces): cross-platform Expo client (`client/`) + Next.js back
   - `schedules/[id]/route.ts` — PUT (update), DELETE (delete)
   - `cron/send-reminders/route.ts` — POST: cron-triggered push notification sender
 - **Libs** (`server/lib/`): `db.ts` (Vercel Postgres), `ai.ts` (AI SDK / OpenAI-compatible), `expo-push.ts` (Expo Push SDK)
-- **Database**: Vercel Postgres (Neon), tables in `public` schema. Tables: `devices` (id, push_token, platform), `schedules` (id, device_id, title, start_at, end_at, timezone, reminder_minutes_before, recurrence, notes, reminder_sent_at).
+- **Database**: Vercel Postgres (Neon), tables in `public` schema. Tables: `devices` (id, push_token, platform), `schedules` (id, device_id, title, start_at, end_at, reminder_minutes_before, recurrence, notes, original_message, reminder_sent_at).
 - **Middleware** (`server/middleware.ts`): CORS handling for `/api/*` routes. Allows `localhost:4398` (dev) and `ALLOWED_ORIGIN` env var (production).
 - **Migration**: `cd server && npm run migrate` (drizzle-kit migrate) or `npm run db:push` (direct schema push)
 - **Scripts**: 独立脚本必须用 `.js` 编写，避免依赖 tsx 等 TypeScript 运行时。
@@ -84,6 +84,15 @@ Server cron (`/api/cron/send-reminders`) runs every minute. Queries schedules wh
 **Client**: Expo 55, React Native 0.83, React 19, Tamagui 2.0-rc, Expo Router, i18n-js, TypeScript 5.9, Jest 29 + jest-expo + Testing Library, Babel with Tamagui plugin.
 
 **Server**: Next.js 15, Vercel Postgres, ai SDK v6 + @ai-sdk/openai, Zod 4, expo-server-sdk, TypeScript 5.9, Vitest.
+
+## Database Conventions
+
+- **不使用外键约束**：表之间的关联通过应用层维护，schema 中不使用 `.references()`。
+- **主键**：UUID 类型，`devices` 由客户端生成，`schedules` 使用 `defaultRandom()`。
+- **索引**：为查询频繁的列手动添加索引（如 `device_id`、提醒查询组合索引）。
+- **时间戳**：统一使用 `timestamp with time zone`，`created_at` 和 `updated_at` 默认 `now()`。
+- **命名**：数据库列名 snake_case，Drizzle schema 字段 camelCase。
+- **迁移**：使用 `npm run db:generate` 生成，`npm run migrate` 执行。每次 schema 变更后重新生成迁移文件。
 
 ## Testing
 
