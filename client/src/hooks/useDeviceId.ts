@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useEffect, useState } from 'react'
 
 export function useDeviceId(): { deviceId: string | null; loading: boolean } {
   const [deviceId, setDeviceId] = useState<string | null>(null)

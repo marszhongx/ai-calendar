@@ -1,5 +1,10 @@
 import { Button, SizableText } from 'tamagui'
-import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, PILL_UNSELECTED_BG, SECONDARY_TEXT } from '../constants'
+import {
+  ACCENT_COLOR,
+  ACCENT_COLOR_PRESSED,
+  PILL_UNSELECTED_BG,
+  SECONDARY_TEXT,
+} from '../constants'
 
 type PillButtonProps = {
   selected: boolean
@@ -8,7 +13,12 @@ type PillButtonProps = {
   children: string
 }
 
-export function PillButton({ selected, onPress, disabled, children }: PillButtonProps) {
+export function PillButton({
+  selected,
+  onPress,
+  disabled,
+  children,
+}: PillButtonProps) {
   return (
     <Button
       size="$3"

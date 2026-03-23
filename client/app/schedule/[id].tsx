@@ -1,17 +1,20 @@
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { useLocale } from '@/context/LocaleContext'
+import { EmptyState } from '@/components/empty-state'
 
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { EmptyState } from '@/components/empty-state'
-import { listSchedules as apiListSchedules, updateSchedule as apiUpdateSchedule } from '@/services'
-import { validateDraft } from '@/utils/schedule-validation'
 import { PAGE_BACKGROUND } from '@/constants'
+import { useLocale } from '@/context/LocaleContext'
 import { useDeviceId } from '@/hooks/useDeviceId'
+import {
+  listSchedules as apiListSchedules,
+  updateSchedule as apiUpdateSchedule,
+} from '@/services'
 import type { Schedule, ScheduleDraft } from '@/types'
+import { validateDraft } from '@/utils/schedule-validation'
 
 function scheduleToDraft(schedule: Schedule): ScheduleDraft {
   return {
@@ -22,6 +25,7 @@ function scheduleToDraft(schedule: Schedule): ScheduleDraft {
     reminderMinutesBefore: schedule.reminderMinutesBefore,
     recurrence: schedule.recurrence,
     notes: schedule.notes,
+    originalMessage: schedule.originalMessage,
     confidence: 1,
     missingFields: [],
   }
@@ -97,7 +101,11 @@ export default function ScheduleDetailScreen() {
       <>
         <Stack.Screen options={{ title: t('schedule.title') }} />
         <YStack flex={1} backgroundColor={PAGE_BACKGROUND}>
-          <EmptyState icon="🔍" iconBg="#F3F4F6" title={t('schedule.notFound')} />
+          <EmptyState
+            icon="🔍"
+            iconBg="#F3F4F6"
+            title={t('schedule.notFound')}
+          />
         </YStack>
       </>
     )
@@ -107,7 +115,12 @@ export default function ScheduleDetailScreen() {
     <>
       <Stack.Screen options={{ title: draft?.title ?? t('schedule.title') }} />
       <ScrollView>
-        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4" gap="$3">
+        <YStack
+          flex={1}
+          backgroundColor={PAGE_BACKGROUND}
+          padding="$4"
+          gap="$3"
+        >
           {draft ? (
             <ScheduleDraftForm
               draft={draft}

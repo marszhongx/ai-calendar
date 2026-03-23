@@ -8,7 +8,12 @@ type EmptyStateProps = {
   subtitle?: string
 }
 
-export function EmptyState({ icon, iconBg = '#F3F4F6', title, subtitle }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  iconBg = '#F3F4F6',
+  title,
+  subtitle,
+}: EmptyStateProps) {
   return (
     <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
       <YStack
@@ -25,7 +30,12 @@ export function EmptyState({ icon, iconBg = '#F3F4F6', title, subtitle }: EmptyS
         {title}
       </SizableText>
       {subtitle ? (
-        <SizableText size="$3" color={LABEL_COLOR} marginTop="$1" textAlign="center">
+        <SizableText
+          size="$3"
+          color={LABEL_COLOR}
+          marginTop="$1"
+          textAlign="center"
+        >
           {subtitle}
         </SizableText>
       ) : null}

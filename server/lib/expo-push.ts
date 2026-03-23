@@ -1,16 +1,16 @@
-import { Expo, type ExpoPushMessage } from 'expo-server-sdk';
+import { Expo, type ExpoPushMessage } from 'expo-server-sdk'
 
-const expo = new Expo();
+const expo = new Expo()
 
 export async function sendPushNotifications(
-  messages: ExpoPushMessage[]
+  messages: ExpoPushMessage[],
 ): Promise<void> {
-  const chunks = expo.chunkPushNotifications(messages);
+  const chunks = expo.chunkPushNotifications(messages)
   for (const chunk of chunks) {
     try {
-      await expo.sendPushNotificationsAsync(chunk);
+      await expo.sendPushNotificationsAsync(chunk)
     } catch (error) {
-      console.error('Push send error:', error);
+      console.error('Push send error:', error)
     }
   }
 }

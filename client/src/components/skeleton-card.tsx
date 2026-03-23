@@ -6,7 +6,15 @@ type SkeletonCardProps = {
   count?: number
 }
 
-function SkeletonLine({ width, height, delay }: { width: DimensionValue; height: number; delay: number }) {
+function SkeletonLine({
+  width,
+  height,
+  delay,
+}: {
+  width: DimensionValue
+  height: number
+  delay: number
+}) {
   const opacity = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
@@ -47,6 +55,7 @@ export function SkeletonCard({ count = 3 }: SkeletonCardProps) {
     <YStack gap="$2.5">
       {Array.from({ length: count }, (_, i) => (
         <YStack
+          // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders
           key={i}
           backgroundColor="#F3F4F6"
           borderRadius={16}

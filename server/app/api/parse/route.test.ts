@@ -1,29 +1,29 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/ai', () => ({
   parseMessage: vi.fn(),
-}));
+}))
 
-import { POST } from './route';
-import { parseMessage } from '@/lib/ai';
+import { parseMessage } from '@/lib/ai'
+import { POST } from './route'
 
-const mockParseMessage = vi.mocked(parseMessage);
+const mockParseMessage = vi.mocked(parseMessage)
 
 function mockRequest(body: unknown) {
   return new Request('http://localhost/api/parse', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-  });
+  })
 }
 
 describe('POST /api/parse', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks())
 
   it('returns 400 if message is missing', async () => {
-    const res = await POST(mockRequest({ deviceId: 'xxx' }));
-    expect(res.status).toBe(400);
-  });
+    const res = await POST(mockRequest({ deviceId: 'xxx' }))
+    expect(res.status).toBe(400)
+  })
 
   it('returns parsed schedule on success', async () => {
     mockParseMessage.mockResolvedValue({
@@ -33,19 +33,21 @@ describe('POST /api/parse', () => {
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       confidence: 0.95,
-    });
+    })
 
-    const res = await POST(mockRequest({ message: '明天十点开会', deviceId: 'dev-1' }));
-    const data = await res.json();
+    const res = await POST(
+      mockRequest({ message: '明天十点开会', deviceId: 'dev-1' }),
+    )
+    const data = await res.json()
 
-    expect(res.status).toBe(200);
-    expect(data.title).toBe('开会');
-  });
+    expect(res.status).toBe(200)
+    expect(data.title).toBe('开会')
+  })
 
   it('returns 500 on AI failure', async () => {
-    mockParseMessage.mockRejectedValue(new Error('AI error'));
+    mockParseMessage.mockRejectedValue(new Error('AI error'))
 
-    const res = await POST(mockRequest({ message: 'test', deviceId: 'dev-1' }));
-    expect(res.status).toBe(500);
-  });
-});
+    const res = await POST(mockRequest({ message: 'test', deviceId: 'dev-1' }))
+    expect(res.status).toBe(500)
+  })
+})

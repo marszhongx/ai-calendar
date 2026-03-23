@@ -54,9 +54,17 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
         icon={submitting ? <Spinner size="small" /> : undefined}
       />
       {error ? (
-        <XStack backgroundColor="#FEF2F2" borderRadius={12} padding="$3" alignItems="center" gap="$2">
+        <XStack
+          backgroundColor="#FEF2F2"
+          borderRadius={12}
+          padding="$3"
+          alignItems="center"
+          gap="$2"
+        >
           <SizableText size="$3">⚠️</SizableText>
-          <SizableText color="#DC2626" size="$3" flex={1}>{error}</SizableText>
+          <SizableText color="#DC2626" size="$3" flex={1}>
+            {error}
+          </SizableText>
         </XStack>
       ) : null}
     </YStack>

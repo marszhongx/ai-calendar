@@ -1,41 +1,46 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { TamaguiProvider } from 'tamagui';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import config from '@/theme/tamagui.config';
-import { LocaleProvider } from '@/context/LocaleContext';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native'
+import { TamaguiProvider } from 'tamagui'
+import { LocaleProvider } from '@/context/LocaleContext'
+import config from '@/theme/tamagui.config'
 
-const mockRouterPush = (globalThis as Record<string, unknown>).__mockRouterPush as jest.Mock;
-const mockRouterDismissAll = (globalThis as Record<string, unknown>).__mockRouterDismissAll as jest.Mock;
+const mockRouterPush = (globalThis as Record<string, unknown>)
+  .__mockRouterPush as jest.Mock
+const mockRouterDismissAll = (globalThis as Record<string, unknown>)
+  .__mockRouterDismissAll as jest.Mock
 
-import dayjs from 'dayjs';
-import { Recurrence } from '@/constants';
-import DraftScreen from '../draft';
-import NewScheduleScreen from '../new';
-import IndexScreen from '../index';
-import type { ScheduleDraft } from '@/types';
-import { ScheduleList } from '@/components/schedule-list';
+import dayjs from 'dayjs'
+import { ScheduleList } from '@/components/schedule-list'
+import { Recurrence } from '@/constants'
+import type { ScheduleDraft } from '@/types'
+import DraftScreen from '../draft'
+import IndexScreen from '../index'
+import NewScheduleScreen from '../new'
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(
     <TamaguiProvider config={config} defaultTheme="light">
-      <LocaleProvider>
-        {ui}
-      </LocaleProvider>
-    </TamaguiProvider>
-  );
+      <LocaleProvider>{ui}</LocaleProvider>
+    </TamaguiProvider>,
+  )
 }
 
 describe('page navigation flow', () => {
   beforeEach(() => {
-    mockRouterPush.mockClear();
-    mockRouterDismissAll.mockClear();
-  });
+    mockRouterPush.mockClear()
+    mockRouterDismissAll.mockClear()
+  })
 
   it('renders the new schedule screen with input form', () => {
-    renderWithProviders(<NewScheduleScreen />);
+    renderWithProviders(<NewScheduleScreen />)
 
-    expect(screen.getByLabelText('Enter your schedule...')).toBeOnTheScreen();
-  });
+    expect(screen.getByLabelText('Enter your schedule...')).toBeOnTheScreen()
+  })
 
   it('renders the draft screen', () => {
     renderWithProviders(
@@ -47,70 +52,85 @@ describe('page navigation flow', () => {
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
+          originalMessage: '',
           confidence: 0.5,
           missingFields: [],
         }}
-      />
-    );
+      />,
+    )
 
-    expect(screen.getByText('Create Schedule')).toBeOnTheScreen();
-  });
+    expect(screen.getByText('Create Schedule')).toBeOnTheScreen()
+  })
 
   it('renders the home screen with schedule list', async () => {
-    renderWithProviders(<IndexScreen schedules={[]} />);
+    renderWithProviders(<IndexScreen schedules={[]} />)
 
     await waitFor(() => {
-      expect(screen.getByText('No schedules today')).toBeOnTheScreen();
-    });
-  });
+      expect(screen.getByText('No schedules today')).toBeOnTheScreen()
+    })
+  })
 
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {
-    const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'));
-    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
+    const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'))
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '这是一条无法解析的消息');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '这是一条无法解析的消息',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith('这是一条无法解析的消息');
-    });
+      expect(onSubmit).toHaveBeenCalledWith('这是一条无法解析的消息')
+    })
 
-    expect(screen.getByText('Operation failed')).toBeOnTheScreen();
-    expect(screen.queryByText('Draft saved')).not.toBeOnTheScreen();
-  });
+    expect(screen.getByText('Operation failed')).toBeOnTheScreen()
+    expect(screen.queryByText('Draft saved')).not.toBeOnTheScreen()
+  })
 
   it('shows the service unavailable message for service_unavailable errors', async () => {
-    const onSubmit = jest.fn().mockRejectedValue(new Error('service_unavailable'));
-    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
+    const onSubmit = jest
+      .fn()
+      .mockRejectedValue(new Error('service_unavailable'))
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '服务暂不可用');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '服务暂不可用',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(await screen.findByText('Server error')).toBeOnTheScreen();
-  });
+    expect(await screen.findByText('Server error')).toBeOnTheScreen()
+  })
 
   it('shows the empty response message for empty_response errors', async () => {
-    const onSubmit = jest.fn().mockRejectedValue(new Error('empty_response'));
-    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
+    const onSubmit = jest.fn().mockRejectedValue(new Error('empty_response'))
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '返回为空');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '返回为空',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(await screen.findByText('Data loading failed')).toBeOnTheScreen();
-  });
+    expect(await screen.findByText('Data loading failed')).toBeOnTheScreen()
+  })
 
   it('shows the invalid format message for invalid_format errors', async () => {
-    const onSubmit = jest.fn().mockRejectedValue(new Error('invalid_format'));
-    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
+    const onSubmit = jest.fn().mockRejectedValue(new Error('invalid_format'))
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '格式异常');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '格式异常',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(await screen.findByText('Data validation error')).toBeOnTheScreen();
-  });
+    expect(await screen.findByText('Data validation error')).toBeOnTheScreen()
+  })
 
   it('clears the old parse error after a successful retry and navigates to draft', async () => {
-    mockRouterPush.mockClear();
+    mockRouterPush.mockClear()
 
     const onSubmit = jest
       .fn()
@@ -122,30 +142,37 @@ describe('page navigation flow', () => {
         reminderMinutesBefore: 30,
         recurrence: Recurrence.NONE,
         notes: '',
+        originalMessage: '明天下午三点开需求评审会',
         confidence: 0.9,
         missingFields: [],
-      } satisfies ScheduleDraft);
-    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />);
+      } satisfies ScheduleDraft)
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '先失败一次');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '先失败一次',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(await screen.findByText('Operation failed')).toBeOnTheScreen();
+    expect(await screen.findByText('Operation failed')).toBeOnTheScreen()
 
-    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '明天下午三点开需求评审会');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(
+      screen.getByLabelText('Enter your schedule...'),
+      '明天下午三点开需求评审会',
+    )
+    fireEvent.press(screen.getByText('Create Schedule'))
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenNthCalledWith(2, '明天下午三点开需求评审会');
-    });
+      expect(onSubmit).toHaveBeenNthCalledWith(2, '明天下午三点开需求评审会')
+    })
 
-    expect(screen.queryByText('Operation failed')).not.toBeOnTheScreen();
+    expect(screen.queryByText('Operation failed')).not.toBeOnTheScreen()
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(
       'pending-draft',
       expect.stringContaining('需求评审会'),
-    );
-    expect(mockRouterPush).toHaveBeenCalledWith('/draft');
-  });
+    )
+    expect(mockRouterPush).toHaveBeenCalledWith('/draft')
+  })
 
   it('shows draft validation errors when required fields are missing', () => {
     renderWithProviders(
@@ -157,16 +184,17 @@ describe('page navigation flow', () => {
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
+          originalMessage: '',
           confidence: 0.4,
           missingFields: ['title', 'startAt'],
         }}
-      />
-    );
+      />,
+    )
 
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(screen.getByText('title is required')).toBeOnTheScreen();
-  });
+    expect(screen.getByText('title is required')).toBeOnTheScreen()
+  })
 
   it('calls dismissAll after creating a schedule', async () => {
     const onCreate = jest.fn().mockResolvedValue({
@@ -177,10 +205,11 @@ describe('page navigation flow', () => {
       reminderMinutesBefore: 10,
       recurrence: Recurrence.WEEKLY,
       notes: '带上原型',
+      originalMessage: '',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',
       updatedAt: '2026-03-16T09:00:00.000Z',
-    });
+    })
 
     renderWithProviders(
       <DraftScreen
@@ -192,16 +221,17 @@ describe('page navigation flow', () => {
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
+          originalMessage: '',
           confidence: 0.9,
           missingFields: [],
         }}
-      />
-    );
+      />,
+    )
 
-    fireEvent.changeText(screen.getByLabelText('Remind me'), '10');
-    fireEvent.press(screen.getByText('Weekly'));
-    fireEvent.changeText(screen.getByLabelText('Description'), '带上原型');
-    fireEvent.press(screen.getByText('Create Schedule'));
+    fireEvent.changeText(screen.getByLabelText('Remind me'), '10')
+    fireEvent.press(screen.getByText('Weekly'))
+    fireEvent.changeText(screen.getByLabelText('Description'), '带上原型')
+    fireEvent.press(screen.getByText('Create Schedule'))
 
     await waitFor(() => {
       expect(onCreate).toHaveBeenCalledWith(
@@ -210,16 +240,16 @@ describe('page navigation flow', () => {
           recurrence: Recurrence.WEEKLY,
           notes: '带上原型',
         }),
-      );
-    });
+      )
+    })
 
     await waitFor(() => {
-      expect(mockRouterDismissAll).toHaveBeenCalled();
-    });
-  });
+      expect(mockRouterDismissAll).toHaveBeenCalled()
+    })
+  })
 
   it('renders schedule card with time range when endAt exists', () => {
-    const now = dayjs().hour(12).minute(0).second(0);
+    const now = dayjs().hour(12).minute(0).second(0)
     renderWithProviders(
       <IndexScreen
         schedules={[
@@ -232,19 +262,20 @@ describe('page navigation flow', () => {
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
+            originalMessage: '',
             notificationId: 'n-1',
             createdAt: now.subtract(1, 'day').toISOString(),
             updatedAt: now.subtract(1, 'day').toISOString(),
           },
         ]}
-      />
-    );
+      />,
+    )
 
-    expect(screen.getByText('团队会议')).toBeOnTheScreen();
-  });
+    expect(screen.getByText('团队会议')).toBeOnTheScreen()
+  })
 
   it('hides notes when schedule notes is empty', () => {
-    const now = dayjs().hour(12).minute(0).second(0).toISOString();
+    const now = dayjs().hour(12).minute(0).second(0).toISOString()
     renderWithProviders(
       <IndexScreen
         schedules={[
@@ -256,39 +287,47 @@ describe('page navigation flow', () => {
             reminderMinutesBefore: 0,
             recurrence: Recurrence.NONE,
             notes: '',
+            originalMessage: '',
             notificationId: 'n-2',
             createdAt: now,
             updatedAt: now,
           },
         ]}
-      />
-    );
+      />,
+    )
 
-    expect(screen.getByText('空备注日程')).toBeOnTheScreen();
-    expect(screen.queryByTestId('schedule-notes-schedule-no-notes')).not.toBeOnTheScreen();
-  });
+    expect(screen.getByText('空备注日程')).toBeOnTheScreen()
+    expect(
+      screen.queryByTestId('schedule-notes-schedule-no-notes'),
+    ).not.toBeOnTheScreen()
+  })
 
   it('navigates to new schedule page when FAB is pressed', () => {
-    renderWithProviders(<IndexScreen schedules={[]} />);
+    renderWithProviders(<IndexScreen schedules={[]} />)
 
-    fireEvent.press(screen.getByText('+'));
+    fireEvent.press(screen.getByText('+'))
 
-    expect(mockRouterPush).toHaveBeenCalledWith('/new');
-  });
+    expect(mockRouterPush).toHaveBeenCalledWith('/new')
+  })
 
   it('renders tab controls with Today selected by default', async () => {
-    renderWithProviders(<IndexScreen schedules={[]} />);
+    renderWithProviders(<IndexScreen schedules={[]} />)
 
     await waitFor(() => {
-      expect(screen.getByText('Today')).toBeOnTheScreen();
-      expect(screen.getByText('Tomorrow')).toBeOnTheScreen();
-      expect(screen.getByText('All')).toBeOnTheScreen();
-    });
-  });
+      expect(screen.getByText('Today')).toBeOnTheScreen()
+      expect(screen.getByText('Tomorrow')).toBeOnTheScreen()
+      expect(screen.getByText('All')).toBeOnTheScreen()
+    })
+  })
 
   it('filters schedules by selected tab', async () => {
-    const today = dayjs().hour(12).minute(0).second(0).toISOString();
-    const tomorrow = dayjs().add(1, 'day').hour(12).minute(0).second(0).toISOString();
+    const today = dayjs().hour(12).minute(0).second(0).toISOString()
+    const tomorrow = dayjs()
+      .add(1, 'day')
+      .hour(12)
+      .minute(0)
+      .second(0)
+      .toISOString()
 
     renderWithProviders(
       <IndexScreen
@@ -301,6 +340,7 @@ describe('page navigation flow', () => {
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
+            originalMessage: '',
             createdAt: today,
             updatedAt: today,
           },
@@ -312,32 +352,33 @@ describe('page navigation flow', () => {
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
+            originalMessage: '',
             createdAt: today,
             updatedAt: today,
           },
         ]}
-      />
-    );
+      />,
+    )
 
     await waitFor(() => {
-      expect(screen.getByText('今日会议')).toBeOnTheScreen();
-    });
-    expect(screen.queryByText('明日会议')).not.toBeOnTheScreen();
+      expect(screen.getByText('今日会议')).toBeOnTheScreen()
+    })
+    expect(screen.queryByText('明日会议')).not.toBeOnTheScreen()
 
-    fireEvent.press(screen.getByText('Tomorrow'));
-
-    await waitFor(() => {
-      expect(screen.getByText('明日会议')).toBeOnTheScreen();
-    });
-    expect(screen.queryByText('今日会议')).not.toBeOnTheScreen();
-
-    fireEvent.press(screen.getByText('All'));
+    fireEvent.press(screen.getByText('Tomorrow'))
 
     await waitFor(() => {
-      expect(screen.getByText('今日会议')).toBeOnTheScreen();
-      expect(screen.getByText('明日会议')).toBeOnTheScreen();
-    });
-  });
+      expect(screen.getByText('明日会议')).toBeOnTheScreen()
+    })
+    expect(screen.queryByText('今日会议')).not.toBeOnTheScreen()
+
+    fireEvent.press(screen.getByText('All'))
+
+    await waitFor(() => {
+      expect(screen.getByText('今日会议')).toBeOnTheScreen()
+      expect(screen.getByText('明日会议')).toBeOnTheScreen()
+    })
+  })
 
   it('renders custom submit label when submitLabel prop is provided', () => {
     renderWithProviders(
@@ -349,20 +390,21 @@ describe('page navigation flow', () => {
           reminderMinutesBefore: 30,
           recurrence: Recurrence.NONE,
           notes: '',
+          originalMessage: '',
           confidence: 0.9,
           missingFields: [],
         }}
         submitLabel="Save"
-      />
-    );
+      />,
+    )
 
-    expect(screen.getByText('Save')).toBeOnTheScreen();
-    expect(screen.queryByText('Create Schedule')).not.toBeOnTheScreen();
-  });
+    expect(screen.getByText('Save')).toBeOnTheScreen()
+    expect(screen.queryByText('Create Schedule')).not.toBeOnTheScreen()
+  })
 
   it('calls onPress when a schedule card is tapped', () => {
-    const onPress = jest.fn();
-    const now = dayjs().hour(12).minute(0).second(0).toISOString();
+    const onPress = jest.fn()
+    const now = dayjs().hour(12).minute(0).second(0).toISOString()
     const schedule = {
       id: 's-tap',
       title: '可点击日程',
@@ -371,20 +413,21 @@ describe('page navigation flow', () => {
       reminderMinutesBefore: 10,
       recurrence: Recurrence.NONE,
       notes: '',
+      originalMessage: '',
       createdAt: now,
       updatedAt: now,
-    };
+    }
 
     renderWithProviders(
-      <ScheduleList schedules={[schedule]} onPress={onPress} />
-    );
+      <ScheduleList schedules={[schedule]} onPress={onPress} />,
+    )
 
-    fireEvent.press(screen.getByText('可点击日程'));
-    expect(onPress).toHaveBeenCalledWith(schedule);
-  });
+    fireEvent.press(screen.getByText('可点击日程'))
+    expect(onPress).toHaveBeenCalledWith(schedule)
+  })
 
   it('navigates to schedule detail when a schedule card is tapped', async () => {
-    const now = dayjs().hour(12).minute(0).second(0).toISOString();
+    const now = dayjs().hour(12).minute(0).second(0).toISOString()
     renderWithProviders(
       <IndexScreen
         schedules={[
@@ -396,34 +439,35 @@ describe('page navigation flow', () => {
             reminderMinutesBefore: 10,
             recurrence: Recurrence.NONE,
             notes: '',
+            originalMessage: '',
             createdAt: now,
             updatedAt: now,
           },
         ]}
-      />
-    );
+      />,
+    )
 
-    fireEvent.press(screen.getByText('点击查看详情'));
-    expect(mockRouterPush).toHaveBeenCalledWith('/schedule/s-detail');
-  });
+    fireEvent.press(screen.getByText('点击查看详情'))
+    expect(mockRouterPush).toHaveBeenCalledWith('/schedule/s-detail')
+  })
 
   it('shows tab-specific empty message when no schedules match', async () => {
-    renderWithProviders(<IndexScreen schedules={[]} />);
+    renderWithProviders(<IndexScreen schedules={[]} />)
 
     await waitFor(() => {
-      expect(screen.getByText('No schedules today')).toBeOnTheScreen();
-    });
+      expect(screen.getByText('No schedules today')).toBeOnTheScreen()
+    })
 
-    fireEvent.press(screen.getByText('Tomorrow'));
-
-    await waitFor(() => {
-      expect(screen.getByText('No schedules tomorrow')).toBeOnTheScreen();
-    });
-
-    fireEvent.press(screen.getByText('All'));
+    fireEvent.press(screen.getByText('Tomorrow'))
 
     await waitFor(() => {
-      expect(screen.getByText('No schedules yet')).toBeOnTheScreen();
-    });
-  });
-});
+      expect(screen.getByText('No schedules tomorrow')).toBeOnTheScreen()
+    })
+
+    fireEvent.press(screen.getByText('All'))
+
+    await waitFor(() => {
+      expect(screen.getByText('No schedules yet')).toBeOnTheScreen()
+    })
+  })
+})

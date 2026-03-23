@@ -15,8 +15,11 @@
     "test": "npm test -w client",
     "test:server": "npm test -w server",
     "test:all": "npm test -w client && npm test -w server",
-    "typecheck": "npm run typecheck -w client",
+    "typecheck": "npm run typecheck -w client && npm run typecheck -w server",
+    "typecheck:client": "npm run typecheck -w client",
     "typecheck:server": "npm run typecheck -w server",
-    "typecheck:all": "npm run typecheck -w client && npm run typecheck -w server"
+    "lint": "npm run lint -w client && npm run lint -w server",
+    "lint:client": "npm run lint -w client",
+    "lint:server": "npm run lint -w server"
   }
 }

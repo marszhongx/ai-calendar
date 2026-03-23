@@ -1,24 +1,24 @@
-import { useEffect } from 'react'
-import { Platform } from 'react-native'
-import { TamaguiProvider, Theme } from 'tamagui'
-import { Stack } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
 import Constants from 'expo-constants'
 import * as Notifications from 'expo-notifications'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Stack } from 'expo-router'
+import { useEffect } from 'react'
+import { Platform } from 'react-native'
+import { TamaguiProvider, Theme } from 'tamagui'
+import { ACCENT_COLOR, PAGE_BACKGROUND } from '@/constants'
 import { LocaleProvider } from '@/context/LocaleContext'
 import { registerDevice } from '@/services'
-import { ACCENT_COLOR, PAGE_BACKGROUND } from '@/constants'
 import config from '@/theme/tamagui.config'
 
 const DEVICE_ID_KEY = 'deviceId'
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 async function getHardwareDeviceId(): Promise<string | null> {
@@ -36,30 +36,30 @@ async function getHardwareDeviceId(): Promise<string | null> {
 async function ensureDeviceRegistered() {
   try {
     const hardwareId = await getHardwareDeviceId()
-    let deviceId = hardwareId || await AsyncStorage.getItem(DEVICE_ID_KEY);
+    let deviceId = hardwareId || (await AsyncStorage.getItem(DEVICE_ID_KEY))
     if (!deviceId) {
-      deviceId = generateUUID();
+      deviceId = generateUUID()
     }
-    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
+    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId)
 
     if (Platform.OS === 'web' || !Constants.isDevice) {
-      await registerDevice(deviceId, null, Platform.OS);
-      return;
+      await registerDevice(deviceId, null, Platform.OS)
+      return
     }
 
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') return;
+    const { status } = await Notifications.requestPermissionsAsync()
+    if (status !== 'granted') return
 
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId
     if (!projectId) {
-      await registerDevice(deviceId, null, Platform.OS);
-      return;
+      await registerDevice(deviceId, null, Platform.OS)
+      return
     }
 
-    const token = await Notifications.getExpoPushTokenAsync({ projectId });
-    await registerDevice(deviceId, token.data, Platform.OS);
+    const token = await Notifications.getExpoPushTokenAsync({ projectId })
+    await registerDevice(deviceId, token.data, Platform.OS)
   } catch (error) {
-    console.error('Device registration failed:', error);
+    console.error('Device registration failed:', error)
   }
 }
 
@@ -67,8 +67,8 @@ export default function RootLayout() {
   const theme = 'light'
 
   useEffect(() => {
-    ensureDeviceRegistered();
-  }, []);
+    ensureDeviceRegistered()
+  }, [])
 
   return (
     <TamaguiProvider config={config} defaultTheme={theme}>

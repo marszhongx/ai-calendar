@@ -1,7 +1,7 @@
 export function formatDate(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return isoString
+    if (Number.isNaN(date.getTime())) return isoString
     return new Intl.DateTimeFormat(locale, {
       month: 'short',
       day: 'numeric',
@@ -14,7 +14,7 @@ export function formatDate(isoString: string, locale?: string): string {
 export function formatTime(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
+    if (Number.isNaN(date.getTime())) return ''
     return new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
@@ -27,7 +27,7 @@ export function formatTime(isoString: string, locale?: string): string {
 export function formatDatePart(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return isoString
+    if (Number.isNaN(date.getTime())) return isoString
     return new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'short',
@@ -41,7 +41,7 @@ export function formatDatePart(isoString: string, locale?: string): string {
 export function formatTimePart(isoString: string, locale?: string): string {
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
+    if (Number.isNaN(date.getTime())) return ''
     return new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
@@ -54,7 +54,7 @@ export function formatTimePart(isoString: string, locale?: string): string {
 export function toDatetimeLocalValue(isoString: string): string {
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
+    if (Number.isNaN(date.getTime())) return ''
     const pad = (n: number) => String(n).padStart(2, '0')
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
   } catch {

@@ -1,11 +1,10 @@
 import { Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
-import { useLocale } from '../context/LocaleContext'
 import { LABEL_COLOR, Recurrence } from '../constants'
+import { useLocale } from '../context/LocaleContext'
+import type { ScheduleDraft } from '../types'
+import { AccentButton } from './accent-button'
 import { DateTimePickerField } from './date-time-picker'
 import { PillButton } from './pill-button'
-import { AccentButton } from './accent-button'
-
-import type { ScheduleDraft } from '../types'
 
 type ScheduleDraftFormProps = {
   draft: ScheduleDraft
@@ -32,7 +31,14 @@ function FormSection({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChange, onSubmit }: ScheduleDraftFormProps) {
+export function ScheduleDraftForm({
+  draft,
+  errors,
+  disabled,
+  submitLabel,
+  onChange,
+  onSubmit,
+}: ScheduleDraftFormProps) {
   const { t, locale } = useLocale()
 
   const recurrenceLabels: Record<string, string> = {
@@ -110,7 +116,9 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
             onChangeText={(value) =>
               onChange({
                 ...draft,
-                reminderMinutesBefore: Number.isNaN(Number(value)) ? 0 : Number(value),
+                reminderMinutesBefore: Number.isNaN(Number(value))
+                  ? 0
+                  : Number(value),
               })
             }
             size="$3"
@@ -148,12 +156,25 @@ export function ScheduleDraftForm({ draft, errors, disabled, submitLabel, onChan
       </FormSection>
 
       {/* Submit */}
-      <AccentButton label={submitLabel ?? t('schedule.create')} onPress={onSubmit} disabled={disabled} />
+      <AccentButton
+        label={submitLabel ?? t('schedule.create')}
+        onPress={onSubmit}
+        disabled={disabled}
+      />
 
       {errors.map((error) => (
-        <XStack key={error} backgroundColor="#FEF2F2" borderRadius={12} padding="$3" alignItems="center" gap="$2">
+        <XStack
+          key={error}
+          backgroundColor="#FEF2F2"
+          borderRadius={12}
+          padding="$3"
+          alignItems="center"
+          gap="$2"
+        >
           <SizableText size="$3">⚠️</SizableText>
-          <SizableText color="#DC2626" size="$3" flex={1}>{error}</SizableText>
+          <SizableText color="#DC2626" size="$3" flex={1}>
+            {error}
+          </SizableText>
         </XStack>
       ))}
     </YStack>

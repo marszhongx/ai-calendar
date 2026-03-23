@@ -13,9 +13,19 @@ npm run web            # Run on Web (React Native Web)
 npm test               # Run client tests (Jest)
 npm run test:server    # Run server tests (Vitest)
 npm run test:all       # Run all tests
-npm run typecheck      # Client TypeScript type check
-npm run typecheck:all  # All workspaces type check
+npm run typecheck         # All workspaces type check
+npm run typecheck:client  # Client TypeScript type check
+npm run typecheck:server  # Server TypeScript type check
+npm run lint              # Biome lint + format check (all workspaces)
+npm run lint:client       # Client only lint
+npm run lint:server       # Server only lint
 cd server && npm run migrate  # Run DB migration
+```
+
+完成代码修改后，必须同时通过 typecheck 和 lint 两项检查：
+
+```bash
+npm run typecheck && npm run lint
 ```
 
 ## Architecture

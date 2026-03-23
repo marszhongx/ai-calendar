@@ -1,6 +1,6 @@
-import { Recurrence } from '../../constants';
-import { validateDraft, validateSchedule } from '../schedule-validation';
-import type { Schedule, ScheduleDraft } from '../../types';
+import { Recurrence } from '../../constants'
+import type { Schedule, ScheduleDraft } from '../../types'
+import { validateDraft, validateSchedule } from '../schedule-validation'
 
 describe('validateDraft', () => {
   it('accepts a complete draft', () => {
@@ -12,12 +12,13 @@ describe('validateDraft', () => {
       reminderMinutesBefore: 30,
       recurrence: Recurrence.WEEKLY,
       notes: '准备原型',
+      originalMessage: '',
       confidence: 0.92,
       missingFields: [],
-    };
+    }
 
-    expect(validateDraft(draft)).toEqual({ valid: true, errors: [] });
-  });
+    expect(validateDraft(draft)).toEqual({ valid: true, errors: [] })
+  })
 
   it('rejects a draft without title', () => {
     const draft: ScheduleDraft = {
@@ -27,15 +28,16 @@ describe('validateDraft', () => {
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',
+      originalMessage: '',
       confidence: 0.8,
       missingFields: [],
-    };
+    }
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
       errors: ['title is required'],
-    });
-  });
+    })
+  })
 
   it('rejects a draft without start time', () => {
     const draft: ScheduleDraft = {
@@ -45,15 +47,16 @@ describe('validateDraft', () => {
       reminderMinutesBefore: 60,
       recurrence: Recurrence.NONE,
       notes: '',
+      originalMessage: '',
       confidence: 0.88,
       missingFields: ['startAt'],
-    };
+    }
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
       errors: ['startAt is required'],
-    });
-  });
+    })
+  })
 
   it('rejects a draft with invalid recurrence', () => {
     const draft = {
@@ -65,14 +68,14 @@ describe('validateDraft', () => {
       notes: '',
       confidence: 0.6,
       missingFields: [],
-    } as unknown as ScheduleDraft;
+    } as unknown as ScheduleDraft
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
       errors: ['recurrence must be one of NONE, DAILY, WEEKLY, MONTHLY'],
-    });
-  });
-});
+    })
+  })
+})
 
 describe('validateSchedule', () => {
   it('accepts a complete schedule', () => {
@@ -85,13 +88,14 @@ describe('validateSchedule', () => {
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',
+      originalMessage: '',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',
       updatedAt: '2026-03-16T09:00:00.000Z',
-    };
+    }
 
-    expect(validateSchedule(schedule)).toEqual({ valid: true, errors: [] });
-  });
+    expect(validateSchedule(schedule)).toEqual({ valid: true, errors: [] })
+  })
 
   it('rejects a schedule without id', () => {
     const schedule = {
@@ -102,14 +106,15 @@ describe('validateSchedule', () => {
       reminderMinutesBefore: 30,
       recurrence: Recurrence.NONE,
       notes: '',
+      originalMessage: '',
       notificationId: 'notification-1',
       createdAt: '2026-03-16T09:00:00.000Z',
       updatedAt: '2026-03-16T09:00:00.000Z',
-    } as Schedule;
+    } as Schedule
 
     expect(validateSchedule(schedule)).toEqual({
       valid: false,
       errors: ['id is required'],
-    });
-  });
-});
+    })
+  })
+})

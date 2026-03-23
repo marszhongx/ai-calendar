@@ -1,8 +1,8 @@
-import { db, schema } from '@/lib/db';
-import { sendPushNotifications } from '@/lib/expo-push';
-import { sql, isNotNull, isNull, eq, inArray, or, and } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
-import type { ExpoPushMessage } from 'expo-server-sdk';
+import { and, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm'
+import type { ExpoPushMessage } from 'expo-server-sdk'
+import { NextResponse } from 'next/server'
+import { db, schema } from '@/lib/db'
+import { sendPushNotifications } from '@/lib/expo-push'
 
 export async function POST() {
   const rows = await db
@@ -49,28 +49,30 @@ export async function POST() {
         ),
       ),
     )
-    .limit(100);
+    .limit(100)
 
   if (rows.length === 0) {
-    return NextResponse.json({ sent: 0 });
+    return NextResponse.json({ sent: 0 })
   }
 
   const messages: ExpoPushMessage[] = rows
-    .filter((row) => row.pushToken != null)
+    .filter(
+      (row): row is typeof row & { pushToken: string } => row.pushToken != null,
+    )
     .map((row) => ({
-      to: row.pushToken!,
+      to: row.pushToken,
       title: row.title,
       body: row.notes || 'You have an upcoming schedule',
       data: { scheduleId: row.id },
-    }));
+    }))
 
-  await sendPushNotifications(messages);
+  await sendPushNotifications(messages)
 
-  const ids = rows.map((r) => r.id);
+  const ids = rows.map((r) => r.id)
   await db
     .update(schema.schedules)
     .set({ reminderSentAt: new Date() })
-    .where(inArray(schema.schedules.id, ids));
+    .where(inArray(schema.schedules.id, ids))
 
-  return NextResponse.json({ sent: rows.length });
+  return NextResponse.json({ sent: rows.length })
 }

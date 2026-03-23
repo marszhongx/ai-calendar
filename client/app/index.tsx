@@ -1,18 +1,26 @@
+import { useFocusEffect } from '@react-navigation/native'
+import dayjs from 'dayjs'
+import { Stack, useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Alert, Platform } from 'react-native'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
-import { Stack, useRouter } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
-import dayjs from 'dayjs'
-import { useLocale } from '@/context/LocaleContext'
-import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, PAGE_BACKGROUND, ScheduleTab } from '@/constants'
+import { EmptyState } from '@/components/empty-state'
+import { PillButton } from '@/components/pill-button'
 
 import { ScheduleList } from '@/components/schedule-list'
-import { PillButton } from '@/components/pill-button'
-import { EmptyState } from '@/components/empty-state'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { listSchedules as apiListSchedules, deleteSchedule as apiDeleteSchedule } from '@/services'
+import {
+  ACCENT_COLOR,
+  ACCENT_COLOR_PRESSED,
+  PAGE_BACKGROUND,
+  ScheduleTab,
+} from '@/constants'
+import { useLocale } from '@/context/LocaleContext'
 import { useDeviceId } from '@/hooks/useDeviceId'
+import {
+  deleteSchedule as apiDeleteSchedule,
+  listSchedules as apiListSchedules,
+} from '@/services'
 import type { Schedule } from '@/types'
 
 function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
@@ -39,7 +47,9 @@ function timeOfDay(iso: string): number {
 
 function filterSchedules(schedules: Schedule[], tab: ScheduleTab): Schedule[] {
   if (tab === ScheduleTab.ALL) {
-    return [...schedules].sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf())
+    return [...schedules].sort(
+      (a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf(),
+    )
   }
   const target = tab === ScheduleTab.TODAY ? dayjs() : dayjs().add(1, 'day')
   return schedules
@@ -76,58 +86,68 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       let cancelled = false
       setLoading(true)
 
-      apiListSchedules(deviceId).then((data) => {
-        if (!cancelled && data) {
-          setItems(data as Schedule[])
-          setError('')
-        }
-      }).catch(() => {
-        if (!cancelled) setError(t('messages.dataLoadFailed'))
-      }).finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+      apiListSchedules(deviceId)
+        .then((data) => {
+          if (!cancelled && data) {
+            setItems(data as Schedule[])
+            setError('')
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setError(t('messages.dataLoadFailed'))
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
 
-      return () => { cancelled = true }
-    }, [schedules, t, deviceId])
+      return () => {
+        cancelled = true
+      }
+    }, [schedules, t, deviceId]),
   )
 
-  const performDelete = useCallback(async (schedule: Schedule) => {
-    try {
-      await apiDeleteSchedule(schedule.id)
-      setItems((prev) => prev.filter((item) => item.id !== schedule.id))
-    } catch {
+  const performDelete = useCallback(
+    async (schedule: Schedule) => {
+      try {
+        await apiDeleteSchedule(schedule.id)
+        setItems((prev) => prev.filter((item) => item.id !== schedule.id))
+      } catch {
+        if (Platform.OS === 'web') {
+          window.alert(t('messages.deleteFailed'))
+        } else {
+          Alert.alert(t('messages.error'), t('messages.deleteFailed'))
+        }
+      }
+    },
+    [t],
+  )
+
+  const handlePress = useCallback(
+    (schedule: Schedule) => {
+      router.push(`/schedule/${schedule.id}`)
+    },
+    [router],
+  )
+
+  const _handleDelete = useCallback(
+    (schedule: Schedule) => {
       if (Platform.OS === 'web') {
-        window.alert(t('messages.deleteFailed'))
+        if (window.confirm(t('schedule.deleteConfirm'))) {
+          performDelete(schedule)
+        }
       } else {
-        Alert.alert(t('messages.error'), t('messages.deleteFailed'))
-      }
-    }
-  }, [t])
-
-  const handlePress = useCallback((schedule: Schedule) => {
-    router.push(`/schedule/${schedule.id}`)
-  }, [router])
-
-  const handleDelete = useCallback((schedule: Schedule) => {
-    if (Platform.OS === 'web') {
-      if (window.confirm(t('schedule.deleteConfirm'))) {
-        performDelete(schedule)
-      }
-    } else {
-      Alert.alert(
-        t('schedule.delete'),
-        t('schedule.deleteConfirm'),
-        [
+        Alert.alert(t('schedule.delete'), t('schedule.deleteConfirm'), [
           { text: t('common.cancel'), style: 'cancel' },
           {
             text: t('common.delete'),
             style: 'destructive',
             onPress: () => performDelete(schedule),
           },
-        ],
-      )
-    }
-  }, [t, performDelete])
+        ])
+      }
+    },
+    [t, performDelete],
+  )
 
   return (
     <>
@@ -154,14 +174,33 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
           <SizableText color="$red10">{error}</SizableText>
         ) : filteredItems.length === 0 ? (
           activeTab === ScheduleTab.TODAY ? (
-            <EmptyState icon="☀️" iconBg="#FEF2F0" title={t('schedule.emptyToday')} subtitle={t('schedule.emptyTodayHint')} />
+            <EmptyState
+              icon="☀️"
+              iconBg="#FEF2F0"
+              title={t('schedule.emptyToday')}
+              subtitle={t('schedule.emptyTodayHint')}
+            />
           ) : activeTab === ScheduleTab.TOMORROW ? (
-            <EmptyState icon="🌙" iconBg="#EFF1FE" title={t('schedule.emptyTomorrow')} subtitle={t('schedule.emptyTomorrowHint')} />
+            <EmptyState
+              icon="🌙"
+              iconBg="#EFF1FE"
+              title={t('schedule.emptyTomorrow')}
+              subtitle={t('schedule.emptyTomorrowHint')}
+            />
           ) : (
-            <EmptyState icon="📋" iconBg="#F0F5F2" title={t('schedule.emptyList')} subtitle={t('schedule.emptyListHint')} />
+            <EmptyState
+              icon="📋"
+              iconBg="#F0F5F2"
+              title={t('schedule.emptyList')}
+              subtitle={t('schedule.emptyListHint')}
+            />
           )
         ) : (
-          <ScheduleList schedules={filteredItems} onPress={handlePress} showDate={activeTab === ScheduleTab.ALL} />
+          <ScheduleList
+            schedules={filteredItems}
+            onPress={handlePress}
+            showDate={activeTab === ScheduleTab.ALL}
+          />
         )}
       </YStack>
       <Button
@@ -176,7 +215,9 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         hoverStyle={{ backgroundColor: ACCENT_COLOR }}
         pressStyle={{ backgroundColor: ACCENT_COLOR_PRESSED }}
       >
-        <SizableText color="white" size="$8" fontWeight="bold" marginTop={-2}>+</SizableText>
+        <SizableText color="white" size="$8" fontWeight="bold" marginTop={-2}>
+          +
+        </SizableText>
       </Button>
     </>
   )

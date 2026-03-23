@@ -1,14 +1,13 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Stack, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { YStack } from 'tamagui'
-import { Stack, useRouter } from 'expo-router'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useLocale } from '@/context/LocaleContext'
-
 import { MessageInputForm } from '@/components/message-input-form'
-import { normalizeDraft } from '@/utils/schedule-normalizer'
-import { parseMessage } from '@/services'
 import { PAGE_BACKGROUND, PENDING_DRAFT_KEY } from '@/constants'
-import type { ScheduleDraft, ParsedSchedulePayload } from '@/types'
+import { useLocale } from '@/context/LocaleContext'
+import { parseMessage } from '@/services'
+import type { ParsedSchedulePayload, ScheduleDraft } from '@/types'
+import { normalizeDraft } from '@/utils/schedule-normalizer'
 
 type NewScheduleScreenProps = {
   onSubmit?(message: string): Promise<ScheduleDraft>
@@ -34,14 +33,16 @@ function getErrorMessage(error: unknown, t: (key: string) => string) {
 }
 
 async function defaultSubmit(message: string) {
-  const deviceId = await AsyncStorage.getItem('deviceId');
-  if (!deviceId) throw new Error('service_unavailable');
+  const deviceId = await AsyncStorage.getItem('deviceId')
+  if (!deviceId) throw new Error('service_unavailable')
 
-  const data = await parseMessage(message, deviceId) as ParsedSchedulePayload;
-  return normalizeDraft(data);
+  const data = (await parseMessage(message, deviceId)) as ParsedSchedulePayload
+  return normalizeDraft(data, message)
 }
 
-export default function NewScheduleScreen({ onSubmit = defaultSubmit }: NewScheduleScreenProps) {
+export default function NewScheduleScreen({
+  onSubmit = defaultSubmit,
+}: NewScheduleScreenProps) {
   const { t } = useLocale()
   const router = useRouter()
   const [error, setError] = useState('')

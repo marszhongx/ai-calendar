@@ -1,9 +1,13 @@
+import DateTimePicker from '@react-native-community/datetimepicker'
 import { useState } from 'react'
 import { Modal, Platform, Pressable } from 'react-native'
-import DateTimePicker from '@react-native-community/datetimepicker'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
-import { formatDatePart, formatTimePart, toDatetimeLocalValue } from '../lib/date-format'
+import {
+  formatDatePart,
+  formatTimePart,
+  toDatetimeLocalValue,
+} from '../lib/date-format'
 
 type DateTimePickerFieldProps = {
   value: string
@@ -12,9 +16,14 @@ type DateTimePickerFieldProps = {
   locale?: string
 }
 
-export function DateTimePickerField({ value, onChange, disabled, locale }: DateTimePickerFieldProps) {
+export function DateTimePickerField({
+  value,
+  onChange,
+  disabled,
+  locale,
+}: DateTimePickerFieldProps) {
   const dateValue = value ? new Date(value) : new Date()
-  const isValidDate = !isNaN(dateValue.getTime())
+  const isValidDate = !Number.isNaN(dateValue.getTime())
   const safeDate = isValidDate ? dateValue : new Date()
 
   if (Platform.OS === 'web') {
@@ -24,7 +33,7 @@ export function DateTimePickerField({ value, onChange, disabled, locale }: DateT
         value={toDatetimeLocalValue(value)}
         onChange={(e) => {
           const date = new Date(e.target.value)
-          if (!isNaN(date.getTime())) {
+          if (!Number.isNaN(date.getTime())) {
             onChange(date.toISOString())
           }
         }}
@@ -43,7 +52,14 @@ export function DateTimePickerField({ value, onChange, disabled, locale }: DateT
     )
   }
 
-  return <NativeDateTimePicker value={safeDate} onChange={onChange} disabled={disabled} locale={locale} />
+  return (
+    <NativeDateTimePicker
+      value={safeDate}
+      onChange={onChange}
+      disabled={disabled}
+      locale={locale}
+    />
+  )
 }
 
 type NativeDateTimePickerProps = {
@@ -53,13 +69,19 @@ type NativeDateTimePickerProps = {
   locale?: string
 }
 
-function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateTimePickerProps) {
+function NativeDateTimePicker({
+  value,
+  onChange,
+  disabled,
+  locale,
+}: NativeDateTimePickerProps) {
   const { t } = useLocale()
   const [show, setShow] = useState(false)
   const [mode, setMode] = useState<'date' | 'time'>('date')
   const [tempDate, setTempDate] = useState(value)
 
-  const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
+  const intlLocale =
+    locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
 
   const openPicker = () => {
     if (disabled) return
@@ -130,20 +152,39 @@ function NativeDateTimePicker({ value, onChange, disabled, locale }: NativeDateT
       {show && Platform.OS === 'ios' && (
         <Modal transparent animationType="slide">
           <Pressable
-            style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              justifyContent: 'flex-end',
+            }}
             onPress={handleIOSCancel}
           >
             <Pressable onPress={(e) => e.stopPropagation()}>
-              <YStack backgroundColor="$background" borderTopLeftRadius={16} borderTopRightRadius={16} paddingBottom="$6">
-                <XStack justifyContent="space-between" alignItems="center" padding="$3">
+              <YStack
+                backgroundColor="$background"
+                borderTopLeftRadius={16}
+                borderTopRightRadius={16}
+                paddingBottom="$6"
+              >
+                <XStack
+                  justifyContent="space-between"
+                  alignItems="center"
+                  padding="$3"
+                >
                   <Button chromeless size="$3" onPress={handleIOSCancel}>
-                    <Button.Text color="$color">{t('picker.cancel')}</Button.Text>
+                    <Button.Text color="$color">
+                      {t('picker.cancel')}
+                    </Button.Text>
                   </Button>
                   <SizableText size="$3" fontWeight="600">
-                    {mode === 'date' ? t('picker.selectDate') : t('picker.selectTime')}
+                    {mode === 'date'
+                      ? t('picker.selectDate')
+                      : t('picker.selectTime')}
                   </SizableText>
                   <Button chromeless size="$3" onPress={handleIOSConfirm}>
-                    <Button.Text color="$blue10">{mode === 'date' ? t('picker.next') : t('picker.confirm')}</Button.Text>
+                    <Button.Text color="$blue10">
+                      {mode === 'date' ? t('picker.next') : t('picker.confirm')}
+                    </Button.Text>
                   </Button>
                 </XStack>
                 <DateTimePicker

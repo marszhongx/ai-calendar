@@ -1,17 +1,20 @@
-import { Recurrence } from '../constants';
-import type { RepeatTrigger } from '../types';
+import { Recurrence } from '../constants'
+import type { RepeatTrigger } from '../types'
 
 export function subtractMinutes(isoString: string, minutes: number) {
-  return new Date(new Date(isoString).getTime() - minutes * 60 * 1000);
+  return new Date(new Date(isoString).getTime() - minutes * 60 * 1000)
 }
 
-export function getRepeatTrigger(recurrence: Recurrence, date: Date): RepeatTrigger | null {
+export function getRepeatTrigger(
+  recurrence: Recurrence,
+  date: Date,
+): RepeatTrigger | null {
   if (recurrence === Recurrence.DAILY) {
     return {
       type: 'daily',
       hour: date.getUTCHours(),
       minute: date.getUTCMinutes(),
-    };
+    }
   }
 
   if (recurrence === Recurrence.WEEKLY) {
@@ -20,7 +23,7 @@ export function getRepeatTrigger(recurrence: Recurrence, date: Date): RepeatTrig
       weekday: date.getUTCDay() + 1,
       hour: date.getUTCHours(),
       minute: date.getUTCMinutes(),
-    };
+    }
   }
 
   if (recurrence === Recurrence.MONTHLY) {
@@ -29,8 +32,8 @@ export function getRepeatTrigger(recurrence: Recurrence, date: Date): RepeatTrig
       day: date.getUTCDate(),
       hour: date.getUTCHours(),
       minute: date.getUTCMinutes(),
-    };
+    }
   }
 
-  return null;
+  return null
 }

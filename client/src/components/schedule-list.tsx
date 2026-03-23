@@ -1,7 +1,7 @@
 import { FlatList, Pressable } from 'react-native'
 import { SizableText, YStack } from 'tamagui'
+import { CARD_COLORS, Recurrence, SECONDARY_TEXT } from '../constants'
 import { useLocale } from '../context/LocaleContext'
-import { CARD_COLORS, SECONDARY_TEXT, Recurrence } from '../constants'
 import { formatDate, formatTime } from '../lib/date-format'
 import type { Schedule } from '../types'
 
@@ -15,9 +15,14 @@ function getCardColor(index: number): string {
   return CARD_COLORS[index % CARD_COLORS.length]
 }
 
-export function ScheduleList({ schedules, showDate, onPress }: ScheduleListProps) {
+export function ScheduleList({
+  schedules,
+  showDate,
+  onPress,
+}: ScheduleListProps) {
   const { t, locale } = useLocale()
-  const intlLocale = locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
+  const intlLocale =
+    locale === 'zh' ? 'zh-CN' : locale === 'zh-TW' ? 'zh-TW' : 'en-US'
 
   return (
     <FlatList
@@ -42,13 +47,19 @@ export function ScheduleList({ schedules, showDate, onPress }: ScheduleListProps
 
         // Recurrence (when not NONE)
         if (schedule.recurrence && schedule.recurrence !== Recurrence.NONE) {
-          const recurrenceKey = `schedule.${schedule.recurrence.toLowerCase()}` as const
+          const recurrenceKey =
+            `schedule.${schedule.recurrence.toLowerCase()}` as const
           metaParts.push(t(recurrenceKey))
         }
 
         // Reminder (when > 0)
-        if (schedule.reminderMinutesBefore && schedule.reminderMinutesBefore > 0) {
-          metaParts.push(`🔔 ${schedule.reminderMinutesBefore}${t('schedule.minutes')}`)
+        if (
+          schedule.reminderMinutesBefore &&
+          schedule.reminderMinutesBefore > 0
+        ) {
+          metaParts.push(
+            `🔔 ${schedule.reminderMinutesBefore}${t('schedule.minutes')}`,
+          )
         }
 
         return (
@@ -63,7 +74,12 @@ export function ScheduleList({ schedules, showDate, onPress }: ScheduleListProps
               <SizableText size="$4" fontWeight="600" numberOfLines={1}>
                 {schedule.title}
               </SizableText>
-              <SizableText size="$2" color={SECONDARY_TEXT} marginTop="$1" numberOfLines={1}>
+              <SizableText
+                size="$2"
+                color={SECONDARY_TEXT}
+                marginTop="$1"
+                numberOfLines={1}
+              >
                 {metaParts.join(' · ')}
               </SizableText>
             </YStack>
