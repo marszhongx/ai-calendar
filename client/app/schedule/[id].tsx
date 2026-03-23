@@ -54,7 +54,7 @@ export default function ScheduleDetailScreen() {
     if (!draft) return
 
     const result = validateDraft(draft)
-    setErrors(result.errors)
+    setErrors(result.errors.map((key) => t(key)))
     if (!result.valid) return
 
     setSubmitting(true)

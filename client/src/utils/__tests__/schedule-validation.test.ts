@@ -35,7 +35,7 @@ describe('validateDraft', () => {
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
-      errors: ['title is required'],
+      errors: ['validation.titleRequired'],
     })
   })
 
@@ -54,7 +54,7 @@ describe('validateDraft', () => {
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
-      errors: ['startAt is required'],
+      errors: ['validation.startAtRequired'],
     })
   })
 
@@ -72,7 +72,41 @@ describe('validateDraft', () => {
 
     expect(validateDraft(draft)).toEqual({
       valid: false,
-      errors: ['recurrence must be one of NONE, DAILY, WEEKLY, MONTHLY'],
+      errors: ['validation.invalidRecurrence'],
+    })
+  })
+
+  it('rejects negative reminder minutes', () => {
+    const draft: ScheduleDraft = {
+      title: '开会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      reminderMinutesBefore: -5,
+      recurrence: Recurrence.NONE,
+      notes: '',
+      originalMessage: '',
+      confidence: 0.8,
+      missingFields: [],
+    }
+    expect(validateDraft(draft)).toEqual({
+      valid: false,
+      errors: ['validation.reminderRange'],
+    })
+  })
+
+  it('rejects reminder over 1440', () => {
+    const draft: ScheduleDraft = {
+      title: '开会',
+      startAt: '2026-03-17T15:00:00.000Z',
+      reminderMinutesBefore: 1500,
+      recurrence: Recurrence.NONE,
+      notes: '',
+      originalMessage: '',
+      confidence: 0.8,
+      missingFields: [],
+    }
+    expect(validateDraft(draft)).toEqual({
+      valid: false,
+      errors: ['validation.reminderRange'],
     })
   })
 })

@@ -164,5 +164,12 @@
     "deleteFailed": "刪除失敗",
     "updateFailed": "更新失敗",
     "invalidUrl": "URL格式無效"
+  },
+  "validation": {
+    "titleRequired": "請輸入活動名稱",
+    "startAtRequired": "請選擇開始時間",
+    "invalidRecurrence": "重複方式無效",
+    "reminderRange": "提醒時間需在 0-1440 分鐘之間",
+    "lowConfidence": "AI 解析置信度較低，請仔細核對各欄位"
   }
 }

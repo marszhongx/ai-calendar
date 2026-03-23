@@ -192,7 +192,7 @@ describe('page navigation flow', () => {
 
     fireEvent.press(screen.getByText('Create Schedule'))
 
-    expect(screen.getByText('title is required')).toBeOnTheScreen()
+    expect(screen.getByText('Event name is required')).toBeOnTheScreen()
   })
 
   it('calls dismissAll after creating a schedule', async () => {

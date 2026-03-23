@@ -164,5 +164,12 @@
     "deleteFailed": "Delete failed",
     "updateFailed": "Update failed",
     "invalidUrl": "Invalid URL format"
+  },
+  "validation": {
+    "titleRequired": "Event name is required",
+    "startAtRequired": "Start time is required",
+    "invalidRecurrence": "Invalid repeat option",
+    "reminderRange": "Reminder must be between 0 and 1440 minutes",
+    "lowConfidence": "AI parsing confidence is low, please review all fields"
   }
 }

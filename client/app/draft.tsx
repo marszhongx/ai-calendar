@@ -79,7 +79,7 @@ export default function DraftScreen({
 
   async function handleSubmit() {
     const result = validateDraft(draft)
-    setErrors(result.errors)
+    setErrors(result.errors.map((key) => t(key)))
 
     if (!result.valid) {
       return

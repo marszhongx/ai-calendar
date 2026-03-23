@@ -117,6 +117,13 @@ export interface TranslationKeys {
     emptyToday: string
     emptyTomorrow: string
   }
+  validation: {
+    titleRequired: string
+    startAtRequired: string
+    invalidRecurrence: string
+    reminderRange: string
+    lowConfidence: string
+  }
   messages: {
     success: string
     error: string

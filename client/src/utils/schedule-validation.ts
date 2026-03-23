@@ -9,15 +9,23 @@ export function validateDraft(draft: ScheduleDraft): ValidationResult {
   const errors: string[] = []
 
   if (!draft.title.trim()) {
-    errors.push('title is required')
+    errors.push('validation.titleRequired')
   }
 
   if (!draft.startAt.trim()) {
-    errors.push('startAt is required')
+    errors.push('validation.startAtRequired')
   }
 
   if (!isAllowedRecurrence(draft.recurrence)) {
-    errors.push('recurrence must be one of NONE, DAILY, WEEKLY, MONTHLY')
+    errors.push('validation.invalidRecurrence')
+  }
+
+  if (
+    !Number.isInteger(draft.reminderMinutesBefore) ||
+    draft.reminderMinutesBefore < 0 ||
+    draft.reminderMinutesBefore > 1440
+  ) {
+    errors.push('validation.reminderRange')
   }
 
   return {
