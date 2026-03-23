@@ -55,16 +55,12 @@ export async function POST() {
     return NextResponse.json({ sent: 0 })
   }
 
-  const messages: ExpoPushMessage[] = rows
-    .filter(
-      (row): row is typeof row & { pushToken: string } => row.pushToken != null,
-    )
-    .map((row) => ({
-      to: row.pushToken,
-      title: row.title,
-      body: row.notes || 'You have an upcoming schedule',
-      data: { scheduleId: row.id },
-    }))
+  const messages: ExpoPushMessage[] = rows.map((row) => ({
+    to: row.pushToken as string,
+    title: row.title,
+    body: row.notes || 'You have an upcoming schedule',
+    data: { scheduleId: row.id },
+  }))
 
   await sendPushNotifications(messages)
 

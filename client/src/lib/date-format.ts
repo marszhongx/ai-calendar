@@ -42,19 +42,6 @@ export function formatDatePart(isoString: string, locale?: string): string {
   }
 }
 
-export function formatTimePart(isoString: string, locale?: string): string {
-  try {
-    const date = new Date(isoString)
-    if (Number.isNaN(date.getTime())) return ''
-    return new Intl.DateTimeFormat(locale, {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-  } catch {
-    return ''
-  }
-}
-
 export function toDatetimeLocalValue(isoString: string): string {
   try {
     const date = new Date(isoString)

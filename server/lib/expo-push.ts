@@ -6,11 +6,12 @@ export async function sendPushNotifications(
   messages: ExpoPushMessage[],
 ): Promise<void> {
   const chunks = expo.chunkPushNotifications(messages)
-  for (const chunk of chunks) {
-    try {
-      await expo.sendPushNotificationsAsync(chunk)
-    } catch (error) {
-      console.error('Push send error:', error)
+  const results = await Promise.allSettled(
+    chunks.map((chunk) => expo.sendPushNotificationsAsync(chunk)),
+  )
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      console.error('Push send error:', result.reason)
     }
   }
 }

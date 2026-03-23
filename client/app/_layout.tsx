@@ -34,11 +34,11 @@ async function getHardwareDeviceId(): Promise<string | null> {
 async function ensureDeviceRegistered() {
   try {
     const hardwareId = await getHardwareDeviceId()
-    let deviceId = hardwareId || (await AsyncStorage.getItem(DEVICE_ID_KEY))
-    if (!deviceId) {
-      deviceId = generateUUID()
+    const stored = await AsyncStorage.getItem(DEVICE_ID_KEY)
+    const deviceId = hardwareId || stored || generateUUID()
+    if (deviceId !== stored) {
+      await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId)
     }
-    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId)
 
     if (Platform.OS === 'web' || !Constants.isDevice) {
       await registerDevice(deviceId, null, Platform.OS)

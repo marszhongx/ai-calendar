@@ -35,7 +35,6 @@ export default function ScheduleDetailScreen() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
   const { deviceId, loading: deviceLoading } = useDeviceId()
-  const [schedule, setSchedule] = useState<Schedule | null>(null)
   const [draft, setDraft] = useState<ScheduleDraft | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -45,21 +44,31 @@ export default function ScheduleDetailScreen() {
   useEffect(() => {
     if (!deviceId) return
 
-    apiListSchedules(deviceId).then((schedules) => {
-      const found = (schedules as Schedule[]).find((s) => s.id === id)
-      if (!found) {
-        setNotFound(true)
-        setLoading(false)
-        return
-      }
-      setSchedule(found)
-      setDraft(scheduleToDraft(found))
-      setLoading(false)
-    })
-  }, [id, deviceId])
+    let cancelled = false
+    apiListSchedules(deviceId)
+      .then((schedules) => {
+        if (cancelled) return
+        const found = (schedules as Schedule[]).find((s) => s.id === id)
+        if (!found) {
+          setNotFound(true)
+        } else {
+          setDraft(scheduleToDraft(found))
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setErrors([t('messages.dataLoadFailed')])
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [id, deviceId, t])
 
   const handleSubmit = useCallback(async () => {
-    if (!draft || !schedule) return
+    if (!draft) return
 
     const result = validateDraft(draft)
     setErrors(result.errors)
@@ -67,7 +76,7 @@ export default function ScheduleDetailScreen() {
 
     setSubmitting(true)
     try {
-      await apiUpdateSchedule(schedule.id, {
+      await apiUpdateSchedule(id, {
         title: draft.title,
         startAt: draft.startAt,
         endAt: draft.endAt,
@@ -81,7 +90,7 @@ export default function ScheduleDetailScreen() {
     } finally {
       setSubmitting(false)
     }
-  }, [draft, schedule, router, t])
+  }, [draft, id, router, t])
 
   if (loading || deviceLoading) {
     return (

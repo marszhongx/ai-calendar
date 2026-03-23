@@ -50,13 +50,22 @@ export default function DraftScreen({
 
   useEffect(() => {
     if (initialDraft) return
-    AsyncStorage.getItem(PENDING_DRAFT_KEY).then((raw) => {
-      if (raw) {
-        setDraft(JSON.parse(raw))
-        AsyncStorage.removeItem(PENDING_DRAFT_KEY)
-      }
-      setLoading(false)
-    })
+    let cancelled = false
+    AsyncStorage.getItem(PENDING_DRAFT_KEY)
+      .then((raw) => {
+        if (cancelled) return
+        if (raw) {
+          setDraft(JSON.parse(raw))
+          AsyncStorage.removeItem(PENDING_DRAFT_KEY)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [initialDraft])
 
   async function handleCreateSchedule(scheduleDraft: ScheduleDraft) {

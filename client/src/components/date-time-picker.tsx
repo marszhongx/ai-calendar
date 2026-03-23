@@ -5,7 +5,7 @@ import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { useLocale } from '../context/LocaleContext'
 import {
   formatDatePart,
-  formatTimePart,
+  formatTime,
   toDatetimeLocalValue,
   toIntlLocale,
 } from '../lib/date-format'
@@ -144,7 +144,7 @@ function NativeDateTimePicker({
             borderRadius={12}
             opacity={disabled ? 0.5 : 1}
           >
-            {formatTimePart(value.toISOString(), intlLocale)}
+            {formatTime(value.toISOString(), intlLocale)}
           </SizableText>
         </XStack>
       </Pressable>

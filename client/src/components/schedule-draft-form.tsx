@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { LABEL_COLOR, Recurrence } from '../constants'
 import { useLocale } from '../context/LocaleContext'
@@ -56,12 +56,15 @@ export function ScheduleDraftForm({
     }
   }
 
-  const recurrenceLabels: Record<string, string> = {
-    NONE: t('schedule.never'),
-    DAILY: t('schedule.daily'),
-    WEEKLY: t('schedule.weekly'),
-    MONTHLY: t('schedule.monthly'),
-  }
+  const recurrenceLabels = useMemo<Record<string, string>>(
+    () => ({
+      NONE: t('schedule.never'),
+      DAILY: t('schedule.daily'),
+      WEEKLY: t('schedule.weekly'),
+      MONTHLY: t('schedule.monthly'),
+    }),
+    [t],
+  )
 
   return (
     <YStack gap="$3">

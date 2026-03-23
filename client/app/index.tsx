@@ -67,11 +67,14 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   const [activeTab, setActiveTab] = useState<ScheduleTab>(ScheduleTab.TODAY)
   const { deviceId } = useDeviceId()
 
-  const TAB_LABELS: { key: ScheduleTab; label: string }[] = [
-    { key: ScheduleTab.TODAY, label: t('schedule.tabToday') },
-    { key: ScheduleTab.TOMORROW, label: t('schedule.tabTomorrow') },
-    { key: ScheduleTab.ALL, label: t('schedule.tabAll') },
-  ]
+  const TAB_LABELS = useMemo(
+    () => [
+      { key: ScheduleTab.TODAY, label: t('schedule.tabToday') },
+      { key: ScheduleTab.TOMORROW, label: t('schedule.tabTomorrow') },
+      { key: ScheduleTab.ALL, label: t('schedule.tabAll') },
+    ],
+    [t],
+  )
 
   const filteredItems = useMemo(
     () => filterSchedules(items, activeTab),
