@@ -109,6 +109,17 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       <Stack.Screen
         options={{
           title: t('schedule.scheduleList'),
+          headerRight: () => (
+            <Button
+              unstyled
+              onPress={() => router.push('/config')}
+              paddingHorizontal="$2"
+            >
+              <SizableText size="$5" color={ACCENT_COLOR}>
+                {t('common.settings')}
+              </SizableText>
+            </Button>
+          ),
         }}
       />
       <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">

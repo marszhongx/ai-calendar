@@ -38,9 +38,6 @@ yarn-error.*
 *.tsbuildinfo
 
 # generated native folders
-client/ios
-client/android
-
-# Next.js
-server/.next/
+ios/
+android/
 .superpowers/

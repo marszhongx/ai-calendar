@@ -11,7 +11,6 @@ export enum ScheduleTab {
   ALL = 'ALL',
 }
 
-export const DEVICE_ID_KEY = 'deviceId'
 export const PENDING_DRAFT_KEY = 'pending-draft'
 
 export const ACCENT_COLOR = '#E8725C'
