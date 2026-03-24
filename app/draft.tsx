@@ -1,12 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { YStack } from 'tamagui'
 import { ErrorBanner } from '@/components/error-banner'
 import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
+import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { createSchedule, parseMessage } from '@/services'
 import type { ParsedSchedulePayload, Schedule, ScheduleDraft } from '@/types'
@@ -102,9 +101,9 @@ export default function DraftScreen({
     return (
       <>
         <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
-        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+        <SafePageView>
           <SkeletonCard count={5} />
-        </YStack>
+        </SafePageView>
       </>
     )
   }

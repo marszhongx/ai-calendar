@@ -1,11 +1,9 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
 import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { PAGE_BACKGROUND } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import {
   listSchedules as apiListSchedules,
@@ -72,9 +70,9 @@ export default function ScheduleDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: t('schedule.title') }} />
-        <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+        <SafePageView>
           <SkeletonCard count={5} />
-        </YStack>
+        </SafePageView>
       </>
     )
   }

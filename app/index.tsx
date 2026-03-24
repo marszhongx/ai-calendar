@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import { Stack, useRouter } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
@@ -65,6 +65,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<ScheduleTab>(ScheduleTab.TODAY)
+  const hasLoaded = useRef(!!schedules)
 
   const TAB_LABELS = useMemo(
     () => [
@@ -81,15 +82,16 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   )
 
   const fetchSchedules = useCallback(() => {
-    if (items.length === 0) setLoading(true)
+    if (!hasLoaded.current) setLoading(true)
     setError('')
     apiListSchedules()
       .then((data) => {
         if (data) setItems(data)
+        hasLoaded.current = true
       })
       .catch(() => setError(t('messages.dataLoadFailed')))
       .finally(() => setLoading(false))
-  }, [t, items.length])
+  }, [t])
 
   useFocusEffect(
     useCallback(() => {
