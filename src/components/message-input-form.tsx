@@ -26,28 +26,19 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
 
   return (
     <YStack gap="$3">
-      <YStack
+      <TextArea
+        aria-label={t('schedule.aiInputPlaceholder')}
+        value={message}
+        onChangeText={setMessage}
+        size="$4"
         backgroundColor="white"
+        borderWidth={0}
         borderRadius={16}
-        paddingHorizontal="$4"
-        paddingVertical="$3"
-        elevation={2}
-      >
-        <TextArea
-          aria-label={t('schedule.aiInputPlaceholder')}
-          value={message}
-          onChangeText={setMessage}
-          size="$4"
-          borderWidth={0}
-          outlineWidth={0}
-          backgroundColor="transparent"
-          paddingHorizontal={0}
-          minHeight={120}
-          placeholder={t('schedule.aiInputPlaceholder')}
-          focusStyle={{ borderWidth: 0, outlineWidth: 0 }}
-          style={{ resize: 'none' }}
-        />
-      </YStack>
+        minHeight={120}
+        maxHeight={240}
+        placeholder={t('schedule.aiInputPlaceholder')}
+        focusStyle={{ borderWidth: 0 }}
+      />
       <AccentButton
         label={t('schedule.create')}
         onPress={handleSubmit}

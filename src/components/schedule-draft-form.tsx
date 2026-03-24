@@ -207,6 +207,7 @@ export function ScheduleDraftForm({
           backgroundColor="transparent"
           paddingHorizontal={0}
           minHeight={60}
+          maxHeight={200}
           disabled={disabled}
         />
       </FormSection>

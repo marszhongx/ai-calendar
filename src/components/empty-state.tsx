@@ -23,8 +23,11 @@ export function EmptyState({
         backgroundColor={iconBg}
         justifyContent="center"
         alignItems="center"
+        overflow="hidden"
       >
-        <SizableText fontSize={36}>{icon}</SizableText>
+        <SizableText fontSize={32} lineHeight={40}>
+          {icon}
+        </SizableText>
       </YStack>
       <SizableText fontWeight="600" size="$4" color="#111" marginTop="$3">
         {title}
