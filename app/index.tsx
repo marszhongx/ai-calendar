@@ -2,6 +2,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import { Stack, useRouter } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
 import { PillButton } from '@/components/pill-button'
@@ -60,6 +61,7 @@ type IndexScreenProps = {
 export default function IndexScreen({ schedules }: IndexScreenProps) {
   const { t } = useLocale()
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [items, setItems] = useState<Schedule[]>(schedules ?? [])
   const [loading, setLoading] = useState(!schedules)
   const [error, setError] = useState('')
@@ -80,7 +82,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
   )
 
   const fetchSchedules = useCallback(() => {
-    setLoading(true)
+    if (items.length === 0) setLoading(true)
     setError('')
     apiListSchedules()
       .then((data) => {
@@ -88,7 +90,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
       })
       .catch(() => setError(t('messages.dataLoadFailed')))
       .finally(() => setLoading(false))
-  }, [t])
+  }, [t, items.length])
 
   useFocusEffect(
     useCallback(() => {
@@ -114,15 +116,19 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
               unstyled
               onPress={() => router.push('/config')}
               paddingHorizontal="$2"
+              marginRight="$2"
             >
-              <SizableText size="$5" color={ACCENT_COLOR}>
-                {t('common.settings')}
-              </SizableText>
+              <SizableText size="$6">⚙️</SizableText>
             </Button>
           ),
         }}
       />
-      <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+      <YStack
+        flex={1}
+        backgroundColor={PAGE_BACKGROUND}
+        padding="$4"
+        paddingBottom={insets.bottom + 16}
+      >
         <XStack gap="$2" marginBottom="$3">
           {TAB_LABELS.map(({ key, label }) => (
             <PillButton
@@ -134,7 +140,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
             </PillButton>
           ))}
         </XStack>
-        {loading ? (
+        {loading && items.length === 0 ? (
           <SkeletonCard />
         ) : error ? (
           <YStack alignItems="center" gap="$3" paddingVertical="$6">
@@ -179,7 +185,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
         circular
         backgroundColor={ACCENT_COLOR}
         position="absolute"
-        bottom={24}
+        bottom={insets.bottom + 24}
         right={24}
         elevation="$4"
         onPress={() => router.push('/new')}
