@@ -11,6 +11,12 @@ export enum ScheduleTab {
   ALL = 'ALL',
 }
 
+export enum SaveStatus {
+  IDLE = 'IDLE',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+}
+
 export const PENDING_DRAFT_KEY = 'pending-draft'
 
 export const ACCENT_COLOR = '#E8725C'

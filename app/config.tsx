@@ -6,6 +6,7 @@ import {
   ACCENT_COLOR,
   ACCENT_COLOR_PRESSED,
   PAGE_BACKGROUND,
+  SaveStatus,
 } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 
@@ -17,7 +18,7 @@ export default function ConfigScreen() {
     modelName: '',
   })
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState('')
+  const [saveStatus, setSaveStatus] = useState(SaveStatus.IDLE)
 
   useEffect(() => {
     getAiConfig().then(setConfig)
@@ -25,16 +26,16 @@ export default function ConfigScreen() {
 
   const handleSave = useCallback(async () => {
     setSaving(true)
-    setMessage('')
+    setSaveStatus(SaveStatus.IDLE)
     try {
       await setAiConfig(config)
-      setMessage(t('aiConfig.saveSuccess'))
+      setSaveStatus(SaveStatus.SUCCESS)
     } catch {
-      setMessage(t('aiConfig.saveFailed'))
+      setSaveStatus(SaveStatus.ERROR)
     } finally {
       setSaving(false)
     }
-  }, [config, t])
+  }, [config])
 
   return (
     <>
@@ -77,14 +78,14 @@ export default function ConfigScreen() {
           />
         </YStack>
 
-        {message ? (
+        {saveStatus !== SaveStatus.IDLE ? (
           <SizableText
-            color={
-              message === t('aiConfig.saveSuccess') ? '$green10' : '$red10'
-            }
+            color={saveStatus === SaveStatus.SUCCESS ? '$green10' : '$red10'}
             textAlign="center"
           >
-            {message}
+            {saveStatus === SaveStatus.SUCCESS
+              ? t('aiConfig.saveSuccess')
+              : t('aiConfig.saveFailed')}
           </SizableText>
         ) : null}
 

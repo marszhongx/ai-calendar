@@ -1,22 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Crypto from 'expo-crypto'
 import type { Schedule, SchedulePayload } from '../types'
 
 export { parseMessage } from './ai'
 
 const SCHEDULES_KEY = 'schedules'
 
-function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
-
 async function readSchedules(): Promise<Schedule[]> {
   const raw = await AsyncStorage.getItem(SCHEDULES_KEY)
   if (!raw) return []
-  return JSON.parse(raw) as Schedule[]
+  try {
+    return JSON.parse(raw) as Schedule[]
+  } catch {
+    return []
+  }
 }
 
 async function writeSchedules(schedules: Schedule[]): Promise<void> {
@@ -31,7 +28,7 @@ export async function createSchedule(data: SchedulePayload): Promise<Schedule> {
   const schedules = await readSchedules()
   const now = new Date().toISOString()
   const schedule: Schedule = {
-    id: generateUUID(),
+    id: Crypto.randomUUID(),
     title: data.title,
     startAt: data.startAt,
     endAt: data.endAt,

@@ -17,7 +17,12 @@ const defaults: AiConfig = {
 export async function getAiConfig(): Promise<AiConfig> {
   const stored = await AsyncStorage.getItem(AI_CONFIG_KEY)
   if (!stored) return defaults
-  const parsed = JSON.parse(stored) as Partial<AiConfig>
+  let parsed: Partial<AiConfig>
+  try {
+    parsed = JSON.parse(stored) as Partial<AiConfig>
+  } catch {
+    return defaults
+  }
   return {
     baseUrl: parsed.baseUrl || defaults.baseUrl,
     apiKey: parsed.apiKey || defaults.apiKey,
