@@ -2,13 +2,11 @@ import { getLocales } from 'expo-localization'
 import { I18n } from 'i18n-js'
 import en from './locales/en.json'
 import zh from './locales/zh.json'
-import zhTW from './locales/zh-TW.json'
 import type { Locale } from './types'
 
 const translations = {
   en,
   zh,
-  'zh-TW': zhTW,
 }
 
 const i18nInstance = new I18n(translations)
@@ -25,13 +23,6 @@ const getSystemLocale = (): Locale => {
     const locale = locales[0]?.languageTag
 
     if (locale?.startsWith('zh')) {
-      if (
-        ['zh-Hant', 'zh-TW', 'zh-HK', 'zh-MO'].some((tag) =>
-          locale.startsWith(tag),
-        )
-      ) {
-        return 'zh-TW'
-      }
       return 'zh'
     }
   } catch {}

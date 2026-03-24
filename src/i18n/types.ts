@@ -2,120 +2,65 @@
 export interface TranslationKeys {
   common: {
     save: string
-    cancel: string
-    confirm: string
-    ok: string
-    yes: string
-    no: string
-    loading: string
-    error: string
-    success: string
-    back: string
-    next: string
-    previous: string
-    delete: string
-    edit: string
-    add: string
-    search: string
     settings: string
-    logout: string
-    login: string
-    register: string
-    home: string
-    profile: string
-    about: string
-    help: string
-    feedback: string
-    share: string
-    copy: string
-    paste: string
-    cut: string
-    selectAll: string
-    undo: string
-    redo: string
-    print: string
-    download: string
-    upload: string
-    refresh: string
-    more: string
-    expand: string
-    collapse: string
-    reset: string
-    clear: string
-    apply: string
-    close: string
   }
   aiConfig: {
     title: string
-    provider: string
     apiKey: string
     baseUrl: string
     baseUrlPlaceholder: string
     modelName: string
-    temperature: string
-    maxTokens: string
-    topP: string
-    frequencyPenalty: string
-    presencePenalty: string
     saveSettings: string
     saveSuccess: string
     saveFailed: string
-    invalidConfig: string
-    testConnection: string
-    connectionSuccess: string
-    connectionFailed: string
-    gemini25Pro: string
-    gpt4: string
-    claude3: string
-    llama3: string
-    defaultModel: string
   }
   schedule: {
     title: string
     newSchedule: string
     scheduleList: string
-    draftList: string
     eventName: string
-    startDate: string
-    endDate: string
     startTime: string
     endTime: string
     description: string
-    location: string
-    attendees: string
-    priority: string
-    high: string
-    medium: string
-    low: string
+    aiInputPlaceholder: string
     create: string
-    update: string
-    delete: string
-    deleteConfirm: string
     saveDraft: string
-    publish: string
-    draftSaved: string
-    published: string
     emptyList: string
-    emptyDraft: string
-    noResults: string
-    searchPlaceholder: string
+    emptyToday: string
+    emptyTomorrow: string
+    emptyTodayHint: string
+    emptyTomorrowHint: string
+    emptyListHint: string
     remindMe: string
-    before: string
     minutes: string
-    hours: string
-    days: string
-    weeks: string
     repeat: string
     never: string
     daily: string
     weekly: string
     monthly: string
-    yearly: string
     tabToday: string
     tabTomorrow: string
     tabAll: string
-    emptyToday: string
-    emptyTomorrow: string
+    notFound: string
+    originalMessage: string
+    reParse: string
+    reParsing: string
+  }
+  picker: {
+    cancel: string
+    selectDate: string
+    selectTime: string
+    next: string
+    confirm: string
+  }
+  messages: {
+    error: string
+    serverError: string
+    dataLoadFailed: string
+    validationError: string
+    timeoutError: string
+    saveFailed: string
+    retry: string
   }
   validation: {
     titleRequired: string
@@ -124,39 +69,6 @@ export interface TranslationKeys {
     reminderRange: string
     lowConfidence: string
   }
-  messages: {
-    success: string
-    error: string
-    warning: string
-    info: string
-    unknownError: string
-    networkError: string
-    timeoutError: string
-    serverError: string
-    validationError: string
-    permissionDenied: string
-    notFound: string
-    conflict: string
-    rateLimit: string
-    invalidInput: string
-    requiredField: string
-    maxLength: string
-    minLength: string
-    invalidFormat: string
-    loadingData: string
-    saving: string
-    deleting: string
-    updating: string
-    processing: string
-    retry: string
-    tryAgain: string
-    contactSupport: string
-    unexpectedError: string
-    dataLoadFailed: string
-    saveFailed: string
-    deleteFailed: string
-    updateFailed: string
-  }
 }
 
-export type Locale = 'en' | 'zh' | 'zh-TW'
+export type Locale = 'en' | 'zh'
