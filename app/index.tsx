@@ -6,13 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
 import { PillButton } from '@/components/pill-button'
-
+import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleList } from '@/components/schedule-list'
 import { SkeletonCard } from '@/components/skeleton-card'
 import {
   ACCENT_COLOR,
   ACCENT_COLOR_PRESSED,
-  PAGE_BACKGROUND,
   Recurrence,
   ScheduleTab,
 } from '@/constants'
@@ -123,12 +122,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
           ),
         }}
       />
-      <YStack
-        flex={1}
-        backgroundColor={PAGE_BACKGROUND}
-        padding="$4"
-        paddingBottom={insets.bottom + 16}
-      >
+      <SafePageView>
         <XStack gap="$2" marginBottom="$3">
           {TAB_LABELS.map(({ key, label }) => (
             <PillButton
@@ -179,7 +173,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
             showDate={activeTab === ScheduleTab.ALL}
           />
         )}
-      </YStack>
+      </SafePageView>
       <Button
         size="$5"
         circular

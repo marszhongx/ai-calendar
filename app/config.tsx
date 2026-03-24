@@ -1,13 +1,9 @@
 import { Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Input, Label, SizableText, Spinner, YStack } from 'tamagui'
+import { SafePageView } from '@/components/safe-page-view'
 import { type AiConfig, getAiConfig, setAiConfig } from '@/config/ai-config'
-import {
-  ACCENT_COLOR,
-  ACCENT_COLOR_PRESSED,
-  PAGE_BACKGROUND,
-  SaveStatus,
-} from '@/constants'
+import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, SaveStatus } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 
 export default function ConfigScreen() {
@@ -40,7 +36,7 @@ export default function ConfigScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t('aiConfig.title') }} />
-      <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4" gap="$3">
+      <SafePageView scroll gap="$3">
         <YStack gap="$1">
           <Label htmlFor="baseUrl">{t('aiConfig.baseUrl')}</Label>
           <Input
@@ -106,7 +102,7 @@ export default function ConfigScreen() {
             </SizableText>
           )}
         </Button>
-      </YStack>
+      </SafePageView>
     </>
   )
 }

@@ -1,9 +1,8 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
 import { EmptyState } from '@/components/empty-state'
-
+import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
 import { PAGE_BACKGROUND } from '@/constants'
@@ -84,13 +83,13 @@ export default function ScheduleDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: t('schedule.title') }} />
-        <YStack flex={1} backgroundColor={PAGE_BACKGROUND}>
+        <SafePageView>
           <EmptyState
             icon="🔍"
             iconBg="#F3F4F6"
             title={t('schedule.notFound')}
           />
-        </YStack>
+        </SafePageView>
       </>
     )
   }
@@ -98,25 +97,18 @@ export default function ScheduleDetailScreen() {
   return (
     <>
       <Stack.Screen options={{ title: draft?.title ?? t('schedule.title') }} />
-      <ScrollView>
-        <YStack
-          flex={1}
-          backgroundColor={PAGE_BACKGROUND}
-          padding="$4"
-          gap="$3"
-        >
-          {draft ? (
-            <ScheduleDraftForm
-              draft={draft}
-              errors={errors}
-              onChange={setDraft}
-              onSubmit={handleSubmit}
-              disabled={submitting}
-              submitLabel={t('common.save')}
-            />
-          ) : null}
-        </YStack>
-      </ScrollView>
+      <SafePageView scroll gap="$3">
+        {draft ? (
+          <ScheduleDraftForm
+            draft={draft}
+            errors={errors}
+            onChange={setDraft}
+            onSubmit={handleSubmit}
+            disabled={submitting}
+            submitLabel={t('common.save')}
+          />
+        ) : null}
+      </SafePageView>
     </>
   )
 }

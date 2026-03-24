@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack, useRouter } from 'expo-router'
 import { useState } from 'react'
-import { YStack } from 'tamagui'
 import { MessageInputForm } from '@/components/message-input-form'
-import { PAGE_BACKGROUND, PENDING_DRAFT_KEY } from '@/constants'
+import { SafePageView } from '@/components/safe-page-view'
+import { PENDING_DRAFT_KEY } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
 import { parseMessage } from '@/services'
 import type { ParsedSchedulePayload, ScheduleDraft } from '@/types'
@@ -59,9 +59,9 @@ export default function NewScheduleScreen({
   return (
     <>
       <Stack.Screen options={{ title: t('schedule.newSchedule') }} />
-      <YStack flex={1} backgroundColor={PAGE_BACKGROUND} padding="$4">
+      <SafePageView>
         <MessageInputForm onSubmit={handleSubmit} error={error} />
-      </YStack>
+      </SafePageView>
     </>
   )
 }

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { ScrollView } from 'react-native'
 import { YStack } from 'tamagui'
 import { ErrorBanner } from '@/components/error-banner'
+import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
 import { PAGE_BACKGROUND, PENDING_DRAFT_KEY, Recurrence } from '@/constants'
@@ -112,27 +112,20 @@ export default function DraftScreen({
   return (
     <>
       <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
-      <ScrollView>
-        <YStack
-          flex={1}
-          backgroundColor={PAGE_BACKGROUND}
-          padding="$4"
-          gap="$3"
-        >
-          {draft.confidence < 0.6 && (
-            <ErrorBanner message={t('validation.lowConfidence')} />
-          )}
-          <ScheduleDraftForm
-            draft={draft}
-            errors={errors}
-            onChange={setDraft}
-            onSubmit={handleSubmit}
-            onReparse={handleReparse}
-            disabled={submitting}
-            submitLabel={submitLabel}
-          />
-        </YStack>
-      </ScrollView>
+      <SafePageView scroll gap="$3">
+        {draft.confidence < 0.6 && (
+          <ErrorBanner message={t('validation.lowConfidence')} />
+        )}
+        <ScheduleDraftForm
+          draft={draft}
+          errors={errors}
+          onChange={setDraft}
+          onSubmit={handleSubmit}
+          onReparse={handleReparse}
+          disabled={submitting}
+          submitLabel={submitLabel}
+        />
+      </SafePageView>
     </>
   )
 }
