@@ -1,5 +1,5 @@
 import { Recurrence } from '../constants'
-import type { RepeatTrigger } from '../types'
+import type { RepeatTrigger } from '../types/reminder'
 
 export function subtractMinutes(isoString: string, minutes: number) {
   return new Date(new Date(isoString).getTime() - minutes * 60 * 1000)

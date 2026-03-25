@@ -3,18 +3,12 @@ import {
   type ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
-import I18n from '../i18n'
-import type { Locale } from '../i18n/types'
-
-type LocaleContextType = {
-  locale: Locale
-  setLocale: (locale: Locale) => void
-  t: (key: string, options?: Record<string, unknown>) => string
-}
+import I18n, { initialLocale } from '@/i18n'
+import type { Locale } from '@/i18n/types'
+import type { LocaleContextType } from './types'
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined)
 
@@ -23,20 +17,7 @@ type LocaleProviderProps = {
 }
 
 export const LocaleProvider = ({ children }: LocaleProviderProps) => {
-  const [locale, setLocaleState] = useState<Locale>('zh')
-
-  useEffect(() => {
-    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
-      return
-    }
-
-    import('../i18n')
-      .then(({ initialLocale }) => {
-        setLocaleState(initialLocale)
-        I18n.locale = initialLocale
-      })
-      .catch(() => {})
-  }, [])
+  const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale)

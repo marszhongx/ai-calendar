@@ -5,10 +5,15 @@ import { ErrorBanner } from '@/components/error-banner'
 import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
-import { PENDING_DRAFT_KEY, Recurrence } from '@/constants'
+import { Recurrence, StorageKey } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { createSchedule, parseMessage } from '@/services'
-import type { ParsedSchedulePayload, Schedule, ScheduleDraft } from '@/types'
+import { parseMessage } from '@/services/ai'
+import { createSchedule } from '@/services/schedule'
+import type {
+  ParsedSchedulePayload,
+  Schedule,
+  ScheduleDraft,
+} from '@/types/schedule'
 import { draftToPayload, normalizeDraft } from '@/utils/schedule-normalizer'
 import { validateDraft } from '@/utils/schedule-validation'
 
@@ -46,12 +51,12 @@ export default function DraftScreen({
   useEffect(() => {
     if (initialDraft) return
     let cancelled = false
-    AsyncStorage.getItem(PENDING_DRAFT_KEY)
+    AsyncStorage.getItem(StorageKey.PENDING_DRAFT)
       .then((raw) => {
         if (cancelled) return
         if (raw) {
           setDraft(JSON.parse(raw))
-          AsyncStorage.removeItem(PENDING_DRAFT_KEY)
+          AsyncStorage.removeItem(StorageKey.PENDING_DRAFT)
         }
       })
       .catch(() => {})

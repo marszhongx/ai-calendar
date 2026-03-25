@@ -3,7 +3,7 @@ import { SizableText, YStack } from 'tamagui'
 import { CARD_COLORS, Recurrence, SECONDARY_TEXT } from '../constants'
 import { useLocale } from '../context/LocaleContext'
 import { formatDate, formatTime, toIntlLocale } from '../lib/date-format'
-import type { Schedule } from '../types'
+import type { Schedule } from '../types/schedule'
 
 type ScheduleListProps = {
   schedules: Schedule[]

@@ -2,9 +2,10 @@ import { Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Input, Label, SizableText, Spinner, YStack } from 'tamagui'
 import { SafePageView } from '@/components/safe-page-view'
-import { type AiConfig, getAiConfig, setAiConfig } from '@/config/ai-config'
 import { ACCENT_COLOR, ACCENT_COLOR_PRESSED, SaveStatus } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
+import { getAiConfig, setAiConfig } from '@/services/ai-config'
+import type { AiConfig } from '@/types/ai-config'
 
 export default function ConfigScreen() {
   const { t } = useLocale()

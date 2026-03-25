@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Recurrence } from '../../constants'
+import { Recurrence } from '@/constants'
 import {
   createSchedule,
   deleteSchedule,
   listSchedules,
   updateSchedule,
-} from '../index'
+} from '../schedule'
 
 beforeEach(async () => {
   await AsyncStorage.clear()
@@ -49,6 +49,7 @@ describe('updateSchedule', () => {
       notes: '',
     })
 
+    await new Promise((r) => setTimeout(r, 10))
     const updated = await updateSchedule(created.id, {
       title: '更新后的会议',
       startAt: '2026-03-20T11:00:00+08:00',

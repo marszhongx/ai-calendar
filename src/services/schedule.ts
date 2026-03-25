@@ -1,13 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Crypto from 'expo-crypto'
-import type { Schedule, SchedulePayload } from '../types'
-
-export { parseMessage } from './ai'
-
-const SCHEDULES_KEY = 'schedules'
+import { StorageKey } from '../constants'
+import type { Schedule, SchedulePayload } from '../types/schedule'
 
 async function readSchedules(): Promise<Schedule[]> {
-  const raw = await AsyncStorage.getItem(SCHEDULES_KEY)
+  const raw = await AsyncStorage.getItem(StorageKey.SCHEDULES)
   if (!raw) return []
   try {
     return JSON.parse(raw) as Schedule[]
@@ -17,7 +14,7 @@ async function readSchedules(): Promise<Schedule[]> {
 }
 
 async function writeSchedules(schedules: Schedule[]): Promise<void> {
-  await AsyncStorage.setItem(SCHEDULES_KEY, JSON.stringify(schedules))
+  await AsyncStorage.setItem(StorageKey.SCHEDULES, JSON.stringify(schedules))
 }
 
 export async function listSchedules(): Promise<Schedule[]> {

@@ -1,6 +1,4 @@
-import { Recurrence } from '../constants'
-
-export { Recurrence }
+import type { Recurrence } from '../constants'
 
 export type ScheduleDraft = {
   title: string

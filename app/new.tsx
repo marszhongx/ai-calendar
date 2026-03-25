@@ -3,10 +3,10 @@ import { Stack, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { MessageInputForm } from '@/components/message-input-form'
 import { SafePageView } from '@/components/safe-page-view'
-import { PENDING_DRAFT_KEY } from '@/constants'
+import { StorageKey } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { parseMessage } from '@/services'
-import type { ParsedSchedulePayload, ScheduleDraft } from '@/types'
+import { parseMessage } from '@/services/ai'
+import type { ParsedSchedulePayload, ScheduleDraft } from '@/types/schedule'
 import { normalizeDraft } from '@/utils/schedule-normalizer'
 
 type NewScheduleScreenProps = {
@@ -49,7 +49,10 @@ export default function NewScheduleScreen({
 
     try {
       const draft = await onSubmit(message)
-      await AsyncStorage.setItem(PENDING_DRAFT_KEY, JSON.stringify(draft))
+      await AsyncStorage.setItem(
+        StorageKey.PENDING_DRAFT,
+        JSON.stringify(draft),
+      )
       router.push('/draft')
     } catch (err) {
       setError(getErrorMessage(err, t))

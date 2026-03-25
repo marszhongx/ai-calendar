@@ -16,8 +16,8 @@ const mockRouterDismissAll = (globalThis as Record<string, unknown>)
 
 import dayjs from 'dayjs'
 import { ScheduleList } from '@/components/schedule-list'
-import { Recurrence } from '@/constants'
-import type { ScheduleDraft } from '@/types'
+import { Recurrence, StorageKey } from '@/constants'
+import type { ScheduleDraft } from '@/types/schedule'
 import DraftScreen from '../draft'
 import IndexScreen from '../index'
 import NewScheduleScreen from '../new'
@@ -167,7 +167,7 @@ describe('page navigation flow', () => {
 
     expect(screen.queryByText('Operation failed')).not.toBeOnTheScreen()
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-      'pending-draft',
+      StorageKey.PENDING_DRAFT,
       expect.stringContaining('需求评审会'),
     )
     expect(mockRouterPush).toHaveBeenCalledWith('/draft')

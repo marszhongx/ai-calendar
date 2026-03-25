@@ -8,8 +8,8 @@ import { useLocale } from '@/context/LocaleContext'
 import {
   listSchedules as apiListSchedules,
   updateSchedule as apiUpdateSchedule,
-} from '@/services'
-import type { ScheduleDraft } from '@/types'
+} from '@/services/schedule'
+import type { ScheduleDraft } from '@/types/schedule'
 import { draftToPayload, scheduleToDraft } from '@/utils/schedule-normalizer'
 import { validateDraft } from '@/utils/schedule-validation'
 

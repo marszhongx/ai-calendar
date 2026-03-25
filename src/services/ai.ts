@@ -1,8 +1,8 @@
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateText, Output } from 'ai'
 import { z } from 'zod'
-import { getAiConfig } from '../config/ai-config'
-import type { ParsedSchedulePayload } from '../types'
+import type { ParsedSchedulePayload } from '../types/schedule'
+import { getAiConfig } from './ai-config'
 
 const scheduleSchema = z.object({
   title: z.string().describe('Short event title extracted from the message'),

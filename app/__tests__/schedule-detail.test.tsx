@@ -8,12 +8,12 @@ import { TamaguiProvider } from 'tamagui'
 import { Recurrence } from '@/constants'
 import { LocaleProvider } from '@/context/LocaleContext'
 import config from '@/theme/tamagui.config'
-import type { Schedule } from '@/types'
+import type { Schedule } from '@/types/schedule'
 
 const mockListSchedules = jest.fn()
 const mockUpdateSchedule = jest.fn()
 
-jest.mock('@/services', () => ({
+jest.mock('@/services/schedule', () => ({
   listSchedules: (...args: unknown[]) => mockListSchedules(...args),
   updateSchedule: (...args: unknown[]) => mockUpdateSchedule(...args),
 }))

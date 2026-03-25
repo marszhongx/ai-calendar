@@ -4,7 +4,7 @@ import type {
   Schedule,
   ScheduleDraft,
   SchedulePayload,
-} from '../types'
+} from '../types/schedule'
 
 function toRecurrence(value?: string): Recurrence {
   if (

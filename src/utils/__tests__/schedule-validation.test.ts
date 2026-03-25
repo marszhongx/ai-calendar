@@ -1,5 +1,5 @@
-import { Recurrence } from '../../constants'
-import type { Schedule, ScheduleDraft } from '../../types'
+import { Recurrence } from '@/constants'
+import type { Schedule, ScheduleDraft } from '@/types/schedule'
 import { validateDraft, validateSchedule } from '../schedule-validation'
 
 describe('validateDraft', () => {

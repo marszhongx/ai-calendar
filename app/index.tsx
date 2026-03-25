@@ -16,8 +16,8 @@ import {
   ScheduleTab,
 } from '@/constants'
 import { useLocale } from '@/context/LocaleContext'
-import { listSchedules as apiListSchedules } from '@/services'
-import type { Schedule } from '@/types'
+import { listSchedules as apiListSchedules } from '@/services/schedule'
+import type { Schedule } from '@/types/schedule'
 
 function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
   const start = dayjs(schedule.startAt)

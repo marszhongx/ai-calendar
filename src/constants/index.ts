@@ -17,7 +17,11 @@ export enum SaveStatus {
   ERROR = 'ERROR',
 }
 
-export const PENDING_DRAFT_KEY = 'pending-draft'
+export enum StorageKey {
+  SCHEDULES = 'SCHEDULES',
+  AI_CONFIG = 'AI_CONFIG',
+  PENDING_DRAFT = 'PENDING_DRAFT',
+}
 
 export const ACCENT_COLOR = '#E8725C'
 export const ACCENT_COLOR_PRESSED = '#D4634E'
