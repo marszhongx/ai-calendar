@@ -29,7 +29,6 @@ describe('normalizeDraft', () => {
       notes: '带上原型',
       originalMessage: '',
       confidence: 0.91,
-      missingFields: [],
     })
   })
 
@@ -49,15 +48,6 @@ describe('normalizeDraft', () => {
     expect(result.recurrence).toBe('WEEKLY')
   })
 
-  it('tracks missing required fields', () => {
-    const result = normalizeDraft({
-      title: '',
-      start_time: '',
-    })
-
-    expect(result.missingFields).toEqual(['title', 'startAt'])
-  })
-
   it('keeps low confidence drafts for manual confirmation', () => {
     const result = normalizeDraft({
       title: '开会',
@@ -67,7 +57,6 @@ describe('normalizeDraft', () => {
     })
 
     expect(result.confidence).toBe(0.3)
-    expect(result.missingFields).toContain('startAt')
   })
 })
 
@@ -95,7 +84,6 @@ describe('scheduleToDraft', () => {
       notes: '带资料',
       originalMessage: '每周三开会',
       confidence: 1,
-      missingFields: [],
     })
   })
 })
@@ -111,7 +99,6 @@ describe('draftToPayload', () => {
       notes: '带资料',
       originalMessage: '每周三开会',
       confidence: 0.9,
-      missingFields: [],
     }
     const payload = draftToPayload(draft)
     expect(payload).toEqual({
@@ -124,6 +111,5 @@ describe('draftToPayload', () => {
       originalMessage: '每周三开会',
     })
     expect(payload).not.toHaveProperty('confidence')
-    expect(payload).not.toHaveProperty('missingFields')
   })
 })

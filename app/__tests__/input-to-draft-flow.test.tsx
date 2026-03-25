@@ -54,7 +54,6 @@ describe('page navigation flow', () => {
           notes: '',
           originalMessage: '',
           confidence: 0.5,
-          missingFields: [],
         }}
       />,
     )
@@ -143,7 +142,6 @@ describe('page navigation flow', () => {
         notes: '',
         originalMessage: '明天下午三点开需求评审会',
         confidence: 0.9,
-        missingFields: [],
       } satisfies ScheduleDraft)
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
@@ -185,7 +183,6 @@ describe('page navigation flow', () => {
           notes: '',
           originalMessage: '',
           confidence: 0.4,
-          missingFields: ['title', 'startAt'],
         }}
       />,
     )
@@ -222,7 +219,6 @@ describe('page navigation flow', () => {
           notes: '',
           originalMessage: '',
           confidence: 0.9,
-          missingFields: [],
         }}
       />,
     )
@@ -391,7 +387,6 @@ describe('page navigation flow', () => {
           notes: '',
           originalMessage: '',
           confidence: 0.9,
-          missingFields: [],
         }}
         submitLabel="Save"
       />,

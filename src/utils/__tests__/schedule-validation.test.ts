@@ -14,7 +14,6 @@ describe('validateDraft', () => {
       notes: '准备原型',
       originalMessage: '',
       confidence: 0.92,
-      missingFields: [],
     }
 
     expect(validateDraft(draft)).toEqual({ valid: true, errors: [] })
@@ -30,7 +29,6 @@ describe('validateDraft', () => {
       notes: '',
       originalMessage: '',
       confidence: 0.8,
-      missingFields: [],
     }
 
     expect(validateDraft(draft)).toEqual({
@@ -49,7 +47,6 @@ describe('validateDraft', () => {
       notes: '',
       originalMessage: '',
       confidence: 0.88,
-      missingFields: ['startAt'],
     }
 
     expect(validateDraft(draft)).toEqual({
@@ -67,7 +64,6 @@ describe('validateDraft', () => {
       recurrence: 'yearly',
       notes: '',
       confidence: 0.6,
-      missingFields: [],
     } as unknown as ScheduleDraft
 
     expect(validateDraft(draft)).toEqual({
@@ -85,7 +81,6 @@ describe('validateDraft', () => {
       notes: '',
       originalMessage: '',
       confidence: 0.8,
-      missingFields: [],
     }
     expect(validateDraft(draft)).toEqual({
       valid: false,
@@ -102,7 +97,6 @@ describe('validateDraft', () => {
       notes: '',
       originalMessage: '',
       confidence: 0.8,
-      missingFields: [],
     }
     expect(validateDraft(draft)).toEqual({
       valid: false,

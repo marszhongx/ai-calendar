@@ -25,7 +25,6 @@ const fallbackDraft: ScheduleDraft = {
   notes: '',
   originalMessage: '',
   confidence: 0.5,
-  missingFields: [],
 }
 
 type DraftScreenProps = {

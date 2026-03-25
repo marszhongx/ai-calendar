@@ -9,7 +9,6 @@ export type ScheduleDraft = {
   notes: string
   originalMessage: string
   confidence: number
-  missingFields: Array<'title' | 'startAt'>
 }
 
 export type Schedule = {

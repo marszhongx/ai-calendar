@@ -34,10 +34,6 @@ export function normalizeDraft(
     notes: payload.notes?.trim() ?? '',
     originalMessage,
     confidence: payload.confidence ?? 0,
-    missingFields: [
-      ...(title ? [] : ['title' as const]),
-      ...(startAt ? [] : ['startAt' as const]),
-    ],
   }
 }
 
@@ -51,7 +47,6 @@ export function scheduleToDraft(schedule: Schedule): ScheduleDraft {
     notes: schedule.notes,
     originalMessage: schedule.originalMessage,
     confidence: 1,
-    missingFields: [],
   }
 }
 
