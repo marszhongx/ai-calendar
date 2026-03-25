@@ -18,8 +18,11 @@ import {
 import { useLocale } from '@/context/LocaleContext'
 import { listSchedules as apiListSchedules } from '@/services/schedule'
 import type { Schedule } from '@/types/schedule'
+import { isExpired } from '@/utils/schedule-expiration'
 
 function occursOnDay(schedule: Schedule, target: dayjs.Dayjs): boolean {
+  if (isExpired(schedule, target.format('YYYY-MM-DD'))) return false
+
   const start = dayjs(schedule.startAt)
   if (start.isSame(target, 'day')) return true
   if (start.isAfter(target, 'day')) return false

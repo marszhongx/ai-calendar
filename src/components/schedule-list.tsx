@@ -4,6 +4,7 @@ import { CARD_COLORS, Recurrence, SECONDARY_TEXT } from '../constants'
 import { useLocale } from '../context/LocaleContext'
 import { formatDate, formatTime, toIntlLocale } from '../lib/date-format'
 import type { Schedule } from '../types/schedule'
+import { isExpired } from '../utils/schedule-expiration'
 
 type ScheduleListProps = {
   schedules: Schedule[]
@@ -61,6 +62,8 @@ export function ScheduleList({
           )
         }
 
+        const expired = isExpired(schedule)
+
         return (
           <Pressable onPress={() => onPress?.(schedule)}>
             <YStack
@@ -69,13 +72,20 @@ export function ScheduleList({
               paddingHorizontal="$4"
               paddingVertical="$3"
               marginBottom="$2.5"
+              opacity={expired ? 0.6 : 1}
             >
-              <SizableText size="$4" fontWeight="600" numberOfLines={1}>
+              <SizableText
+                size="$4"
+                fontWeight="600"
+                numberOfLines={1}
+                color={expired ? '$gray8' : undefined}
+                textDecorationLine={expired ? 'line-through' : 'none'}
+              >
                 {schedule.title}
               </SizableText>
               <SizableText
                 size="$2"
-                color={SECONDARY_TEXT}
+                color={expired ? '$gray7' : SECONDARY_TEXT}
                 marginTop="$1"
                 numberOfLines={1}
               >
