@@ -42,7 +42,7 @@ Local-only Expo app. Users describe events in natural language, the app calls an
 - **Routing**: Expo Router (file-based routing in `app/`).
 - **Normalizer** (`utils/schedule-normalizer.ts`): Transforms AI `ParsedSchedulePayload` (snake_case) into client `ScheduleDraft` (camelCase).
 - **Validation** (`utils/schedule-validation.ts`): Pre-submission client-side validation.
-- **i18n** (`i18n/`): i18n-js + expo-localization. Supports en, zh, zh-TW. LocaleContext in `context/`.
+- **i18n** (`i18n/`): i18n-js + expo-localization. Supports en, zh. LocaleContext in `context/`.
 - **Types** (`types/`): ScheduleDraft (editable), Schedule (persisted), ParsedSchedulePayload (AI response).
 
 ### Storage

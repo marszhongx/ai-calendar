@@ -10,7 +10,7 @@
 - 支持单次 / 每日 / 每周 / 每月重复日程
 - 支持 today / tomorrow / all 视图
 - 已过期日程不会出现在 today / tomorrow 中，并会在 all 中显示过期样式
-- 支持 en、zh、zh-TW
+- 支持 en、zh
 - 支持配置兼容 OpenAI 的 base URL、API key、model
 
 ## 技术栈
