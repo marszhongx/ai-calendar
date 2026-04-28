@@ -54,12 +54,44 @@ describe('parseMessage', () => {
     const payload = {
       title: '开会',
       start_time: '2026-03-20T10:00:00Z',
+      end_time: null,
       reminder_minutes_before: 10,
       recurrence: 'NONE',
+      notes: null,
       confidence: 0.9,
     }
     mockGenerateText.mockResolvedValue({ output: payload })
     const result = await parseMessage('明天开会')
     expect(result).toEqual(payload)
+  })
+
+  it('keeps strict OpenAI JSON schema compatible by allowing null values', async () => {
+    mockGetAiConfig.mockResolvedValue({
+      baseUrl: 'https://api.example.com',
+      apiKey: 'sk-test',
+      modelName: 'gpt-4o',
+    })
+    const payload = {
+      title: '开会',
+      start_time: '2026-03-20T10:00:00Z',
+      end_time: null,
+      reminder_minutes_before: 10,
+      recurrence: 'NONE',
+      notes: null,
+      confidence: 0.9,
+    }
+    mockGenerateText.mockResolvedValue({ output: payload })
+
+    const result = await parseMessage('明天开会')
+
+    expect(result).toEqual(payload)
+    const output = mockGenerateText.mock.calls[0][0].output
+    expect(output.schema.safeParse(payload).success).toBe(true)
+    expect(
+      output.schema.safeParse({ ...payload, end_time: undefined }).success,
+    ).toBe(false)
+    expect(mockGenerateText.mock.calls[0][0]).not.toHaveProperty(
+      'providerOptions',
+    )
   })
 })

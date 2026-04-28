@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications'
 import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { TamaguiProvider, Theme } from 'tamagui'
@@ -29,6 +30,7 @@ export default function RootLayout() {
       <TamaguiProvider config={config} defaultTheme={theme}>
         <Theme name={theme}>
           <LocaleProvider>
+            <StatusBar style="dark" />
             <Stack
               screenOptions={{
                 headerShown: true,

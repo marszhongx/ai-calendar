@@ -127,7 +127,7 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
           ),
         }}
       />
-      <SafePageView>
+      <SafePageView paddingTop="$2">
         <XStack gap="$2" marginBottom="$3">
           {TAB_LABELS.map(({ key, label }) => (
             <PillButton

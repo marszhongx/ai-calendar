@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import { ScheduleList } from '@/components/schedule-list'
 import { Recurrence, StorageKey } from '@/constants'
 import type { ScheduleDraft } from '@/types/schedule'
+import RootLayout from '../_layout'
 import DraftScreen from '../draft'
 import IndexScreen from '../index'
 import NewScheduleScreen from '../new'
@@ -67,6 +68,12 @@ describe('page navigation flow', () => {
     await waitFor(() => {
       expect(screen.getByText('No schedules today')).toBeOnTheScreen()
     })
+  })
+
+  it('uses dark status bar content on the light app background', () => {
+    render(<RootLayout />)
+
+    expect(screen.getByTestId('app-status-bar')).toHaveProp('style', 'dark')
   })
 
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {

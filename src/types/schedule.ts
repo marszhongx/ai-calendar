@@ -31,13 +31,13 @@ export type ValidationResult = {
 }
 
 export type ParsedSchedulePayload = {
-  title?: string
-  start_time?: string
-  end_time?: string
-  reminder_minutes_before?: number
-  recurrence?: string
-  notes?: string
-  confidence?: number
+  title: string
+  start_time: string
+  end_time: string | null
+  reminder_minutes_before: number
+  recurrence: string
+  notes: string | null
+  confidence: number
 }
 
 export type SchedulePayload = {

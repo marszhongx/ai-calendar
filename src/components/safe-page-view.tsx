@@ -9,12 +9,14 @@ type SafePageViewProps = {
   children: ReactNode
   scroll?: boolean
   gap?: YStackProps['gap']
+  paddingTop?: YStackProps['paddingTop']
 }
 
 export function SafePageView({
   children,
   scroll = false,
   gap,
+  paddingTop = '$4',
 }: SafePageViewProps) {
   const insets = useSafeAreaInsets()
   const paddingBottom = insets.bottom + 16
@@ -26,6 +28,7 @@ export function SafePageView({
           flex={1}
           backgroundColor={PAGE_BACKGROUND}
           padding="$4"
+          paddingTop={paddingTop}
           gap={gap}
         >
           {children}
@@ -39,6 +42,7 @@ export function SafePageView({
       flex={1}
       backgroundColor={PAGE_BACKGROUND}
       padding="$4"
+      paddingTop={paddingTop}
       paddingBottom={paddingBottom}
       gap={gap}
     >

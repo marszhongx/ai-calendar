@@ -11,16 +11,21 @@ const mockRouterDismissAll = jest.fn()
 
 let mockSearchParams: Record<string, string> = {}
 
-jest.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: mockRouterPush,
-    replace: mockRouterReplace,
-    back: mockRouterBack,
-    dismissAll: mockRouterDismissAll,
-  }),
-  useLocalSearchParams: () => mockSearchParams,
-  Stack: { Screen: () => null },
-}))
+jest.mock('expo-router', () => {
+  const Stack = ({ children }: { children: React.ReactNode }) => children
+  Stack.Screen = () => null
+
+  return {
+    useRouter: () => ({
+      push: mockRouterPush,
+      replace: mockRouterReplace,
+      back: mockRouterBack,
+      dismissAll: mockRouterDismissAll,
+    }),
+    useLocalSearchParams: () => mockSearchParams,
+    Stack,
+  }
+})
 
 ;(globalThis as Record<string, unknown>).__mockRouterPush = mockRouterPush
 ;(globalThis as Record<string, unknown>).__mockRouterDismissAll =
@@ -53,9 +58,22 @@ jest.mock('react-native-safe-area-context', () => ({
 }))
 
 jest.mock('expo-notifications', () => ({
+  requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
   scheduleNotificationAsync: jest.fn().mockResolvedValue('notification-id'),
   cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(undefined),
 }))
+
+jest.mock('expo-status-bar', () => {
+  const StatusBar = (props: Record<string, unknown>) => {
+    const React = require('react')
+    return React.createElement('StatusBar', {
+      ...props,
+      testID: 'app-status-bar',
+    })
+  }
+
+  return { StatusBar }
+})
 
 jest.mock('./src/theme/tamagui.config', () => {
   const { createTamagui } = require('tamagui')

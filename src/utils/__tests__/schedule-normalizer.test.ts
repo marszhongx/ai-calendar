@@ -32,27 +32,29 @@ describe('normalizeDraft', () => {
     })
   })
 
-  it('applies default reminder and empty notes', () => {
+  it('maps null end time to an open-ended draft', () => {
     const result = normalizeDraft({
       title: '医生复诊',
       start_time: '2026-03-21T02:00:00.000Z',
+      end_time: null,
+      reminder_minutes_before: 30,
+      recurrence: 'NONE',
+      notes: null,
+      confidence: 0.8,
     })
 
-    expect(result.reminderMinutesBefore).toBe(30)
+    expect(result.endAt).toBeUndefined()
     expect(result.notes).toBe('')
-    expect(result.recurrence).toBe('NONE')
-  })
-
-  it('keeps recurrence values after type relocation', () => {
-    const result = normalizeDraft({ recurrence: 'WEEKLY' })
-    expect(result.recurrence).toBe('WEEKLY')
   })
 
   it('keeps low confidence drafts for manual confirmation', () => {
     const result = normalizeDraft({
       title: '开会',
       start_time: '',
-
+      end_time: null,
+      reminder_minutes_before: 30,
+      recurrence: 'NONE',
+      notes: null,
       confidence: 0.3,
     })
 

@@ -10,7 +10,8 @@ const scheduleSchema = z.object({
     .string()
     .describe('Start time in ISO 8601 UTC, e.g. "2026-03-20T15:00:00Z"'),
   end_time: z
-    .optional(z.string())
+    .string()
+    .nullable()
     .describe('End time in ISO 8601 UTC, e.g. "2026-03-20T15:30:00Z"'),
   reminder_minutes_before: z
     .number()
@@ -20,7 +21,7 @@ const scheduleSchema = z.object({
   recurrence: z
     .enum(['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'])
     .describe('Recurrence frequency. NONE if not repeating'),
-  notes: z.optional(z.string()).describe('Original user message as notes'),
+  notes: z.string().nullable().describe('Original user message as notes'),
   confidence: z
     .number()
     .min(0)
