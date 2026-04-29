@@ -7,7 +7,7 @@
     "title": "AI配置",
     "apiKey": "API密钥",
     "baseUrl": "基础URL",
-    "baseUrlPlaceholder": "输入自定义API基础URL（可选）",
+    "baseUrlPlaceholder": "https://api.deepseek.com",
     "modelName": "模型名称",
     "saveSettings": "保存设置",
     "saveSuccess": "设置保存成功",

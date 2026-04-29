@@ -19,6 +19,7 @@ import { ScheduleList } from '@/components/schedule-list'
 import { Recurrence, StorageKey } from '@/constants'
 import type { ScheduleDraft } from '@/types/schedule'
 import RootLayout from '../_layout'
+import ConfigScreen from '../config'
 import DraftScreen from '../draft'
 import IndexScreen from '../index'
 import NewScheduleScreen from '../new'
@@ -74,6 +75,17 @@ describe('page navigation flow', () => {
     render(<RootLayout />)
 
     expect(screen.getByTestId('app-status-bar')).toHaveProp('style', 'dark')
+  })
+
+  it('shows DeepSeek placeholders on the AI settings screen', async () => {
+    renderWithProviders(<ConfigScreen />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText('https://api.deepseek.com'),
+      ).toBeOnTheScreen()
+    })
+    expect(screen.getByPlaceholderText('deepseek-v4-pro')).toBeOnTheScreen()
   })
 
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {

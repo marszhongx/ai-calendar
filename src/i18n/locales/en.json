@@ -7,7 +7,7 @@
     "title": "AI Settings",
     "apiKey": "API Key",
     "baseUrl": "Base URL",
-    "baseUrlPlaceholder": "Enter custom API base URL (optional)",
+    "baseUrlPlaceholder": "https://api.deepseek.com",
     "modelName": "Model Name",
     "saveSettings": "Save Settings",
     "saveSuccess": "Settings saved successfully",

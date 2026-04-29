@@ -69,7 +69,7 @@ export default function ConfigScreen() {
             id="modelName"
             value={config.modelName}
             onChangeText={(v) => setConfig((c) => ({ ...c, modelName: v }))}
-            placeholder="gpt-4o-mini"
+            placeholder="deepseek-v4-pro"
             autoCapitalize="none"
             autoCorrect={false}
           />
