@@ -60,16 +60,16 @@ describe('parseMessage', () => {
       notes: null,
       confidence: 0.9,
     }
-    mockGenerateText.mockResolvedValue({ output: payload })
+    mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
     const result = await parseMessage('明天开会')
     expect(result).toEqual(payload)
   })
 
-  it('keeps strict OpenAI JSON schema compatible by allowing null values', async () => {
+  it('requests plain text JSON without structured response format', async () => {
     mockGetAiConfig.mockResolvedValue({
-      baseUrl: 'https://api.example.com',
+      baseUrl: 'https://api.deepseek.com',
       apiKey: 'sk-test',
-      modelName: 'gpt-4o',
+      modelName: 'deepseek-v4-pro',
     })
     const payload = {
       title: '开会',
@@ -80,18 +80,57 @@ describe('parseMessage', () => {
       notes: null,
       confidence: 0.9,
     }
-    mockGenerateText.mockResolvedValue({ output: payload })
+    mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
 
     const result = await parseMessage('明天开会')
 
     expect(result).toEqual(payload)
-    const output = mockGenerateText.mock.calls[0][0].output
-    expect(output.schema.safeParse(payload).success).toBe(true)
-    expect(
-      output.schema.safeParse({ ...payload, end_time: undefined }).success,
-    ).toBe(false)
-    expect(mockGenerateText.mock.calls[0][0]).not.toHaveProperty(
-      'providerOptions',
-    )
+    expect(mockGenerateText.mock.calls[0][0]).not.toHaveProperty('output')
+  })
+
+  it('separates stable JSON instructions from the user schedule request', async () => {
+    mockGetAiConfig.mockResolvedValue({
+      baseUrl: 'https://api.deepseek.com',
+      apiKey: 'sk-test',
+      modelName: 'deepseek-v4-pro',
+    })
+    const payload = {
+      title: '开会',
+      start_time: '2026-03-20T10:00:00Z',
+      end_time: null,
+      reminder_minutes_before: 10,
+      recurrence: 'NONE',
+      notes: null,
+      confidence: 0.9,
+    }
+    mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
+
+    await parseMessage('明天开会')
+
+    const request = mockGenerateText.mock.calls[0][0]
+    expect(request.system).toContain('return only JSON')
+    expect(request.system).toContain('reminder_minutes_before')
+    expect(request.prompt).toContain('Current time:')
+    expect(request.prompt).toContain('"明天开会"')
+    expect(request.prompt).not.toContain('return only JSON')
+  })
+
+  it('rejects text JSON that does not match the schedule schema', async () => {
+    mockGetAiConfig.mockResolvedValue({
+      baseUrl: 'https://api.example.com',
+      apiKey: 'sk-test',
+      modelName: 'gpt-4o',
+    })
+    const payload = {
+      title: '开会',
+      start_time: '2026-03-20T10:00:00Z',
+      reminder_minutes_before: 10,
+      recurrence: 'NONE',
+      notes: null,
+      confidence: 0.9,
+    }
+    mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
+
+    await expect(parseMessage('明天开会')).rejects.toThrow()
   })
 })

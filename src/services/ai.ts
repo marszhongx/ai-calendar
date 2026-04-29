@@ -1,5 +1,5 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { generateText, Output } from 'ai'
+import { generateText } from 'ai'
 import { z } from 'zod'
 import type { ParsedSchedulePayload } from '../types/schedule'
 import { getAiConfig } from './ai-config'
@@ -48,17 +48,20 @@ export async function parseMessage(
     .toLocaleString('sv-SE', { timeZone: tz })
     .replace(' ', 'T')
 
+  const system =
+    "Parse schedule requests and return only JSON that matches this TypeScript shape: { title: string; start_time: string; end_time: string | null; reminder_minutes_before: number; recurrence: 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY'; notes: string | null; confidence: number }."
   const prompt = `Current time: ${now} (${tz}). Parse the following schedule request:\n\n"${message}"`
 
   const result = await generateText({
     model,
-    output: Output.object({ schema: scheduleSchema }),
+    system,
     prompt,
   })
 
-  if (!result.output) {
+  if (!result.text) {
     throw new Error('empty_response')
   }
 
-  return result.output as ParsedSchedulePayload
+  const parsed = JSON.parse(result.text)
+  return scheduleSchema.parse(parsed) as ParsedSchedulePayload
 }
