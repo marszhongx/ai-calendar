@@ -67,7 +67,6 @@ export interface TranslationKeys {
     startAtRequired: string
     invalidRecurrence: string
     reminderRange: string
-    lowConfidence: string
   }
 }
 

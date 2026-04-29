@@ -22,11 +22,6 @@ const scheduleSchema = z.object({
     .enum(['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'])
     .describe('Recurrence frequency. NONE if not repeating'),
   notes: z.string().nullable().describe('Original user message as notes'),
-  confidence: z
-    .number()
-    .min(0)
-    .max(1)
-    .describe('Confidence score between 0 and 1'),
 })
 
 export async function parseMessage(
@@ -49,7 +44,7 @@ export async function parseMessage(
     .replace(' ', 'T')
 
   const system =
-    "Parse schedule requests and return only JSON that matches this TypeScript shape: { title: string; start_time: string; end_time: string | null; reminder_minutes_before: number; recurrence: 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY'; notes: string | null; confidence: number }."
+    "Parse schedule requests and return only JSON that matches this TypeScript shape: { title: string; start_time: string; end_time: string | null; reminder_minutes_before: number; recurrence: 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY'; notes: string | null }."
   const prompt = `Current time: ${now} (${tz}). Parse the following schedule request:\n\n"${message}"`
 
   const result = await generateText({

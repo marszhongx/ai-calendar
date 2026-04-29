@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { ErrorBanner } from '@/components/error-banner'
 import { SafePageView } from '@/components/safe-page-view'
 import { ScheduleDraftForm } from '@/components/schedule-draft-form'
 import { SkeletonCard } from '@/components/skeleton-card'
@@ -24,13 +23,31 @@ const fallbackDraft: ScheduleDraft = {
   recurrence: Recurrence.NONE,
   notes: '',
   originalMessage: '',
-  confidence: 0.5,
 }
 
 type DraftScreenProps = {
   initialDraft?: ScheduleDraft
   submitLabel?: string
   onCreate?(draft: ScheduleDraft): Promise<Schedule>
+}
+
+function getParseErrorMessage(error: unknown, t: (key: string) => string) {
+  if (error instanceof Error) {
+    switch (error.message) {
+      case 'service_unavailable':
+        return t('messages.serverError')
+      case 'empty_response':
+        return t('messages.dataLoadFailed')
+      case 'invalid_format':
+        return t('messages.validationError')
+      case 'timeout':
+        return t('messages.timeoutError')
+      default:
+        return t('messages.error')
+    }
+  }
+
+  return t('messages.error')
 }
 
 export default function DraftScreen({
@@ -74,11 +91,15 @@ export default function DraftScreen({
   async function handleReparse() {
     if (!draft.originalMessage) return
 
-    const data = (await parseMessage(
-      draft.originalMessage,
-    )) as ParsedSchedulePayload
-    setDraft(normalizeDraft(data, draft.originalMessage))
-    setErrors([])
+    try {
+      const data = (await parseMessage(
+        draft.originalMessage,
+      )) as ParsedSchedulePayload
+      setDraft(normalizeDraft(data, draft.originalMessage))
+      setErrors([])
+    } catch (err) {
+      setErrors([getParseErrorMessage(err, t)])
+    }
   }
 
   async function handleSubmit() {
@@ -116,9 +137,6 @@ export default function DraftScreen({
     <>
       <Stack.Screen options={{ title: t('schedule.saveDraft') }} />
       <SafePageView scroll gap="$3">
-        {draft.confidence < 0.6 && (
-          <ErrorBanner message={t('validation.lowConfidence')} />
-        )}
         <ScheduleDraftForm
           draft={draft}
           errors={errors}

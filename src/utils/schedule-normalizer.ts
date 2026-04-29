@@ -33,7 +33,6 @@ export function normalizeDraft(
     recurrence: toRecurrence(payload.recurrence),
     notes: payload.notes?.trim() ?? '',
     originalMessage,
-    confidence: payload.confidence ?? 0,
   }
 }
 
@@ -46,7 +45,6 @@ export function scheduleToDraft(schedule: Schedule): ScheduleDraft {
     recurrence: schedule.recurrence,
     notes: schedule.notes,
     originalMessage: schedule.originalMessage,
-    confidence: 1,
   }
 }
 

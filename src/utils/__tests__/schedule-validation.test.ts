@@ -13,7 +13,6 @@ describe('validateDraft', () => {
       recurrence: Recurrence.WEEKLY,
       notes: '准备原型',
       originalMessage: '',
-      confidence: 0.92,
     }
 
     expect(validateDraft(draft)).toEqual({ valid: true, errors: [] })
@@ -28,7 +27,6 @@ describe('validateDraft', () => {
       recurrence: Recurrence.NONE,
       notes: '',
       originalMessage: '',
-      confidence: 0.8,
     }
 
     expect(validateDraft(draft)).toEqual({
@@ -46,7 +44,6 @@ describe('validateDraft', () => {
       recurrence: Recurrence.NONE,
       notes: '',
       originalMessage: '',
-      confidence: 0.88,
     }
 
     expect(validateDraft(draft)).toEqual({
@@ -63,7 +60,6 @@ describe('validateDraft', () => {
       reminderMinutesBefore: 10,
       recurrence: 'yearly',
       notes: '',
-      confidence: 0.6,
     } as unknown as ScheduleDraft
 
     expect(validateDraft(draft)).toEqual({
@@ -80,7 +76,6 @@ describe('validateDraft', () => {
       recurrence: Recurrence.NONE,
       notes: '',
       originalMessage: '',
-      confidence: 0.8,
     }
     expect(validateDraft(draft)).toEqual({
       valid: false,
@@ -96,7 +91,6 @@ describe('validateDraft', () => {
       recurrence: Recurrence.NONE,
       notes: '',
       originalMessage: '',
-      confidence: 0.8,
     }
     expect(validateDraft(draft)).toEqual({
       valid: false,

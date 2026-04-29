@@ -7,12 +7,19 @@ import {
 } from '@testing-library/react-native'
 import { TamaguiProvider } from 'tamagui'
 import { LocaleProvider } from '@/context/LocaleContext'
+import { parseMessage } from '@/services/ai'
 import config from '@/theme/tamagui.config'
 
 const mockRouterPush = (globalThis as Record<string, unknown>)
   .__mockRouterPush as jest.Mock
 const mockRouterDismissAll = (globalThis as Record<string, unknown>)
   .__mockRouterDismissAll as jest.Mock
+
+jest.mock('@/services/ai', () => ({
+  parseMessage: jest.fn(),
+}))
+
+const mockParseMessage = jest.mocked(parseMessage)
 
 import dayjs from 'dayjs'
 import { ScheduleList } from '@/components/schedule-list'
@@ -36,6 +43,7 @@ describe('page navigation flow', () => {
   beforeEach(() => {
     mockRouterPush.mockClear()
     mockRouterDismissAll.mockClear()
+    mockParseMessage.mockReset()
   })
 
   it('renders the new schedule screen with input form', () => {
@@ -55,7 +63,6 @@ describe('page navigation flow', () => {
           recurrence: Recurrence.NONE,
           notes: '',
           originalMessage: '',
-          confidence: 0.5,
         }}
       />,
     )
@@ -160,7 +167,6 @@ describe('page navigation flow', () => {
         recurrence: Recurrence.NONE,
         notes: '',
         originalMessage: '明天下午三点开需求评审会',
-        confidence: 0.9,
       } satisfies ScheduleDraft)
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
 
@@ -201,7 +207,6 @@ describe('page navigation flow', () => {
           recurrence: Recurrence.NONE,
           notes: '',
           originalMessage: '',
-          confidence: 0.4,
         }}
       />,
     )
@@ -209,6 +214,28 @@ describe('page navigation flow', () => {
     fireEvent.press(screen.getByText('Create Schedule'))
 
     expect(screen.getByText('Event name is required')).toBeOnTheScreen()
+  })
+
+  it('shows an error when re-parsing a draft fails', async () => {
+    mockParseMessage.mockRejectedValue(new Error('invalid_format'))
+
+    renderWithProviders(
+      <DraftScreen
+        initialDraft={{
+          title: '旧标题',
+          startAt: '2026-03-17T15:00:00.000Z',
+          reminderMinutesBefore: 30,
+          recurrence: Recurrence.NONE,
+          notes: '',
+          originalMessage: '明天下午三点开需求评审会',
+        }}
+      />,
+    )
+
+    fireEvent.press(screen.getByText('Re-parse'))
+
+    expect(await screen.findByText('Data validation error')).toBeOnTheScreen()
+    expect(mockParseMessage).toHaveBeenCalledWith('明天下午三点开需求评审会')
   })
 
   it('calls dismissAll after creating a schedule', async () => {
@@ -237,7 +264,6 @@ describe('page navigation flow', () => {
           recurrence: Recurrence.NONE,
           notes: '',
           originalMessage: '',
-          confidence: 0.9,
         }}
       />,
     )
@@ -405,7 +431,6 @@ describe('page navigation flow', () => {
           recurrence: Recurrence.NONE,
           notes: '',
           originalMessage: '',
-          confidence: 0.9,
         }}
         submitLabel="Save"
       />,

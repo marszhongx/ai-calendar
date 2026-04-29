@@ -16,7 +16,6 @@ describe('normalizeDraft', () => {
       reminder_minutes_before: 45,
       recurrence: 'WEEKLY',
       notes: '带上原型',
-      confidence: 0.91,
     })
 
     expect(result).toEqual({
@@ -28,7 +27,6 @@ describe('normalizeDraft', () => {
       recurrence: 'WEEKLY',
       notes: '带上原型',
       originalMessage: '',
-      confidence: 0.91,
     })
   })
 
@@ -40,25 +38,10 @@ describe('normalizeDraft', () => {
       reminder_minutes_before: 30,
       recurrence: 'NONE',
       notes: null,
-      confidence: 0.8,
     })
 
     expect(result.endAt).toBeUndefined()
     expect(result.notes).toBe('')
-  })
-
-  it('keeps low confidence drafts for manual confirmation', () => {
-    const result = normalizeDraft({
-      title: '开会',
-      start_time: '',
-      end_time: null,
-      reminder_minutes_before: 30,
-      recurrence: 'NONE',
-      notes: null,
-      confidence: 0.3,
-    })
-
-    expect(result.confidence).toBe(0.3)
   })
 })
 
@@ -85,7 +68,6 @@ describe('scheduleToDraft', () => {
       recurrence: Recurrence.WEEKLY,
       notes: '带资料',
       originalMessage: '每周三开会',
-      confidence: 1,
     })
   })
 })
@@ -100,7 +82,6 @@ describe('draftToPayload', () => {
       recurrence: Recurrence.WEEKLY,
       notes: '带资料',
       originalMessage: '每周三开会',
-      confidence: 0.9,
     }
     const payload = draftToPayload(draft)
     expect(payload).toEqual({

@@ -65,7 +65,6 @@
     "titleRequired": "请输入事件名称",
     "startAtRequired": "请选择开始时间",
     "invalidRecurrence": "重复方式无效",
-    "reminderRange": "提醒时间需在 0-1440 分钟之间",
-    "lowConfidence": "AI 解析置信度较低，请仔细核对各字段"
+    "reminderRange": "提醒时间需在 0-1440 分钟之间"
   }
 }

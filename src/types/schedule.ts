@@ -8,7 +8,6 @@ export type ScheduleDraft = {
   recurrence: Recurrence
   notes: string
   originalMessage: string
-  confidence: number
 }
 
 export type Schedule = {
@@ -37,7 +36,6 @@ export type ParsedSchedulePayload = {
   reminder_minutes_before: number
   recurrence: string
   notes: string | null
-  confidence: number
 }
 
 export type SchedulePayload = {

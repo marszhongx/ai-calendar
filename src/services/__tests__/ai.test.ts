@@ -58,7 +58,6 @@ describe('parseMessage', () => {
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       notes: null,
-      confidence: 0.9,
     }
     mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
     const result = await parseMessage('明天开会')
@@ -78,7 +77,6 @@ describe('parseMessage', () => {
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       notes: null,
-      confidence: 0.9,
     }
     mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
 
@@ -101,7 +99,6 @@ describe('parseMessage', () => {
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       notes: null,
-      confidence: 0.9,
     }
     mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
 
@@ -127,7 +124,6 @@ describe('parseMessage', () => {
       reminder_minutes_before: 10,
       recurrence: 'NONE',
       notes: null,
-      confidence: 0.9,
     }
     mockGenerateText.mockResolvedValue({ text: JSON.stringify(payload) })
 
