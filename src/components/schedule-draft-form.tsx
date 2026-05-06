@@ -75,13 +75,15 @@ export function ScheduleDraftForm({
             <SizableText size="$3" color={LABEL_COLOR} fontWeight="500">
               {t('schedule.originalMessage')}
             </SizableText>
-            <PillButton
-              selected={false}
-              onPress={handleReparse}
-              disabled={disabled || reparsing}
-            >
-              {reparsing ? t('schedule.reParsing') : t('schedule.reParse')}
-            </PillButton>
+            {onReparse ? (
+              <PillButton
+                selected={false}
+                onPress={handleReparse}
+                disabled={disabled || reparsing}
+              >
+                {reparsing ? t('schedule.reParsing') : t('schedule.reParse')}
+              </PillButton>
+            ) : null}
           </XStack>
           <SizableText size="$3" color="$color11">
             {draft.originalMessage}

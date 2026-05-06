@@ -97,6 +97,23 @@ describe('schedule detail page', () => {
     )
   })
 
+  it('does not show re-parse action when detail editing cannot re-parse', async () => {
+    mockListSchedules.mockResolvedValue([
+      {
+        ...baseSchedule,
+        originalMessage: '明天下午三点开需求评审会',
+      },
+    ])
+
+    renderWithProviders(<ScheduleDetailScreen />)
+
+    await waitFor(() => {
+      expect(screen.getByText('明天下午三点开需求评审会')).toBeOnTheScreen()
+    })
+
+    expect(screen.queryByText('Re-parse')).not.toBeOnTheScreen()
+  })
+
   it('shows not found state when schedule does not exist', async () => {
     ;(globalThis as Record<string, unknown>).__mockSearchParams = {
       id: 'non-existent',
