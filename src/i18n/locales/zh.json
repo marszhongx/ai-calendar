@@ -11,7 +11,8 @@
     "modelName": "模型名称",
     "saveSettings": "保存设置",
     "saveSuccess": "设置保存成功",
-    "saveFailed": "设置保存失败"
+    "saveFailed": "设置保存失败",
+    "requiredFields": "请填写基础URL、API密钥和模型名称"
   },
   "schedule": {
     "title": "日程安排",
@@ -20,6 +21,9 @@
     "eventName": "事件名称",
     "startTime": "开始时间",
     "endTime": "结束时间",
+    "noEndTime": "未设置结束时间",
+    "addEndTime": "添加结束时间",
+    "removeEndTime": "移除结束时间",
     "description": "描述",
     "aiInputPlaceholder": "输入你的日程...",
     "create": "创建日程",
@@ -65,6 +69,7 @@
     "titleRequired": "请输入事件名称",
     "startAtRequired": "请选择开始时间",
     "invalidRecurrence": "重复方式无效",
-    "reminderRange": "提醒时间需在 0-1440 分钟之间"
+    "reminderRange": "提醒时间需在 0-1440 分钟之间",
+    "messageRequired": "请输入日程内容"
   }
 }

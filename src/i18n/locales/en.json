@@ -11,7 +11,8 @@
     "modelName": "Model Name",
     "saveSettings": "Save Settings",
     "saveSuccess": "Settings saved successfully",
-    "saveFailed": "Failed to save settings"
+    "saveFailed": "Failed to save settings",
+    "requiredFields": "Base URL, API key, and model name are required"
   },
   "schedule": {
     "title": "Schedule",
@@ -20,6 +21,9 @@
     "eventName": "Event Name",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "noEndTime": "No end time",
+    "addEndTime": "Add end time",
+    "removeEndTime": "Remove end time",
     "description": "Description",
     "aiInputPlaceholder": "Enter your schedule...",
     "create": "Create Schedule",
@@ -65,6 +69,7 @@
     "titleRequired": "Event name is required",
     "startAtRequired": "Start time is required",
     "invalidRecurrence": "Invalid repeat option",
-    "reminderRange": "Reminder must be between 0 and 1440 minutes"
+    "reminderRange": "Reminder must be between 0 and 1440 minutes",
+    "messageRequired": "Please enter a schedule"
   }
 }

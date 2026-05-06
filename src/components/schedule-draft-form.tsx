@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { Input, SizableText, TextArea, XStack, YStack } from 'tamagui'
 import { LABEL_COLOR, Recurrence } from '../constants'
@@ -54,6 +55,17 @@ export function ScheduleDraftForm({
     } finally {
       setReparsing(false)
     }
+  }
+
+  function handleAddEndTime() {
+    onChange({
+      ...draft,
+      endAt: dayjs(draft.startAt).add(1, 'hour').toISOString(),
+    })
+  }
+
+  function handleRemoveEndTime() {
+    onChange({ ...draft, endAt: undefined })
   }
 
   const recurrenceLabels = useMemo<Record<string, string>>(
@@ -129,14 +141,38 @@ export function ScheduleDraftForm({
         >
           {t('schedule.endTime')}
         </SizableText>
-        <DateTimePickerField
-          value={draft.endAt ?? ''}
-          onChange={(endAt) =>
-            onChange({ ...draft, endAt: endAt || undefined })
-          }
-          disabled={disabled}
-          locale={locale}
-        />
+        {draft.endAt ? (
+          <YStack gap="$2">
+            <DateTimePickerField
+              value={draft.endAt}
+              onChange={(endAt) =>
+                onChange({ ...draft, endAt: endAt || undefined })
+              }
+              disabled={disabled}
+              locale={locale}
+            />
+            <PillButton
+              selected={false}
+              onPress={handleRemoveEndTime}
+              disabled={disabled}
+            >
+              {t('schedule.removeEndTime')}
+            </PillButton>
+          </YStack>
+        ) : (
+          <XStack alignItems="center" justifyContent="space-between" gap="$3">
+            <SizableText size="$3" color="$placeholderColor" flex={1}>
+              {t('schedule.noEndTime')}
+            </SizableText>
+            <PillButton
+              selected={false}
+              onPress={handleAddEndTime}
+              disabled={disabled}
+            >
+              {t('schedule.addEndTime')}
+            </PillButton>
+          </XStack>
+        )}
       </FormSection>
 
       {/* Recurrence */}

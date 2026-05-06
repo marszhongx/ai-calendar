@@ -118,6 +118,8 @@ export default function IndexScreen({ schedules }: IndexScreenProps) {
           headerRight: () => (
             <Button
               unstyled
+              accessibilityLabel={t('common.settings')}
+              aria-label={t('common.settings')}
               onPress={() => router.push('/config')}
               paddingHorizontal="$2"
               marginRight="$2"

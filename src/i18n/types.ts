@@ -13,6 +13,7 @@ export interface TranslationKeys {
     saveSettings: string
     saveSuccess: string
     saveFailed: string
+    requiredFields: string
   }
   schedule: {
     title: string
@@ -21,6 +22,9 @@ export interface TranslationKeys {
     eventName: string
     startTime: string
     endTime: string
+    noEndTime: string
+    addEndTime: string
+    removeEndTime: string
     description: string
     aiInputPlaceholder: string
     create: string
@@ -67,6 +71,7 @@ export interface TranslationKeys {
     startAtRequired: string
     invalidRecurrence: string
     reminderRange: string
+    messageRequired: string
   }
 }
 

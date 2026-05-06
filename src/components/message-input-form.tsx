@@ -13,12 +13,20 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
   const { t } = useLocale()
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [validationError, setValidationError] = useState('')
 
   async function handleSubmit() {
+    const trimmedMessage = message.trim()
+    if (!trimmedMessage) {
+      setValidationError(t('validation.messageRequired'))
+      return
+    }
+
+    setValidationError('')
     setSubmitting(true)
 
     try {
-      await onSubmit(message)
+      await onSubmit(trimmedMessage)
     } finally {
       setSubmitting(false)
     }
@@ -29,7 +37,10 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
       <TextArea
         aria-label={t('schedule.aiInputPlaceholder')}
         value={message}
-        onChangeText={setMessage}
+        onChangeText={(value) => {
+          setMessage(value)
+          if (validationError && value.trim()) setValidationError('')
+        }}
         size="$4"
         backgroundColor="white"
         borderWidth={0}
@@ -45,6 +56,7 @@ export function MessageInputForm({ onSubmit, error }: MessageInputFormProps) {
         disabled={submitting}
         icon={submitting ? <Spinner size="small" /> : undefined}
       />
+      {validationError ? <ErrorBanner message={validationError} /> : null}
       {error ? <ErrorBanner message={error} /> : null}
     </YStack>
   )

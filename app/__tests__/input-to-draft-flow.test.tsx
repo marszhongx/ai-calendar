@@ -95,6 +95,34 @@ describe('page navigation flow', () => {
     expect(screen.getByPlaceholderText('deepseek-v4-pro')).toBeOnTheScreen()
   })
 
+  it('shows validation when new schedule input is empty', () => {
+    const onSubmit = jest.fn()
+    renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
+
+    fireEvent.changeText(screen.getByLabelText('Enter your schedule...'), '   ')
+    fireEvent.press(screen.getByText('Create Schedule'))
+
+    expect(screen.getByText('Please enter a schedule')).toBeOnTheScreen()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('shows validation when AI settings fields are empty', async () => {
+    renderWithProviders(<ConfigScreen />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Save Settings')).toBeOnTheScreen()
+    })
+
+    fireEvent.press(screen.getByText('Save Settings'))
+
+    expect(
+      screen.getByText('Base URL, API key, and model name are required'),
+    ).toBeOnTheScreen()
+    expect(
+      screen.queryByText('Settings saved successfully'),
+    ).not.toBeOnTheScreen()
+  })
+
   it('shows a fallback parse error when parsing fails with an unknown code', async () => {
     const onSubmit = jest.fn().mockRejectedValue(new Error('parse failed'))
     renderWithProviders(<NewScheduleScreen onSubmit={onSubmit} />)
@@ -214,6 +242,48 @@ describe('page navigation flow', () => {
     fireEvent.press(screen.getByText('Create Schedule'))
 
     expect(screen.getByText('Event name is required')).toBeOnTheScreen()
+  })
+
+  it('shows an add end time action when end time is unset', () => {
+    renderWithProviders(
+      <DraftScreen
+        initialDraft={{
+          title: '需求评审会',
+          startAt: '2026-03-17T15:00:00.000Z',
+          reminderMinutesBefore: 30,
+          recurrence: Recurrence.NONE,
+          notes: '',
+          originalMessage: '',
+        }}
+      />,
+    )
+
+    expect(screen.getByText('No end time')).toBeOnTheScreen()
+    expect(screen.getByText('Add end time')).toBeOnTheScreen()
+  })
+
+  it('adds and removes an end time in the draft form', () => {
+    renderWithProviders(
+      <DraftScreen
+        initialDraft={{
+          title: '需求评审会',
+          startAt: '2026-03-17T15:00:00.000Z',
+          reminderMinutesBefore: 30,
+          recurrence: Recurrence.NONE,
+          notes: '',
+          originalMessage: '',
+        }}
+      />,
+    )
+
+    fireEvent.press(screen.getByText('Add end time'))
+
+    expect(screen.getByText('Remove end time')).toBeOnTheScreen()
+
+    fireEvent.press(screen.getByText('Remove end time'))
+
+    expect(screen.getByText('No end time')).toBeOnTheScreen()
+    expect(screen.getByText('Add end time')).toBeOnTheScreen()
   })
 
   it('shows an error when re-parsing a draft fails', async () => {
@@ -462,6 +532,28 @@ describe('page navigation flow', () => {
 
     fireEvent.press(screen.getByText('可点击日程'))
     expect(onPress).toHaveBeenCalledWith(schedule)
+  })
+
+  it('exposes schedule cards as accessible buttons', () => {
+    const now = dayjs().hour(12).minute(0).second(0).toISOString()
+    const schedule = {
+      id: 's-accessible',
+      title: '可访问日程',
+      startAt: now,
+      timezone: 'Asia/Shanghai',
+      reminderMinutesBefore: 10,
+      recurrence: Recurrence.NONE,
+      notes: '',
+      originalMessage: '',
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    renderWithProviders(
+      <ScheduleList schedules={[schedule]} onPress={jest.fn()} />,
+    )
+
+    expect(screen.getByRole('button', { name: '可访问日程' })).toBeOnTheScreen()
   })
 
   it('navigates to schedule detail when a schedule card is tapped', async () => {

@@ -16,6 +16,27 @@ function getCardColor(index: number): string {
   return CARD_COLORS[index % CARD_COLORS.length]
 }
 
+type PressableWebState = {
+  pressed: boolean
+  hovered: boolean
+  focused: boolean
+}
+
+function cardStyle(state: PressableWebState) {
+  return {
+    cursor: 'pointer' as const,
+    outlineStyle: state.focused ? 'solid' : 'none',
+    outlineWidth: state.focused ? 2 : 0,
+    outlineColor: '#2563EB',
+    borderRadius: 16,
+    transform: [{ translateY: state.hovered ? -2 : state.pressed ? 1 : 0 }],
+    shadowColor: '#111827',
+    shadowOpacity: state.hovered ? 0.12 : 0,
+    shadowRadius: state.hovered ? 10 : 0,
+    shadowOffset: { width: 0, height: state.hovered ? 6 : 0 },
+  }
+}
+
 export function ScheduleList({
   schedules,
   showDate,
@@ -65,7 +86,12 @@ export function ScheduleList({
         const expired = isExpired(schedule)
 
         return (
-          <Pressable onPress={() => onPress?.(schedule)}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={schedule.title}
+            onPress={() => onPress?.(schedule)}
+            style={cardStyle as never}
+          >
             <YStack
               backgroundColor={getCardColor(index)}
               borderRadius={16}

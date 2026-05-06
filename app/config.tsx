@@ -16,23 +16,42 @@ export default function ConfigScreen() {
   })
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState(SaveStatus.IDLE)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     getAiConfig().then(setConfig)
   }, [])
 
   const handleSave = useCallback(async () => {
+    const trimmedBaseUrl = config.baseUrl.trim()
+    const trimmedApiKey = config.apiKey.trim()
+    const trimmedModelName = config.modelName.trim()
+
+    if (!trimmedBaseUrl || !trimmedApiKey || !trimmedModelName) {
+      setSaveStatus(SaveStatus.IDLE)
+      setError(t('aiConfig.requiredFields'))
+      return
+    }
+
+    const trimmedConfig = {
+      baseUrl: trimmedBaseUrl,
+      apiKey: trimmedApiKey,
+      modelName: trimmedModelName,
+    }
+
     setSaving(true)
     setSaveStatus(SaveStatus.IDLE)
+    setError('')
     try {
-      await setAiConfig(config)
+      await setAiConfig(trimmedConfig)
+      setConfig(trimmedConfig)
       setSaveStatus(SaveStatus.SUCCESS)
     } catch {
-      setSaveStatus(SaveStatus.ERROR)
+      setError(t('aiConfig.saveFailed'))
     } finally {
       setSaving(false)
     }
-  }, [config])
+  }, [config, t])
 
   return (
     <>
@@ -83,6 +102,12 @@ export default function ConfigScreen() {
             {saveStatus === SaveStatus.SUCCESS
               ? t('aiConfig.saveSuccess')
               : t('aiConfig.saveFailed')}
+          </SizableText>
+        ) : null}
+
+        {error ? (
+          <SizableText color="$red10" size="$3" textAlign="center">
+            {error}
           </SizableText>
         ) : null}
 
